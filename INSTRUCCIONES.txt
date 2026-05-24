@@ -1,0 +1,97 @@
+========================================================================
+             BIENVENIDO A TU DRILL CONTROL ROOM (SALIDAS DE POZOS)
+========================================================================
+
+¡Hola! He diseñado esta aplicación especialmente para ti. No necesitas 
+saber nada de programación ni instalar ningún programa complejo para usarla. 
+Aquí tienes la guía paso a paso de cómo abrirla, probarla y sacarle provecho.
+
+------------------------------------------------------------------------
+1. CÓMO ABRIR LA APLICACIÓN EN TU COMPUTADORA (WINDOWS)
+------------------------------------------------------------------------
+La aplicación está guardada en la carpeta de tu computadora. Para abrirla, 
+sigue estos pasos extremadamente fáciles:
+
+   1. Abre el explorador de archivos de Windows.
+   2. Ve a la siguiente ruta en tu computadora:
+      C:\Users\ASUS\.gemini\antigravity\scratch\control-solicitudes\
+   
+   3. Busca el archivo llamado: "index.html" (o que simplemente se llame 
+      "index" y tenga el ícono de tu navegador de internet Chrome o Edge).
+   
+   4. ¡Hazle DOBLE CLIC a ese archivo!
+   
+   ¡Listo! La aplicación se abrirá instantáneamente en tu navegador y ya 
+   estará funcionando al 100% de forma local.
+
+------------------------------------------------------------------------
+2. CÓMO PROBAR EL MODO "EDITOR" (REGISTRAR DATOS)
+------------------------------------------------------------------------
+Al abrir la app por primera vez, verás toda la información en tiempo real 
+pero no podrás modificar nada. Para poder editar, sigue estos pasos:
+
+   1. En la esquina superior derecha, haz clic en el botón cian que dice: 
+      "Ingresar como Editor".
+   
+   2. Te pedirá tu Nombre y una Contraseña. Usa este usuario de prueba 
+      que ya te dejé creado:
+      
+      * Nombre y Apellido: Admin
+      * Contraseña (Documento): 1111
+      
+      (También puedes probar con: Nombre y Apellido: Juan Pérez, Contraseña: 12345678)
+   
+   3. Haz clic en "Ingresar". 
+      ¡Verás que tu perfil cambia arriba a la derecha y se desbloquea una 
+      nueva pestaña en el panel derecho llamada "Administración"!
+
+------------------------------------------------------------------------
+3. CÓMO USAR LA APP (CARGAR SERVICIOS Y CREAR USUARIOS)
+------------------------------------------------------------------------
+
+A) VINCULAR OPERADORA Y CONFIGURAR SISTEMAS (SÚPER SENCILLO):
+   1. Con la sesión iniciada, haz clic sobre cualquiera de los 14 equipos en la cuadrícula de la izquierda (por ejemplo, el "Rig F03").
+   2. Verás que en el panel derecho (pestaña "Administración") se abre la sección de control para el Rig F03.
+   3. **Vincular Operadora (1 Clic):** Verás la sección "Vincular Equipo a Operadora". Simplemente haz clic en el botón de la operadora que desees (YPF, Tecpetrol, Vista o Total) y confirma en la ventana emergente. ¡El equipo se reasignará al instante!
+   4. **Configurar Sistemas:** En la sección inferior, tilda qué sistemas están cubiertos por "Contrato" o selecciona si fueron solicitados con/sin operador por mail. Haz clic en "Guardar Sistemas del Rig".
+   5. ¡Listo! Al instante verás las actualizaciones en las tarjetas y en el historial de Solicitudes (con la auditoría verde de Reasignación).
+
+B) CREAR UN NUEVO USUARIO EDITOR:
+   1. Ve a la pestaña "Usuarios" en el panel derecho.
+   2. Completa el formulario con el Nombre, Apellido y Número de Documento 
+      de tu compañero de trabajo.
+   3. Haz clic en "Crear Usuario Editor".
+   4. A partir de ese momento, esa persona podrá ingresar a editar usando 
+      esos mismos datos (su documento será su contraseña).
+
+------------------------------------------------------------------------
+4. CÓMO INSTALAR LA APP EN WINDOWS COMO UNA APLICACIÓN REAL
+------------------------------------------------------------------------
+Cuando abres la app en el navegador (Google Chrome o Microsoft Edge):
+   1. Mira al final de la barra de direcciones del navegador (donde se escribe 
+      la dirección de la página web, a la derecha del todo).
+   2. Verás un pequeño ícono con una pantalla y una flecha hacia abajo, o tres 
+      puntos que dicen "Instalar Drill Control Room".
+   3. Haz clic allí y dale a "Instalar".
+   4. ¡Mágico! La ventana del navegador desaparecerá y la app se abrirá en su 
+      propia ventana independiente, sin barras molestas. Además, se creará un 
+      ícono de acceso directo en tu escritorio para que entres directo con un clic.
+
+------------------------------------------------------------------------
+5. CÓMO HACERLA LLEGAR A TU CELULAR (ANDROID) Y COMPARTIR EN TIEMPO REAL
+------------------------------------------------------------------------
+Por ahora, la aplicación guarda toda la información dentro del navegador de tu 
+computadora de forma local y 100% segura para que juegues y la pruebes.
+
+Para que tu equipo de trabajo pueda verla en tiempo real en otros celulares 
+Android y computadoras, simplemente necesitamos:
+   1. Subir estos archivos a internet (un servidor web gratuito).
+   2. Conectarla a Firebase (la base de datos gratuita de Google).
+
+¡No te preocupes por esto ahora! Juega con la aplicación localmente primero, 
+carga datos, crea usuarios y mira si te gusta la interfaz gerencial. 
+Cuando estés listo, avísame y yo me encargaré de configurarte el servidor 
+gratuito de Firebase para que todos la usen en tiempo real de forma segura.
+
+¡Disfruta de tu nueva sala de control de perforaciones!
+========================================================================

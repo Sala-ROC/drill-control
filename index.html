@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drill Control — Centro de Operaciones</title>
+    <meta name="description" content="Sistema de automatización y control de equipos de perforación. Centro de operaciones RigLine.">
+    <meta name="application-name" content="Drill Control">
+
+    <!-- PWA: Manifest e íconos -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-180x180.png">
+    <meta name="theme-color" content="#00D2FF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Drill Control">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Google Fonts para aspecto gerencial y técnico -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- PANTALLA DE LOGIN OBLIGATORIA (HARD GATE) -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-scroll-area">
+            <div class="auth-card glass">
+            <div class="auth-logo" style="margin-bottom: 15px;">
+                <svg viewBox="0 0 24 24" width="36" height="36" stroke="var(--color-cyan)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(0,210,255,0.6)); margin-bottom: 8px;"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                <h2>DRILL CONTROL</h2>
+                <p>Sistemas de Automatización</p>
+            </div>
+            <p class="auth-instructions" style="margin-bottom: 15px;">Ingreso Restringido. Introduce tus credenciales.</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginName">Usuario (Nombre y Apellido)</label>
+                    <input type="text" id="loginName" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña (Documento)</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <div class="error-message hidden" id="loginError">Credenciales incorrectas o acceso denegado.</div>
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top: 10px; font-size: 0.9rem; padding: 8px;">Acceder al Centro de Control</button>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            <a href="https://wa.me/5492995157594" target="_blank" class="wa-contact-link" title="Soporte Técnico por WhatsApp">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+                </svg>
+                Inconvenientes Técnicos Sala ROC: +54 9 299 515-7594
+            </a>
+        </div>
+        </div> <!-- End of auth-scroll-area -->
+    </div>
+
+    <!-- Pantalla de carga / Centro de Control Principal -->
+    <div class="app-container" id="appContainer" style="display: none;">
+        
+        <!-- CABECERA GERENCIAL (Top Bar) -->
+        <header class="main-header">
+            <div class="header-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                </div>
+                <div class="logo-text">
+                    <h1>DRILL CONTROL</h1>
+                    <span class="sub-logo">Sistemas de Automatización | Centro de Operaciones | v1.4.0</span>
+                </div>
+            </div>
+
+            <!-- Indicador de Sincronización y Acceso -->
+            <div class="header-actions">
+                <div class="db-status-badge offline" id="dbStatus">
+                    <span class="status-dot"></span>
+                    <span id="dbStatusText">Base de Datos Local (Offline)</span>
+                </div>
+                <!-- Botón de Login Viejo Eliminado -->
+                
+                <div class="admin-profile hidden" id="adminProfile">
+                    <div class="avatar">AD</div>
+                    <div class="profile-info">
+                        <span class="profile-name" id="activeUserName">Editor</span>
+                        <span class="profile-role role-badge role-badge-inline" id="profileRoleLabel">Operaciones</span>
+                    </div>
+                    <button class="btn btn-icon-small" id="logoutBtn" title="Cerrar Sesión">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- NAVEGACIÓN GLOBAL DE PESTAÑAS -->
+        <nav class="global-nav-tabs">
+            <button class="global-tab-btn active" id="globalTabAutomation" onclick="switchGlobalTab('automation')">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon-spacing"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
+                Centro de Control (Automatización)
+            </button>
+            <button class="global-tab-btn" id="globalTabRigLine" onclick="switchGlobalTab('rigline')">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon-spacing"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                RigLine (Seguimiento de Casos)
+                <span class="badge-count" id="riglineActiveCasesBadge" style="display: none;">0</span>
+            </button>
+            <button class="global-tab-btn" id="globalTabVersions" onclick="switchGlobalTab('versions')">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon-spacing"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Control de Versiones
+            </button>
+        </nav>
+
+        <!-- PESTAÑA 1: CONTENIDO ORIGINAL DE AUTOMATIZACIÓN -->
+        <div id="tabContentAutomation" class="global-tab-content active">
+
+            <!-- HERO BANNER CON TORRE DE PERFORACIÓN NEÓN ILUMINADA -->
+            <section class="dashboard-hero-banner glass">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <span class="pulse-indicator"></span>
+                        CENTRO DE OPERACIONES ACTIVO
+                    </div>
+                    <h2>Sala de Control de Perforación</h2>
+                    <p>Monitoreo inteligente y despacho automatizado de sistemas direccionales y de optimización de perforación. Análisis de KPIs y seguimiento de incidentes RigLine en tiempo real.</p>
+                    <div class="hero-stats-row">
+                        <div class="hero-stat-item">
+                            <span class="stat-num" id="heroActiveRigsCount">0</span>
+                            <span class="stat-lbl">Pozos Activos</span>
+                        </div>
+                        <div class="hero-divider"></div>
+                        <div class="hero-stat-item">
+                            <span class="stat-num" id="heroCriticalIncidentsCount">0</span>
+                            <span class="stat-lbl">Alertas Pendientes</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-illustration">
+                    <!-- SVG DE TORRE DE PERFORACIÓN CON BRILLO Y ESTRUCTURA -->
+                    <svg viewBox="0 0 200 300" class="drilling-rig-svg">
+                        <defs>
+                            <radialGradient id="neonGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.3" />
+                                <stop offset="100%" stop-color="#00d2ff" stop-opacity="0" />
+                            </radialGradient>
+                            <filter id="glow-effect-rig" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
+
+                        <!-- Aura Brillante de Fondo -->
+                        <circle cx="100" cy="120" r="70" fill="url(#neonGlow)" class="rig-glow-pulse" />
+
+                        <!-- Estratos Geológicos Subterráneos (Blueprint) -->
+                        <g stroke="rgba(0, 210, 255, 0.12)" stroke-width="1.2" stroke-dasharray="4 3" fill="none">
+                            <path d="M 10 230 C 50 220, 150 240, 190 230" />
+                            <path d="M 10 250 C 60 245, 140 265, 190 250" />
+                            <path d="M 10 270 C 40 262, 160 282, 190 270" />
+                        </g>
+                        <!-- Reservorio de Petróleo/Gas Iluminado -->
+                        <ellipse cx="100" cy="270" rx="35" ry="10" fill="rgba(0, 210, 255, 0.05)" stroke="rgba(0, 210, 255, 0.25)" stroke-width="1" />
+
+                        <!-- Estructura del Taladro / Torre de Perforación -->
+                        <!-- Subestructura Base -->
+                        <rect x="40" y="200" width="120" height="20" rx="2" fill="#0b0f19" stroke="#00d2ff" stroke-width="1.5" />
+                        <rect x="65" y="185" width="70" height="15" fill="#101626" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1" />
+
+                        <!-- Patas de la Torre Principal (A-Frame) -->
+                        <line x1="72" y1="185" x2="90" y2="40" stroke="#ffffff" stroke-width="1.8" />
+                        <line x1="128" y1="185" x2="110" y2="40" stroke="#ffffff" stroke-width="1.8" />
+
+                        <!-- Vigas Horizontales y Diagonales de Arriostramiento -->
+                        <g stroke="rgba(255, 255, 255, 0.45)" stroke-width="1" fill="none">
+                            <!-- Horizontales -->
+                            <line x1="76" y1="155" x2="124" y2="155" />
+                            <line x1="79" y1="125" x2="121" y2="125" />
+                            <line x1="82" y1="95" x2="118" y2="95" />
+                            <line x1="85" y1="65" x2="115" y2="65" />
+                            <line x1="88" y1="40" x2="112" y2="40" />
+
+                            <!-- Cruces Diagonales -->
+                            <line x1="72" y1="185" x2="124" y2="155" />
+                            <line x1="128" y1="185" x2="76" y2="155" />
+
+                            <line x1="76" y1="155" x2="121" y2="125" />
+                            <line x1="124" y1="155" x2="79" y2="125" />
+
+                            <line x1="79" y1="125" x2="118" y2="95" />
+                            <line x1="121" y1="125" x2="82" y2="95" />
+
+                            <line x1="82" y1="95" x2="115" y2="65" />
+                            <line x1="118" y1="95" x2="85" y2="65" />
+
+                            <line x1="85" y1="65" x2="112" y2="40" />
+                            <line x1="115" y1="65" x2="88" y2="40" />
+                        </g>
+
+                        <!-- Corona (Polea Superior) -->
+                        <circle cx="100" cy="35" r="5" fill="#00d2ff" stroke="#00d2ff" stroke-width="1" filter="url(#glow-effect-rig)" />
+
+                        <!-- Tubería de Perforación (Drill String) descendiendo -->
+                        <line x1="100" y1="35" x2="100" y2="265" stroke="#00d2ff" stroke-width="2" class="drill-string-glow" />
+
+                        <!-- Trépano (Drill Bit) al fondo realizando fricción -->
+                        <path d="M 97 265 L 103 265 L 100 271 Z" fill="#ffaa00" stroke="#ffaa00" stroke-width="1" filter="url(#glow-effect-rig)" class="drill-bit-pulse" />
+
+                        <!-- Ondas y Chispas de Perforación en el fondo -->
+                        <circle cx="100" cy="270" r="4" fill="none" stroke="#00d2ff" stroke-width="0.8" class="drilling-spark-1" />
+                        <circle cx="100" cy="270" r="8" fill="none" stroke="#ffaa00" stroke-width="0.8" class="drilling-spark-2" />
+                    </svg>
+                </div>
+            </section>
+
+        <!-- DASHBOARD GERENCIAL (Métricas Clave) -->
+        <section class="kpi-section">
+            <div class="kpi-card glass">
+                <div class="kpi-icon cyan">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
+                </div>
+                <div class="kpi-data">
+                    <span class="kpi-value" id="kpiTotalRigs">14</span>
+                    <span class="kpi-label">Equipos Registrados (Rigs)</span>
+                </div>
+            </div>
+
+            <div class="kpi-card glass">
+                <div class="kpi-icon green">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+                <div class="kpi-data">
+                    <span class="kpi-value" id="kpiActiveServices">0</span>
+                    <span class="kpi-label">Servicios Activos por Contrato</span>
+                </div>
+            </div>
+
+            <div class="kpi-card glass">
+                <div class="kpi-icon amber">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div class="kpi-data">
+                    <span class="kpi-value" id="kpiRequestedServices">0</span>
+                    <span class="kpi-label">Servicios Solicitados (Mail)</span>
+                </div>
+            </div>
+
+            <div class="kpi-card glass">
+                <div class="kpi-icon blue">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <div class="kpi-data">
+                    <span class="kpi-value" id="kpiOperatorRate">0%</span>
+                    <span class="kpi-label">Tasa con Operador Técnico</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL DE CONTROL PRINCIPAL -->
+        <main class="dashboard-body">
+            
+            <!-- PANEL IZQUIERDO: VISTA GERENCIAL DE EQUIPOS (RIGS) -->
+            <section class="rigs-section">
+                <div class="section-title-bar">
+                    <h2>Estado General de Equipos de Perforación</h2>
+                    <span class="section-subtitle">Haz clic en un equipo para gestionar o ver detalles</span>
+                </div>
+                
+                <div class="rigs-grid" id="rigsGrid">
+                    <!-- Los Rigs (F03, F07, etc.) serán inyectados dinámicamente desde JavaScript -->
+                </div>
+            </section>
+
+            <!-- PANEL DERECHO: PANEL DE ACCIONES E HISTORIAL -->
+            <aside class="details-aside glass" id="detailsAside">
+                
+                <!-- Pestañas de Navegación del Panel Derecho -->
+                <div class="aside-tabs">
+                    <button class="tab-btn active" id="tabRequests">Solicitudes</button>
+                    <button class="tab-btn" id="tabUsers">Usuarios</button>
+                    <button class="tab-btn hidden" id="tabAdminActions">Administración</button>
+                </div>
+
+                <!-- CONTENIDO: SOLICITUDES / HISTORIAL -->
+                <div class="tab-content" id="contentRequests">
+                    <div class="filter-bar">
+                        <h3>Búsqueda Rápida</h3>
+                        <div class="search-input-wrapper">
+                            <input type="text" id="searchInput" placeholder="Buscar por equipo, operadora o servicio...">
+                        </div>
+                        <div class="filter-selectors">
+                            <select id="filterClient">
+                                <option value="">Todos los Clientes</option>
+                                <option value="YPF">YPF</option>
+                                <option value="Tecpetrol">Tecpetrol</option>
+                                <option value="Vista Energy">Vista Energy</option>
+                                <option value="TOTAL Energy">TOTAL Energy</option>
+                                <option value="Phoenix">Phoenix</option>
+                                <option value="Geopark">Geopark</option>
+                            </select>
+                            <select id="filterSystem">
+                                <option value="">Todos los Sistemas</option>
+                                <option value="REVit">REVit</option>
+                                <option value="SmartDrill">SmartDrill</option>
+                                <option value="SmartSlide">SmartSlide</option>
+                                <option value="SmartNav">SmartNav</option>
+                                <option value="AutoDownlinks">AutoDownlinks</option>
+                                <option value="Predictive Drilling">Predictive Drilling</option>
+                                <option value="Operador">Operador</option>
+                            </select>
+                        </div>
+                        <div class="history-controls-row">
+                            <div class="toggle-container">
+                                <label class="checkbox-label" style="font-size: 0.76rem; display: flex; align-items: center; gap: 6px;">
+                                    <input type="checkbox" id="toggleShowAllHistory">
+                                    Mostrar todo el historial
+                                </label>
+                            </div>
+                            <button type="button" class="btn btn-operator btn-operator-none btn-small hidden" id="btnClearHistory" style="border: 1px solid rgba(255, 68, 68, 0.4); padding: 4px 10px; font-size: 0.72rem; color: #ff8888 !important;" title="Limpiar historial acumulado">
+                                Limpiar Historial
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Historial -->
+                    <div class="table-container">
+                        <table class="requests-table">
+                            <thead>
+                                <tr>
+                                    <th>Equipo</th>
+                                    <th>Cliente</th>
+                                    <th>Sistema</th>
+                                    <th>Modalidad</th>
+                                    <th class="actions-header hidden">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requestsTableBody">
+                                <!-- Filas de solicitudes cargadas dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CONTENIDO: USUARIOS -->
+                <div class="tab-content hidden" id="contentUsers">
+                    <div class="users-panel-header">
+                        <h3>Gestión de Usuarios</h3>
+                        <p class="description-text">Solo el Super Administrador puede registrar usuarios, asignar roles y eliminar cuentas. El número de documento (DNI) sirve como contraseña de acceso.</p>
+                    </div>
+
+                    <!-- Formulario de creación de usuarios (Solo visible para Editores) -->
+                    <div id="createUserFormWrapper" class="admin-action-box glass hidden">
+                        <h4>Registrar Nuevo Usuario</h4>
+                        <form id="createUserForm">
+                            <div class="form-group">
+                                <label for="uName">Nombre</label>
+                                <input type="text" id="uName" required placeholder="Ej: Juan">
+                            </div>
+                            <div class="form-group">
+                                <label for="uLastName">Apellido</label>
+                                <input type="text" id="uLastName" required placeholder="Ej: Pérez">
+                            </div>
+                            <div class="form-group">
+                                <label for="uDoc">Número de Documento (Contraseña de acceso)</label>
+                                <input type="password" id="uDoc" required placeholder="Ej: 34567890">
+                            </div>
+                            <div class="form-group">
+                                <label for="uRole">Nivel de Permiso</label>
+                                <select id="uRole" required>
+                                    <option value="VIEWER">Solo Lectura — Solo puede visualizar</option>
+                                    <option value="REPORTER">Cargador — Ver + Reportar casos</option>
+                                    <option value="RESOLVER" selected>Operador — Ver + Reportar + Cerrar</option>
+                                    <option value="ADMIN">Administrador — Ver + Cargar + Cerrar + Editar + Borrar</option>
+                                    <option value="SUPER_ADMIN">Super Administrador — Control total + Gestión de usuarios</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-full">Crear Usuario</button>
+                        </form>
+                    </div>
+
+                    <!-- Mensaje para no autorizados -->
+                    <div id="usersPanelNoAccess" class="no-access-box">
+                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <p>Inicia sesión como Editor para ver, crear o administrar los usuarios autorizados.</p>
+                    </div>
+
+                    <!-- Lista de usuarios creados (Solo visible para Editores) -->
+                    <div id="usersListWrapper" class="users-list-section hidden">
+                        <h4>Usuarios Habilitados</h4>
+                        <ul class="users-list" id="usersList">
+                            <!-- Inyectado dinámicamente -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- CONTENIDO: ACCIONES DE ADMINISTRACIÓN (CARGA DE SOLICITUDES) -->
+                <div class="tab-content hidden" id="contentAdminActions">
+                    <div class="admin-action-box">
+                        <h3>Registrar / Modificar Servicio</h3>
+                        <p class="description-text">Carga de forma manual el estado y modalidad del servicio de automatización para un equipo específico.</p>
+                        
+                        <!-- BLOQUE 1: VINCULAR OPERADORA (SÚPER FÁCIL) -->
+                        <div class="admin-action-box">
+                            <h3>Vincular Equipo a Operadora</h3>
+                            <p class="description-text">Selecciona un equipo arriba y haz clic en la operadora para vincularlo instantáneamente:</p>
+                            
+                            <!-- Indicador de Rig Seleccionado en este bloque -->
+                            <div class="selected-rig-display" id="selectedRigDisplay">
+                                Ningún equipo seleccionado
+                            </div>
+
+                            <div class="operator-quick-bind" id="operatorQuickBind">
+                                <button type="button" class="btn btn-operator" data-client="YPF">YPF</button>
+                                <button type="button" class="btn btn-operator" data-client="Tecpetrol">Tecpetrol</button>
+                                <button type="button" class="btn btn-operator" data-client="Vista Energy">Vista</button>
+                                <button type="button" class="btn btn-operator" data-client="TOTAL Energy">Total</button>
+                                <button type="button" class="btn btn-operator" data-client="Phoenix">Phoenix</button>
+                                <button type="button" class="btn btn-operator" data-client="Geopark">Geopark</button>
+                                <button type="button" class="btn btn-operator btn-operator-none" data-client="" style="grid-column: span 2;">Sin Contrato</button>
+                            </div>
+                        </div>
+
+                        <!-- BLOQUE 2: CONFIGURACIÓN DE SISTEMAS -->
+                        <div class="admin-action-box">
+                            <h3>Sistemas de Automatización</h3>
+                            <p class="description-text">Tilda los sistemas cubiertos por Contrato o selecciona su estado de Solicitud por Mail:</p>
+                            
+                            <form id="requestForm">
+                                <div class="form-group">
+                                    <div class="systems-config-list" id="systemsConfigList">
+                                        <!-- Generado dinámicamente en app.js -->
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success btn-full">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon-spacing"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                                    Guardar Sistemas del Rig
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+        </main>
+
+        <!-- PLANILLA DE CARGA RÁPIDA TIPO EXCEL -->
+        <section class="excel-section glass">
+            <div class="excel-header">
+                <div class="excel-title-block">
+                    <div class="excel-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <div>
+                        <h2>Planilla de Carga Rápida de Mails (Eventuales)</h2>
+                        <p class="section-subtitle">Registra manualmente múltiples solicitudes de correo. Al hacer clic en Procesar, la fila se guardará y se auto-limpiará.</p>
+                    </div>
+                </div>
+                
+                <!-- Controles globales -->
+                <div class="excel-global-actions hidden" id="excelGlobalActions">
+                    <button type="button" class="btn btn-primary btn-small" id="btnExcelProcessAll" title="Procesar todas las filas completas">
+                        Procesar Todo
+                    </button>
+                    <button type="button" class="btn btn-operator btn-operator-none btn-small" id="btnExcelClearAll" style="border: 1px solid rgba(255, 68, 68, 0.4); text-shadow: none;" title="Limpiar todas las filas de la planilla">
+                        Limpiar Todo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alerta para no autorizados (Solo lectura) -->
+            <div id="excelPanelNoAccess" class="excel-no-access-box">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span>Modo Solo Lectura. Inicia sesión como Editor para habilitar la carga rápida tipo Excel.</span>
+            </div>
+
+            <!-- Tabla tipo Excel -->
+            <div class="excel-table-container">
+                <table class="excel-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px; text-align: center;">Fila</th>
+                            <th style="width: 130px;">Equipo (Rig)</th>
+                            <th style="width: 180px;">Servicio Solicitado</th>
+                            <th style="width: 200px;">Contacto Previo (Equipo)</th>
+                            <th>Remitente (Cliente)</th>
+                            <th style="width: 160px;">Fecha Recibido (Mini-Calendario)</th>
+                            <th style="width: 150px; text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excelTableBody">
+                        <!-- Las 5 filas de carga rápida se inyectarán de forma dinámica en app.js -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Histórico de últimas 5 solicitudes procesadas -->
+            <div class="excel-history-header" style="margin-top: 25px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-top: 1px dashed rgba(217, 70, 239, 0.15); padding-top: 15px;">
+                <div class="excel-icon" style="width: 30px; height: 30px; background: rgba(0, 210, 255, 0.08); color: var(--color-cyan); display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+                <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin: 0;">Histórico de las Últimas 5 Solicitudes Procesadas (Mail)</h3>
+            </div>
+
+            <div class="excel-table-container">
+                <table class="excel-table" style="min-width: 900px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px; text-align: center;">Fila</th>
+                            <th style="width: 130px;">Equipo (Rig)</th>
+                            <th style="width: 180px;">Servicio Solicitado</th>
+                            <th style="width: 200px;">Contacto Previo (Equipo)</th>
+                            <th>Remitente (Cliente)</th>
+                            <th style="width: 160px;">Fecha Recibido</th>
+                            <th style="width: 150px; text-align: center;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="excelHistoryTableBody">
+                        <!-- Filas del histórico inyectadas de forma dinámica en app.js -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        </div> <!-- FIN DE #tabContentAutomation -->
+
+        <!-- PESTAÑA 2: CONTENIDO RIGLINE (SEGUIMIENTO DE CASOS) -->
+        <div id="tabContentRigLine" class="global-tab-content hidden">
+            
+            <!-- KPIs ESPECIALIZADOS DE RIGLINE -->
+            <section class="kpi-section">
+                <div class="kpi-card glass kpi-rigline-pending">
+                    <div class="kpi-icon amber pulsing-glow">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <div class="kpi-data">
+                        <span class="kpi-value" id="kpiRlPending">0</span>
+                        <span class="kpi-label">Casos Pendientes Activos</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card glass kpi-rigline-high">
+                    <div class="kpi-icon orange red-glow">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <div class="kpi-data">
+                        <span class="kpi-value" id="kpiRlHigh">0</span>
+                        <span class="kpi-label">Casos de Prioridad Alta</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card glass">
+                    <div class="kpi-icon cyan">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    </div>
+                    <div class="kpi-data">
+                        <span class="kpi-value" id="kpiRlMostAffected">-</span>
+                        <span class="kpi-label">Equipo más Afectado</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card glass">
+                    <div class="kpi-icon green">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 11.08 12 19 9 16"></polyline><circle cx="12" cy="12" r="10"></circle></svg>
+                    </div>
+                    <div class="kpi-data">
+                        <span class="kpi-value" id="kpiRlClosedCount">0</span>
+                        <span class="kpi-label">Casos Resueltos (Historial)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CUERPO PRINCIPAL DEL MÓDULO RIGLINE -->
+            <main class="dashboard-body">
+                
+                <!-- SECCIÓN IZQUIERDA: LISTADO DE CASOS PENDIENTES -->
+                <section class="rigs-section">
+                    <div class="section-title-bar" style="border-left-color: var(--color-amber);">
+                        <h2>Panel de Casos RigLine Activos</h2>
+                        <span class="section-subtitle">Casos técnicos pendientes de resolución. Los resueltos desaparecen de esta cuadrícula y se archivan.</span>
+                    </div>
+
+                    <!-- Filtros de búsqueda en la lista de casos -->
+                    <div class="rigline-filter-row glass" style="padding: 12px; border-radius: 8px; margin-bottom: 5px; display: flex; gap: 12px; align-items: center; border-color: rgba(255, 255, 255, 0.05); margin-top: 10px;">
+                        <div class="search-input-wrapper" style="flex: 1;">
+                            <input type="text" id="rlSearchInput" placeholder="Buscar por N° caso, equipo, sistema o falla..." style="padding: 8px 12px;">
+                        </div>
+                        <div class="filter-selectors" style="width: auto; display: flex; gap: 8px;">
+                            <button id="btnExportRigLine" class="btn btn-operator btn-operator-none" style="padding: 6px 12px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(0, 210, 255, 0.4);" title="Descargar reporte .txt">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Exportar TXT
+                            </button>
+                            <select id="rlFilterStatus" style="padding: 6px 10px; width: 140px;">
+                                <option value="PENDIENTE">Solo Pendientes</option>
+                                <option value="RESUELTO">Solo Resueltos</option>
+                                <option value="TODOS">Todos los Casos</option>
+                            </select>
+                            <select id="rlFilterPriority" style="padding: 6px 10px; width: 150px;">
+                                <option value="">Todas las Prioridades</option>
+                                <option value="Alta">Prioridad Alta</option>
+                                <option value="Media">Prioridad Media</option>
+                                <option value="Baja">Prioridad Baja</option>
+                            </select>
+                            <select id="rlFilterRig" style="padding: 6px 10px; width: 110px;">
+                                <option value="">Todos los Rigs</option>
+                                <!-- Inyectado dinámicamente -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="rigline-cases-grid" id="rlCasesGrid">
+                        <!-- Las tarjetas de casos RigLine serán inyectadas de forma dinámica en app.js -->
+                    </div>
+                </section>
+
+                <!-- SECCIÓN DERECHA: FORMULARIO DE REPORTE -->
+                <aside class="details-aside glass" style="padding: 16px; display: flex; flex-direction: column; gap: 16px;">
+                    <div class="admin-action-box" style="margin-bottom: 0; background: none; border: none; padding: 0;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <div style="width: 32px; height: 32px; border-radius: 6px; background: rgba(0, 210, 255, 0.1); color: var(--color-cyan); display: flex; align-items: center; justify-content: center;">
+                                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+                            </div>
+                            <h3 style="font-size: 1.05rem; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 600;">Reportar Incidente en RigLine</h3>
+                        </div>
+                        <p class="description-text">Reporta incidentes técnicos y de conectividad. Cada caso queda vinculado a tu usuario, equipo, fecha y hora de registro automáticamente.</p>
+                        
+                        <form id="rlReportForm" style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="rlCaseIdInput">Número de Caso (RigLine) *</label>
+                                <input type="text" id="rlCaseIdInput" placeholder="Ej: RL-8421 o 12345..." required>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="rlRigSelect">Equipo (Rig) Afectado *</label>
+                                <select id="rlRigSelect" required>
+                                    <option value="">-- Seleccionar Rig --</option>
+                                    <!-- Inyectado dinámicamente -->
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="rlSystemSelect">Sistema Afectado *</label>
+                                <select id="rlSystemSelect" required>
+                                    <option value="">-- Seleccionar Sistema --</option>
+                                    <option value="REVit">REVit</option>
+                                    <option value="SmartDrill">SmartDrill</option>
+                                    <option value="SmartSlide">SmartSlide</option>
+                                    <option value="SmartNav">SmartNav</option>
+                                    <option value="AutoDownlinks">AutoDownlinks</option>
+                                    <option value="Predictive Drilling">Predictive Drilling</option>
+                                    <option value="Hardware / Conectividad">Hardware / Conectividad</option>
+                                    <option value="Otros / Soporte Informático">Otros / Soporte Informático</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="rlPrioritySelect">Prioridad *</label>
+                                <select id="rlPrioritySelect" required>
+                                    <option value="Baja">Baja (Incidente menor)</option>
+                                    <option value="Media" selected>Media (Falla intermitente / Parcial)</option>
+                                    <option value="Alta">Alta (Operación de Perforación Detenida)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="rlReporterName">Registrado como</label>
+                                <input type="text" id="rlReporterName" placeholder="Iniciá sesión para reportar..." readonly>
+                                <span style="font-size: 0.68rem; color: var(--text-muted); margin-top: 3px; display: block;">Vinculado automáticamente a tu usuario y hora de registro.</span>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="rlDescription">Descripción Detallada de la Falla *</label>
+                                <textarea id="rlDescription" rows="4" placeholder="Describe brevemente la falla informática, pérdida de señal o comportamiento del sistema..." required style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 0.82rem; outline: none; resize: none; transition: var(--transition-smooth);"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-full" style="padding: 12px; margin-top: 8px;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon-spacing"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                                Registrar Caso RigLine
+                            </button>
+                        </form>
+                    </div>
+                </aside>
+
+            </main>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             HISTORIAL COMPLETO DE CASOS RIGLINE (Planilla al Pie)
+             ═══════════════════════════════════════════════════════════ -->
+        <section class="rl-history-section glass" id="rlHistorySection">
+            <div class="rl-history-header">
+                <div class="rl-history-title-block">
+                    <div class="rl-history-icon">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                    </div>
+                    <div>
+                        <h3>Historial Completo de Casos RigLine</h3>
+                        <span class="rl-history-subtitle">Registro permanente · Todos los estados · Ordenado por fecha de apertura</span>
+                    </div>
+                </div>
+                <div class="rl-history-controls">
+                    <div class="rl-history-counter">
+                        <span id="rlHistoryTotalCount">0</span> registros
+                    </div>
+                    <div class="search-input-wrapper" style="width: 220px;">
+                        <input type="text" id="rlHistorySearch" placeholder="Buscar en historial...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="rl-history-table-wrap">
+                <table class="rl-history-table">
+                    <thead>
+                        <tr>
+                            <th>N° Caso</th>
+                            <th>Rig</th>
+                            <th>Sistema</th>
+                            <th>Prioridad</th>
+                            <th>Reportó</th>
+                            <th>Resolvió</th>
+                            <th>Fecha Apertura</th>
+                            <th>Fecha Cierre</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rlHistoryTableBody">
+                        <!-- Inyectado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        </div> <!-- FIN DE #tabContentRigLine -->
+
+        <!-- PESTAÑA 3: CONTROL DE VERSIONES -->
+        <div id="tabContentVersions" class="global-tab-content hidden">
+            <section class="dashboard-hero-banner glass" style="margin-bottom: 25px; min-height: auto; padding: 25px 40px;">
+                <div class="hero-content">
+                    <h2 style="font-size: 1.8rem; margin-bottom: 10px;">Control de Versiones de Sistemas</h2>
+                    <p style="font-size: 0.95rem; opacity: 0.8; max-width: 800px;">Registro centralizado de versiones de software. El panel permite la búsqueda rápida y edición (requiere permisos de Administrador).</p>
+                </div>
+            </section>
+            
+            <div class="versions-grid" id="versionsGrid">
+                <!-- Rigs Cards inyectadas por JS -->
+            </div>
+        </div> <!-- FIN DE #tabContentVersions -->
+
+    </div> <!-- FIN DE .app-container -->
+
+    <!-- EL MODAL DE INICIO DE SESIÓN FLOTANTE FUE ELIMINADO -->
+    <!-- SCRIPT DE LA APLICACIÓN -->
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="100" fill="#070a13"/>
+  <!-- Círculo de Resplandor Cian -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#00d2ff" stroke-width="6" stroke-opacity="0.3" stroke-dasharray="15 10" />
+  <circle cx="256" cy="256" r="140" fill="none" stroke="#00d2ff" stroke-width="2" stroke-opacity="0.15" />
+  
+  <!-- Torre de Perforación (Drilling Derrick) Estilizada -->
+  <g stroke="#00d2ff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Patas de la torre -->
+    <line x1="170" y1="400" x2="230" y2="150" />
+    <line x1="342" y1="400" x2="282" y2="150" />
+    
+    <!-- Base -->
+    <line x1="130" y1="400" x2="382" y2="400" />
+    
+    <!-- Vigas cruzadas horizontales -->
+    <line x1="190" y1="310" x2="322" y2="310" />
+    <line x1="210" y1="220" x2="302" y2="220" />
+    <line x1="230" y1="150" x2="282" y2="150" />
+    
+    <!-- Vigas cruzadas en X -->
+    <line x1="190" y1="310" x2="322" y2="400" />
+    <line x1="322" y1="310" x2="190" y2="400" />
+    
+    <line x1="210" y1="220" x2="302" y2="310" />
+    <line x1="302" y1="220" x2="210" y2="310" />
+    
+    <line x1="230" y1="150" x2="282" y2="220" />
+    <line x1="282" y1="150" x2="230" y2="220" />
+    
+    <!-- Corona y Línea de Perforación Superior -->
+    <rect x="240" y="110" width="32" height="40" rx="4" fill="#070a13" stroke-width="10"/>
+    <line x1="256" y1="110" x2="256" y2="70" stroke-width="8" stroke-dasharray="6 4" />
+    
+    <!-- Gota de Aceite / Energía en el centro -->
+    <path d="M256,250 C256,250 280,285 280,300 C280,313.2 269.2,324 256,324 C242.8,324 232,313.2 232,300 C232,285 256,250 256,250 Z" fill="#00ff88" stroke="#00ff88" stroke-width="4" />
+  </g>
+</svg>
