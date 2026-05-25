@@ -82,7 +82,7 @@ let showAllHistory = false;
 // Elementos de la UI
 const authScreen = document.getElementById('authScreen');
 const appContainer = document.getElementById('appContainer');
-const adminProfile = document.getElementById('adminProfile');
+const adminProfile = document.getElementById('activeUserBadge');
 const activeUserName = document.getElementById('activeUserName');
 const logoutBtn = document.getElementById('logoutBtn');
 
