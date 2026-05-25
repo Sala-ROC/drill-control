@@ -1,4 +1,4 @@
-﻿// DRILL CONTROL SYSTEM v1.4.0  PWA Release
+// DRILL CONTROL SYSTEM v1.4.0  PWA Release
 // Lgica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
 
 // 1. ESTRUCTURAS DE DATOS INICIALES (Listados oficiales)
@@ -506,7 +506,7 @@ function updateUIByRole() {
     }
     
     authScreen.classList.add('hidden');
-    appContainer.style.display = 'block';
+    appContainer.style.display = 'flex';
 
     const role = currentUser.role || 'VIEWER';
 
@@ -2197,3 +2197,6 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
         document.getElementById('recoveryForm').reset();
     }, 2000);
 });
+
+// Ejecutar inmediatamente para ocultar login si ya hay sesion
+checkSession();
