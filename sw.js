@@ -1,5 +1,5 @@
-// Service Worker — Drill Control v1.4.1
-const CACHE_NAME = 'drill-control-v1.4.1';
+// Service Worker — Drill Control v2.1.1
+const CACHE_NAME = 'drill-control-v2.1.1';
 const ASSETS = [
     './',
     './index.html',
