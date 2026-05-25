@@ -1,5 +1,5 @@
-// DRILL CONTROL SYSTEM v1.4.0 — PWA Release
-// Lógica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
+﻿// DRILL CONTROL SYSTEM v1.4.0 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â PWA Release
+// LÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³gica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
 
 // 1. ESTRUCTURAS DE DATOS INICIALES (Listados oficiales)
 const OFFICIAl_RIGS = ["F03", "F07", "F35", "M1211", "990", "F10", "F19", "F24", "F34", "F37", "991", "F15", "F26", "F36"];
@@ -21,16 +21,16 @@ const MODALITY_LABELS = {
     CONTRATO: "Activo por Contrato",
     SOLICITADO_CON_OP: "Solicitado (Con Op.)",
     SOLICITADO_SIN_OP: "Solicitado (Sin Op.)",
-    SOLICITADO_MAIL: "Solicitado vía Mail (Eventual)"
+    SOLICITADO_MAIL: "Solicitado vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a Mail (Eventual)"
 };
 
-// ─── SISTEMA DE ROLES Y PERMISOS ──────────────────────────────────────────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ SISTEMA DE ROLES Y PERMISOS ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
 const ROLES = {
-    VIEWER:      'VIEWER',      // Solo visualización
+    VIEWER:      'VIEWER',      // Solo visualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
     REPORTER:    'REPORTER',    // Ver + Cargar casos
     RESOLVER:    'RESOLVER',    // Ver + Cargar + Cerrar
     ADMIN:       'ADMIN',       // Ver + Cargar + Cerrar + Editar + Borrar
-    SUPER_ADMIN: 'SUPER_ADMIN'  // Todo + Gestión de usuarios y roles
+    SUPER_ADMIN: 'SUPER_ADMIN'  // Todo + GestiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de usuarios y roles
 };
 
 const ROLE_LABELS = {
@@ -38,185 +38,36 @@ const ROLE_LABELS = {
     REPORTER:    'Cargador',
     RESOLVER:    'Operador',
     ADMIN:       'Administrador',
-    SUPER_ADMIN: 'Super Admin ★'
+    SUPER_ADMIN: 'Super Admin ÃƒÆ’Ã‚Â¢Ãƒâ€¹Ã…â€œÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦'
 };
 
 const ROLE_ORDER = ['VIEWER', 'REPORTER', 'RESOLVER', 'ADMIN', 'SUPER_ADMIN'];
-const SUPER_ADMIN_DOC = '31434249'; // Fernando Volpi — Super Admin principal inmutable
+const SUPER_ADMIN_DOC = '31434249'; // Fernando Volpi ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Super Admin principal inmutable
 
-// 2. INICIALIZACIÓN DE LA BASE DE DATOS LOCAL (Si no existe en el navegador)
-let rigsData = JSON.parse(localStorage.getItem('drill_rigs_data'));
-let requestsHistory = JSON.parse(localStorage.getItem('drill_requests_history'));
-let usersList = JSON.parse(localStorage.getItem('drill_users_list'));
+// 2. INICIALIZACIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN DE FIREBASE (v2.0.0)
+const firebaseConfig = {
+  apiKey: "AIzaSyBN-n6JDPttz60o1FN7pQLSmVl8a9fMDVI",
+  authDomain: "sala-roc-drill-control.firebaseapp.com",
+  projectId: "sala-roc-drill-control",
+  storageBucket: "sala-roc-drill-control.firebasestorage.app",
+  messagingSenderId: "761001663698",
+  appId: "1:761001663698:web:df6cff08c9b57a6478a10b"
+};
+
+// Inicializar la app solo si no estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ inicializada
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+
+// ESTADO GLOBAL DE LA APLICACIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN (Ahora en memoria, alimentado por Firebase)
+let rigsData = [];
+let requestsHistory = [];
+let usersList = [];
+let riglineCases = [];
+
+// Mantenemos la sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del usuario actual en localStorage para no perderla al refrescar
 let currentUser = JSON.parse(localStorage.getItem('drill_current_user')) || null;
-let riglineCases = JSON.parse(localStorage.getItem('drill_rigline_cases'));
-
-// Migración automática de datos para la versión v1.5.0 / v1.3.0 (Sistemas y Versiones)
-if (rigsData && rigsData.length > 0) {
-    let migrated = false;
-    rigsData.forEach(rig => {
-        if (!rig.systems) { rig.systems = {}; migrated = true; }
-        if (!rig.versions) { rig.versions = {}; migrated = true; }
-        
-        OFFICIAL_SYSTEMS.forEach(sys => {
-            if (rig.systems[sys] === undefined) {
-                rig.systems[sys] = MODALITIES.INACTIVO;
-                migrated = true;
-            }
-            if (rig.versions[sys] === undefined) {
-                rig.versions[sys] = "";
-                migrated = true;
-            }
-        });
-    });
-    if (migrated) {
-        localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
-    }
-}
-
-// Semilla de Datos de Ejemplo (Para que la app no empiece vacía en la primera ejecución)
-if (!rigsData || rigsData.length === 0) {
-    rigsData = OFFICIAl_RIGS.map(rig => {
-        // Asignamos clientes de forma predeterminada para ver el panel poblado
-        let client = "";
-        if (["F03", "F07", "F10"].includes(rig)) client = "YPF";
-        else if (["M1211", "990"].includes(rig)) client = "Vista Energy";
-        else if (["F24", "F34"].includes(rig)) client = "Tecpetrol";
-        else if (["F15", "F36"].includes(rig)) client = "TOTAL Energy";
-        else if (["F19"].includes(rig)) client = "Phoenix";
-        else if (["F37"].includes(rig)) client = "Geopark";
-        else client = "YPF"; // Default
-
-        // Creamos el estado inicial inactivo para todos los sistemas y vacío para versiones
-        let systems = {};
-        let versions = {};
-        OFFICIAL_SYSTEMS.forEach(sys => {
-            systems[sys] = MODALITIES.INACTIVO;
-            versions[sys] = "";
-        });
-
-        // Agregamos algunos sistemas activos de ejemplo
-        if (rig === "F03") {
-            systems["REVit"] = MODALITIES.CONTRATO;
-            systems["SmartDrill"] = MODALITIES.SOLICITADO_CON_OP;
-        } else if (rig === "M1211") {
-            systems["SmartSlide"] = MODALITIES.SOLICITADO_SIN_OP;
-            systems["SmartNav"] = MODALITIES.CONTRATO;
-        } else if (rig === "F15") {
-            systems["Predictive Drilling"] = MODALITIES.CONTRATO;
-        }
-
-        return { id: rig, client: client, systems: systems, versions: versions };
-    });
-    localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
-}
-
-if (!requestsHistory || requestsHistory.length === 0) {
-    requestsHistory = [
-        { id: "1", rig: "F03", client: "YPF", system: "REVit", modality: MODALITIES.CONTRATO, date: new Date().toISOString() },
-        { id: "2", rig: "F03", client: "YPF", system: "SmartDrill", modality: MODALITIES.SOLICITADO_CON_OP, date: new Date().toISOString() },
-        { id: "3", rig: "M1211", client: "Vista Energy", system: "SmartSlide", modality: MODALITIES.SOLICITADO_SIN_OP, date: new Date().toISOString() },
-        { id: "4", rig: "M1211", client: "Vista Energy", system: "SmartNav", modality: MODALITIES.CONTRATO, date: new Date().toISOString() },
-        { id: "5", rig: "F15", client: "TOTAL Energy", system: "Predictive Drilling", modality: MODALITIES.CONTRATO, date: new Date().toISOString() }
-    ];
-    localStorage.setItem('drill_requests_history', JSON.stringify(requestsHistory));
-}
-
-// Seed inicial: Fernando Volpi (Super Admin) + usuarios de prueba
-if (!usersList || usersList.length === 0) {
-    usersList = [
-        { name: "Fernando", lastName: "Volpi",      doc: "31434249", role: "SUPER_ADMIN" },
-        { name: "Admin",    lastName: "Operaciones", doc: "1111",     role: "VIEWER"      },
-        { name: "Juan",     lastName: "Pérez",       doc: "12345678", role: "RESOLVER"    }
-    ];
-    localStorage.setItem('drill_users_list', JSON.stringify(usersList));
-}
-
-// Migración automática: agregar campo 'role' a usuarios sin él
-let _usersMigrated = false;
-usersList = usersList.map(u => {
-    if (!u.role) {
-        _usersMigrated = true;
-        if (u.doc === SUPER_ADMIN_DOC) return { ...u, role: 'SUPER_ADMIN' };
-        if (u.doc === '1111')          return { ...u, role: 'VIEWER' };
-        return { ...u, role: 'RESOLVER' };
-    }
-    // Forzar migración del usuario 1111 a VIEWER (Solo mirar)
-    if (u.doc === '1111' && u.role === 'ADMIN') {
-        _usersMigrated = true;
-        return { ...u, role: 'VIEWER' };
-    }
-    return u;
-});
-// Garantizar que Fernando Volpi siempre exista como SUPER_ADMIN
-if (!usersList.find(u => u.doc === SUPER_ADMIN_DOC)) {
-    usersList.unshift({ name: "Fernando", lastName: "Volpi", doc: SUPER_ADMIN_DOC, role: "SUPER_ADMIN" });
-    _usersMigrated = true;
-}
-// Proteger su rol: no puede ser degradado por nadie
-usersList = usersList.map(u => u.doc === SUPER_ADMIN_DOC ? { ...u, role: 'SUPER_ADMIN' } : u);
-if (_usersMigrated) localStorage.setItem('drill_users_list', JSON.stringify(usersList));
-
-// Sincronizar currentUser con los datos frescos (rol pudo haber cambiado)
-if (currentUser) {
-    const _freshUser = usersList.find(u => u.doc === currentUser.doc);
-    if (_freshUser) {
-        currentUser = _freshUser;
-        localStorage.setItem('drill_current_user', JSON.stringify(currentUser));
-    } else {
-        // Usuario fue eliminado — cerrar sesión automáticamente
-        currentUser = null;
-        localStorage.removeItem('drill_current_user');
-    }
-}
-
-if (!riglineCases || riglineCases.length === 0) {
-    riglineCases = [
-        {
-            id: "RL-8421",
-            rig: "F03",
-            system: "REVit",
-            priority: "Alta",
-            reporter: "Carlos Gómez",
-            description: "Caída completa de la telemetría REVit. Falla física en el enlace de fibra óptica de la cabina de perforación.",
-            status: "PENDIENTE",
-            date: new Date(Date.now() - 3600000 * 4).toISOString() // 4 hours ago
-        },
-        {
-            id: "RL-3195",
-            rig: "M1211",
-            system: "SmartDrill",
-            priority: "Media",
-            reporter: "Enzo Rodríguez",
-            description: "Falla intermitente en sensor de torque en mesa rotaria. Lecturas erráticas durante la perforación del tramo de 12 1/4\".",
-            status: "PENDIENTE",
-            date: new Date(Date.now() - 3600000 * 12).toISOString() // 12 hours ago
-        },
-        {
-            id: "RL-7052",
-            rig: "F15",
-            system: "Hardware / Conectividad",
-            priority: "Baja",
-            reporter: "Marcos Soler",
-            description: "Teclado industrial de la cabina dañado por salpicadura de lodo de perforación. Teclas atascadas.",
-            status: "PENDIENTE",
-            date: new Date(Date.now() - 3600000 * 24).toISOString() // 24 hours ago
-        },
-        {
-            id: "RL-1084",
-            rig: "F07",
-            system: "SmartNav",
-            priority: "Media",
-            reporter: "Silvia López",
-            description: "Error de calibración en la sonda direccional al reiniciar el sistema SmartNav.",
-            status: "RESUELTO",
-            resolver: "Juan Pérez",
-            date: new Date(Date.now() - 3600000 * 48).toISOString(), // 48 hours ago
-            closedDate: new Date(Date.now() - 3600000 * 46).toISOString()
-        }
-    ];
-    localStorage.setItem('drill_rigline_cases', JSON.stringify(riglineCases));
-}
 
 // 3. ELEMENTOS DEL DOM (Selectores de Interfaz)
 const rigsGrid = document.getElementById('rigsGrid');
@@ -247,7 +98,7 @@ const kpiActiveServices = document.getElementById('kpiActiveServices');
 const kpiRequestedServices = document.getElementById('kpiRequestedServices');
 const kpiOperatorRate = document.getElementById('kpiOperatorRate');
 
-// Pestañas Laterales
+// PestaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as Laterales
 const tabRequests = document.getElementById('tabRequests');
 const tabUsers = document.getElementById('tabUsers');
 const tabAdminActions = document.getElementById('tabAdminActions');
@@ -255,7 +106,7 @@ const contentRequests = document.getElementById('contentRequests');
 const contentUsers = document.getElementById('contentUsers');
 const contentAdminActions = document.getElementById('contentAdminActions');
 
-// Formularios y Asignación Rápida
+// Formularios y AsignaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n RÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡pida
 const requestForm = document.getElementById('requestForm');
 const systemsConfigList = document.getElementById('systemsConfigList');
 
@@ -288,7 +139,7 @@ const kpiRlHigh = document.getElementById('kpiRlHigh');
 const kpiRlMostAffected = document.getElementById('kpiRlMostAffected');
 const kpiRlClosedCount = document.getElementById('kpiRlClosedCount');
 
-// 4. FUNCIONES DE RENDERIZACIÓN DE LA INTERFAZ
+// 4. FUNCIONES DE RENDERIZACIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN DE LA INTERFAZ
 
 // Renderiza las 14 Rigs
 function renderRigsGrid() {
@@ -306,7 +157,7 @@ function renderRigsGrid() {
         if (isCritical) {
             criticalClass = hasHighPriority ? 'critical-rig' : 'warning-rig';
             const iconColor = hasHighPriority ? 'var(--color-orange)' : 'var(--color-amber)';
-            const titleTooltip = hasHighPriority ? '¡Estado Crítico! Caso técnico de prioridad alta activo en RigLine.' : 'Advertencia: Falla técnica activa en RigLine.';
+            const titleTooltip = hasHighPriority ? 'ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡Estado CrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­tico! Caso tÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cnico de prioridad alta activo en RigLine.' : 'Advertencia: Falla tÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cnica activa en RigLine.';
             warningBadge = `
                 <span class="rig-warning-badge" style="color: ${iconColor}; font-size: 0.72rem; display: inline-flex; align-items: center;" title="${titleTooltip}">
                     <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -327,7 +178,7 @@ function renderRigsGrid() {
             const statusLabel = rig.systems[sys] === MODALITIES.INACTIVO ? 'Inactivo' :
                           rig.systems[sys] === MODALITIES.CONTRATO ? 'Activo' :
                           rig.systems[sys] === MODALITIES.SOLICITADO_CON_OP ? 'Con Op.' :
-                          rig.systems[sys] === MODALITIES.SOLICITADO_SIN_OP ? 'Sin Op.' : 'Vía Mail';
+                          rig.systems[sys] === MODALITIES.SOLICITADO_SIN_OP ? 'Sin Op.' : 'VÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a Mail';
             
             systemsHtml += `
                 <div class="rig-system-item">
@@ -352,7 +203,7 @@ function renderRigsGrid() {
             </div>
         `;
 
-        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de edición
+        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de ediciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
         card.addEventListener('click', () => {
             selectRigCard(rig.id);
         });
@@ -389,7 +240,7 @@ function renderSystemsConfigForm(rigId) {
             </label>
             <select class="select-mail-status" data-system="${sys}" ${isContract ? 'disabled' : ''}>
                 <option value="INACTIVO" ${mailValue === 'INACTIVO' ? 'selected' : ''}>Inactivo</option>
-                <option value="SOLICITADO_MAIL" ${mailValue === 'SOLICITADO_MAIL' ? 'selected' : ''}>Solicitado vía Mail (Eventual)</option>
+                <option value="SOLICITADO_MAIL" ${mailValue === 'SOLICITADO_MAIL' ? 'selected' : ''}>Solicitado vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a Mail (Eventual)</option>
             </select>
         `;
 
@@ -409,7 +260,7 @@ function renderSystemsConfigForm(rigId) {
     });
 }
 
-// Selecciona un equipo y actualiza la sección de carga/formulario
+// Selecciona un equipo y actualiza la secciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de carga/formulario
 function selectRigCard(rigId) {
     selectedRigCardId = rigId;
     
@@ -421,7 +272,7 @@ function selectRigCard(rigId) {
         }
     });
 
-    // Si somos editores, actualizamos el estado de administración y cargamos sistemas
+    // Si somos editores, actualizamos el estado de administraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y cargamos sistemas
     if (currentUser) {
         updateAdminPanelState();
         renderSystemsConfigForm(rigId);
@@ -479,7 +330,7 @@ function renderRequestsTable() {
         let statusLabel = MODALITY_LABELS[req.modality];
         let statusClass = `status-${req.modality}`;
 
-        if (req.system === "REASIGNACIÓN") {
+        if (req.system === "REASIGNACIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN") {
             if (req.modality === "Sin Contrato") {
                 statusLabel = "Sin Contrato / Liberado";
                 statusClass = 'status-INACTIVO'; // Gris pizarra
@@ -512,9 +363,9 @@ function renderRequestsTable() {
                 formattedDateStr = `${day}/${month}/${year}`;
             }
             if (req.ourContact) {
-                detailsSubtextHtml = `<span class="request-details-subtext">Vía: ${req.sender} (Previo: ${req.ourContact}) el ${formattedDateStr}</span>`;
+                detailsSubtextHtml = `<span class="request-details-subtext">VÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a: ${req.sender} (Previo: ${req.ourContact}) el ${formattedDateStr}</span>`;
             } else {
-                detailsSubtextHtml = `<span class="request-details-subtext">Vía: ${req.sender} el ${formattedDateStr}</span>`;
+                detailsSubtextHtml = `<span class="request-details-subtext">VÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a: ${req.sender} el ${formattedDateStr}</span>`;
             }
         }
 
@@ -537,7 +388,7 @@ function renderRequestsTable() {
         const infoTr = document.createElement('tr');
         infoTr.innerHTML = `
             <td colspan="${currentUser ? '5' : '4'}" style="text-align: center; color: var(--color-cyan); padding: 10px; font-size: 0.72rem; font-style: italic; background: rgba(0, 210, 255, 0.02); border-top: 1px dashed rgba(0, 210, 255, 0.15);">
-                Mostrando los 15 registros más recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
+                Mostrando los 15 registros mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
             </td>
         `;
         requestsTableBody.appendChild(infoTr);
@@ -585,7 +436,7 @@ function calculateKPIs() {
         heroActiveRigsCount.textContent = activeRigsWithSystems;
     }
 
-    // Calcular Tasa con Operador Técnico (Porcentaje de Rigs activos con Operador asignado)
+    // Calcular Tasa con Operador TÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cnico (Porcentaje de Rigs activos con Operador asignado)
     let activeRigsCount = 0;
     let rigsWithOperatorCount = 0;
 
@@ -620,9 +471,9 @@ function calculateKPIs() {
     kpiOperatorRate.textContent = `${rate}%`;
 }
 
-// 6. GESTIÓN DE SESIÓN, PERMISOS Y LOGIN
+// 6. GESTIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN DE SESIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN, PERMISOS Y LOGIN
 
-// Verifica si el usuario actual tiene permiso para una acción específica
+// Verifica si el usuario actual tiene permiso para una acciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n especÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­fica
 function can(action) {
     if (!currentUser) return false;
     const role = currentUser.role || 'VIEWER';
@@ -636,7 +487,7 @@ function can(action) {
     return (perms[action] || []).includes(role);
 }
 
-// Comprobar la sesión al cargar y actualizar la UI según el rol
+// Comprobar la sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n al cargar y actualizar la UI segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn el rol
 function checkSession() {
     if (currentUser) {
         updateUIByRole();
@@ -646,7 +497,7 @@ function checkSession() {
     }
 }
 
-// Actualiza toda la interfaz según el rol del usuario autenticado
+// Actualiza toda la interfaz segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn el rol del usuario autenticado
 function updateUIByRole() {
     if (!currentUser) {
         authScreen.classList.remove('hidden');
@@ -673,7 +524,7 @@ function updateUIByRole() {
         profileRoleEl.className = `profile-role role-badge role-badge-inline role-${role.toLowerCase()}`;
     }
 
-    // Tab Administración: visible para REPORTER+
+    // Tab AdministraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n: visible para REPORTER+
     if (can('report')) {
         tabAdminActions.classList.remove('hidden');
     } else {
@@ -729,7 +580,7 @@ function updateUIByRole() {
 
 
 
-// Actualiza el estado del formulario de reporte RigLine según permisos del usuario
+// Actualiza el estado del formulario de reporte RigLine segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn permisos del usuario
 function updateRLFormByRole() {
     if (!rlReportForm) return;
     // Eliminar lock msg anterior
@@ -759,8 +610,8 @@ function updateRLFormByRole() {
                 <strong>${currentUser ? 'Permisos insuficientes' : 'Acceso restringido'}</strong><br>
                 <span style="font-size:0.75rem;">
                     ${currentUser
-                        ? `Tu rol actual es <strong style="color:var(--color-amber);">${roleLabel}</strong>. Necesitás permisos de <strong>Cargador</strong> o superior.`
-                        : 'Iniciá sesión con permisos de <strong>Cargador</strong> o superior para reportar casos.'
+                        ? `Tu rol actual es <strong style="color:var(--color-amber);">${roleLabel}</strong>. NecesitÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s permisos de <strong>Cargador</strong> o superior.`
+                        : 'IniciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n con permisos de <strong>Cargador</strong> o superior para reportar casos.'
                     }
                 </span>
             </div>
@@ -808,18 +659,18 @@ function updateAdminPanelState() {
         }
     }
     
-    // Estado inicial / Ningún rig seleccionado
+    // Estado inicial / NingÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn rig seleccionado
     if (selectedRigDisplay) {
-        selectedRigDisplay.textContent = "Ningún equipo seleccionado (Selecciona uno a la izquierda)";
+        selectedRigDisplay.textContent = "NingÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn equipo seleccionado (Selecciona uno a la izquierda)";
         selectedRigDisplay.classList.remove('active-glow');
     }
     buttons.forEach(btn => btn.classList.remove('active'));
     if (systemsConfigList) {
-        systemsConfigList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.85rem;">Selecciona un equipo de perforación de la izquierda para configurar sus sistemas.</div>';
+        systemsConfigList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.85rem;">Selecciona un equipo de perforaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de la izquierda para configurar sus sistemas.</div>';
     }
 }
 
-// Cambiar de Pestaña en el Panel Derecho
+// Cambiar de PestaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a en el Panel Derecho
 function switchTab(tabId) {
     const tabs = [tabRequests, tabUsers, tabAdminActions];
     const contents = [contentRequests, contentUsers, contentAdminActions];
@@ -840,7 +691,7 @@ function switchTab(tabId) {
     });
 }
 
-// Renderiza la lista de usuarios con badges de rol y controles de gestión (SUPER_ADMIN)
+// Renderiza la lista de usuarios con badges de rol y controles de gestiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n (SUPER_ADMIN)
 function renderUsersList() {
     if (!usersListElement) return;
     usersListElement.innerHTML = '';
@@ -855,29 +706,43 @@ function renderUsersList() {
         const isMe = currentUser && u.doc === currentUser.doc;
         const isMainSA = u.doc === SUPER_ADMIN_DOC;
         const role = u.role || 'VIEWER';
+        const isOnline = u.status === 'online';
+        
+        const initials = (u.name.charAt(0) + (u.lastName ? u.lastName.charAt(0) : '')).toUpperCase();
+        
         const roleOptionsHtml = ROLE_ORDER.map(r =>
             `<option value="${r}" ${role === r ? 'selected' : ''}>${ROLE_LABELS[r]}</option>`
         ).join('');
+        
         let actionsHtml = '';
         if (isSuperAdmin && !isMe) {
             if (isMainSA) {
-                actionsHtml = `<span class="role-badge role-super_admin" style="font-size:0.6rem;padding:2px 5px;">★ Protegido</span>`;
+                actionsHtml = `<span class="role-badge role-super_admin" style="font-size:0.6rem;padding:2px 5px;">ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦ Protegido</span>`;
             } else {
                 actionsHtml = `
                     <div style="display:flex;gap:6px;align-items:center;">
                         <select class="role-select-inline" onchange="window.changeUserRole('${u.doc}', this.value)" title="Cambiar nivel de permiso">
                             ${roleOptionsHtml}
                         </select>
-                        <button class="btn btn-danger-icon" onclick="window.deleteUser('${u.doc}')" style="padding:4px 7px;" title="Eliminar usuario">✕</button>
+                        <button class="btn btn-danger-icon" onclick="window.deleteUser('${u.doc}')" style="padding:4px 7px;" title="Eliminar usuario">ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬ËœÃƒÂ¯Ã‚Â¸Ã‚Â</button>
                     </div>`;
             }
         } else if (isMe) {
             actionsHtml = `<span style="font-size:0.68rem;color:var(--color-cyan);opacity:0.8;">(Vos)</span>`;
         }
+        
         li.innerHTML = `
-            <div class="user-item-info">
-                <span class="user-item-name">${u.name} ${u.lastName}${isMainSA ? ' ★' : ''}</span>
-                <span class="user-item-pass">Doc: ${u.doc}</span>
+            <div style="display:flex; align-items:center; gap: 12px;">
+                <div style="position:relative;">
+                    <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,210,255,0.1);color:var(--color-cyan);display:flex;align-items:center;justify-content:center;font-weight:bold;border:1px solid rgba(0,210,255,0.3);">
+                        ${initials}
+                    </div>
+                    <div style="width:10px;height:10px;border-radius:50%;background:${isOnline ? 'var(--color-success)' : '#555'};position:absolute;bottom:0;right:0;border:2px solid var(--color-bg);"></div>
+                </div>
+                <div class="user-item-info">
+                    <span class="user-item-name">${u.name} ${u.lastName}${isMainSA ? ' ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦' : ''}</span>
+                    <span class="user-item-pass" style="font-size:0.7rem;">${u.email || 'Sin correo'}</span>
+                </div>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
                 <span class="role-badge role-${role.toLowerCase()}">${ROLE_LABELS[role]}</span>
@@ -900,7 +765,7 @@ window.changeUserRole = function(docId, newRole) {
     const idx = usersList.findIndex(u => u.doc === docId);
     if (idx !== -1) {
         usersList[idx].role = newRole;
-        localStorage.setItem('drill_users_list', JSON.stringify(usersList));
+        usersList.forEach(u => db.collection('users').doc(u.doc).set(u));
         renderUsersList();
     }
 };
@@ -913,29 +778,43 @@ loginForm.addEventListener('submit', (e) => {
     const typedName = loginName.value.trim().toLowerCase();
     const typedPass = loginPassword.value.trim();
 
-    // Buscar en nuestra base de datos local de usuarios
+    // Formato de usuario: nombre.apellido (sin tildes, sin espacios, todo minusculas)
     const matchedUser = usersList.find(u => {
-        const fullName = `${u.name} ${u.lastName}`.toLowerCase();
-        return (fullName === typedName || u.name.toLowerCase() === typedName) && u.doc === typedPass;
+        const username = `${u.name}.${u.lastName}`.toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // quitar tildes
+        
+        // Verifica si la contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a coincide. Si no tiene contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a seteada, usa el DNI (doc).
+        const validPassword = u.password ? u.password === typedPass : u.doc === typedPass;
+        return username === typedName && validPassword;
     });
 
     if (matchedUser) {
         currentUser = matchedUser;
         localStorage.setItem('drill_current_user', JSON.stringify(currentUser));
+        
+        // Actualizar estado a Online en la Nube
+        db.collection('users').doc(currentUser.doc).update({ status: 'online' }).catch(console.error);
+
         updateUIByRole();
         loginForm.reset();
         loginError.classList.add('hidden');
+        runFirebaseMigration();
+
+        // Verificar si necesita configuraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n inicial
+        if (!currentUser.password || currentUser.password === currentUser.doc) {
+            document.getElementById('firstLoginModal').classList.remove('hidden');
+        }
     } else {
         loginError.classList.remove('hidden');
     }
 });
 
-// Evento Guardar/Registrar Solicitud (Sistemas de Automatización)
+// Evento Guardar/Registrar Solicitud (Sistemas de AutomatizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n)
 requestForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    if (!can('report')) { alert('Necesitás permisos de Cargador o superior para guardar cambios.'); return; }
+    if (!can('report')) { alert('NecesitÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s permisos de Cargador o superior para guardar cambios.'); return; }
     if (!selectedRigCardId) {
-        alert("Por favor, selecciona un equipo de perforación de la izquierda.");
+        alert("Por favor, selecciona un equipo de perforaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de la izquierda.");
         return;
     }
 
@@ -980,8 +859,8 @@ requestForm.addEventListener('submit', (e) => {
     });
 
     if (anyChange) {
-        localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
-        localStorage.setItem('drill_requests_history', JSON.stringify(requestsHistory));
+        rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
+        requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
         
         // Refrescar interfaz
         renderRigsGrid();
@@ -989,7 +868,7 @@ requestForm.addEventListener('submit', (e) => {
         calculateKPIs();
     }
 
-    // Limpiar formulario y cambiar a pestaña de Solicitudes
+    // Limpiar formulario y cambiar a pestaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a de Solicitudes
     requestForm.reset();
     selectedRigCardId = null;
     updateAdminPanelState();
@@ -1005,11 +884,11 @@ createUserForm.addEventListener('submit', (e) => {
     const newULastName = document.getElementById('uLastName').value.trim();
     const newUDoc     = document.getElementById('uDoc').value.trim();
     const newURole    = (document.getElementById('uRole') ? document.getElementById('uRole').value : 'RESOLVER') || 'RESOLVER';
-    if (!newUName || !newULastName || !newUDoc) { alert('Completá todos los campos.'); return; }
-    if (newUDoc === SUPER_ADMIN_DOC) { alert('Ese DNI está reservado para el Super Admin principal.'); return; }
-    if (usersList.some(u => u.doc === newUDoc)) { alert('Error: Ya existe un usuario con ese número de documento.'); return; }
+    if (!newUName || !newULastName || !newUDoc) { alert('CompletÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ todos los campos.'); return; }
+    if (newUDoc === SUPER_ADMIN_DOC) { alert('Ese DNI estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ reservado para el Super Admin principal.'); return; }
+    if (usersList.some(u => u.doc === newUDoc)) { alert('Error: Ya existe un usuario con ese nÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºmero de documento.'); return; }
     usersList.push({ name: newUName, lastName: newULastName, doc: newUDoc, role: newURole });
-    localStorage.setItem('drill_users_list', JSON.stringify(usersList));
+    usersList.forEach(u => db.collection('users').doc(u.doc).set(u));
     renderUsersList();
     createUserForm.reset();
     alert(`Usuario ${newUName} ${newULastName} creado con rol: ${ROLE_LABELS[newURole] || newURole}.`);
@@ -1018,25 +897,25 @@ createUserForm.addEventListener('submit', (e) => {
 // Eliminar Registro de Solicitud (Solo ADMIN+)
 window.deleteRequest = function(reqId) {
     if (!can('delete')) return;
-    if (!confirm("¿Está seguro de eliminar esta solicitud de la base de datos?")) return;
+    if (!confirm("ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿EstÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ seguro de eliminar esta solicitud de la base de datos?")) return;
 
-    // Buscar la solicitud para saber qué Rig y Sistema debemos resetear a INACTIVO
+    // Buscar la solicitud para saber quÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© Rig y Sistema debemos resetear a INACTIVO
     const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
     if (reqIndex !== -1) {
         const reqObj = requestsHistory[reqIndex];
         
         // Remover de la tabla de solicitudes
         requestsHistory.splice(reqIndex, 1);
-        localStorage.setItem('drill_requests_history', JSON.stringify(requestsHistory));
+        requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
 
-        // Comprobar si hay alguna solicitud más reciente para ese mismo Rig + Sistema
+        // Comprobar si hay alguna solicitud mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s reciente para ese mismo Rig + Sistema
         // Si no la hay, el Rig vuelve a estar INACTIVO en ese sistema
         const hasMoreRecent = requestsHistory.find(r => r.rig === reqObj.rig && r.system === reqObj.system);
         
         const rigIndex = rigsData.findIndex(r => r.id === reqObj.rig);
         if (rigIndex !== -1) {
             rigsData[rigIndex].systems[reqObj.system] = hasMoreRecent ? hasMoreRecent.modality : MODALITIES.INACTIVO;
-            localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
+            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
         }
 
         // Refrescar
@@ -1053,25 +932,40 @@ window.deleteUser = function(docId) {
     if (docId === SUPER_ADMIN_DOC) { alert('No es posible eliminar al Super Administrador principal (Fernando Volpi).'); return; }
     const userToDelete = usersList.find(u => u.doc === docId);
     if (!userToDelete) return;
-    if (!confirm(`¿Eliminar a ${userToDelete.name} ${userToDelete.lastName} del sistema? Esta acción no puede deshacerse.`)) return;
+    if (!confirm(`ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿Eliminar a ${userToDelete.name} ${userToDelete.lastName} del sistema? Esta acciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n no puede deshacerse.`)) return;
     usersList = usersList.filter(u => u.doc !== docId);
-    localStorage.setItem('drill_users_list', JSON.stringify(usersList));
+    usersList.forEach(u => db.collection('users').doc(u.doc).set(u));
     renderUsersList();
 };
 
-// 8. ASOCIACIÓN DE BOTONES SIMPLES Y EVENTOS GENERALES
-logoutBtn.addEventListener('click', () => {
-    currentUser = null;
-    localStorage.removeItem('drill_current_user');
-    window.location.reload();
-});
+const mainLogoutBtn = document.getElementById('btnLogout') || document.getElementById('logoutBtn');
+if (mainLogoutBtn) {
+    mainLogoutBtn.addEventListener('click', () => {
+        if (currentUser) {
+            db.collection('users').doc(currentUser.doc).update({ status: 'offline' })
+              .then(() => {
+                  currentUser = null;
+                  localStorage.removeItem('drill_current_user');
+                  window.location.reload();
+              }).catch(() => {
+                  currentUser = null;
+                  localStorage.removeItem('drill_current_user');
+                  window.location.reload();
+              });
+        } else {
+            window.location.reload();
+        }
+    });
+}
 
-// Eventos de Pestañas
+// 8. ASOCIACIÃƒâ€œN DE BOTONES SIMPLES Y EVENTOS GENERALES
+
+// Eventos de PestaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as
 tabRequests.addEventListener('click', () => switchTab('tabRequests'));
 tabUsers.addEventListener('click', () => switchTab('tabUsers'));
 tabAdminActions.addEventListener('click', () => switchTab('tabAdminActions'));
 
-// Eventos de Búsqueda y Filtros
+// Eventos de BÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºsqueda y Filtros
 searchInput.addEventListener('input', renderRequestsTable);
 filterClient.addEventListener('change', renderRequestsTable);
 filterSystem.addEventListener('change', renderRequestsTable);
@@ -1084,13 +978,13 @@ if (toggleShowAllHistory) {
     });
 }
 
-// Botón para limpiar todo el historial acumulado
+// BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para limpiar todo el historial acumulado
 if (btnClearHistory) {
     btnClearHistory.addEventListener('click', function() {
         if (!currentUser) return;
-        if (confirm("¿Está seguro de eliminar TODO el historial de solicitudes? Se vaciará el registro de cambios (el estado actual de los equipos no se perderá).")) {
+        if (confirm("ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿EstÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ seguro de eliminar TODO el historial de solicitudes? Se vaciarÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ el registro de cambios (el estado actual de los equipos no se perderÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡).")) {
             requestsHistory = [];
-            localStorage.setItem('drill_requests_history', JSON.stringify(requestsHistory));
+            requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
             renderRequestsTable();
             renderExcelHistory();
             calculateKPIs();
@@ -1098,7 +992,7 @@ if (btnClearHistory) {
     });
 }
 
-// Asociar eventos de clic de vinculación rápida a los botones de operadora
+// Asociar eventos de clic de vinculaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n rÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡pida a los botones de operadora
 document.querySelectorAll('.btn-operator').forEach(btn => {
     btn.addEventListener('click', function() {
         if (!currentUser) return;
@@ -1114,32 +1008,32 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
         
         const oldClient = rigsData[rigIndex].client;
         if (oldClient === selectedClient) {
-            // Ya está asignado a esa operadora
+            // Ya estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ asignado a esa operadora
             return;
         }
         
-        // Confirmar reasignación directa o liberación de contrato
+        // Confirmar reasignaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n directa o liberaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de contrato
         const confirmMsg = selectedClient === "" 
-            ? `¿Confirmar dejar al Rig ${selectedRigCardId} Sin Contrato?` 
-            : `¿Confirmar vinculación rápida del Rig ${selectedRigCardId} a ${selectedClient}?`;
+            ? `ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿Confirmar dejar al Rig ${selectedRigCardId} Sin Contrato?` 
+            : `ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿Confirmar vinculaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n rÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡pida del Rig ${selectedRigCardId} a ${selectedClient}?`;
             
         if (confirm(confirmMsg)) {
             rigsData[rigIndex].client = selectedClient;
             
-            // Inyectar el registro de auditoría en el historial
+            // Inyectar el registro de auditorÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a en el historial
             const clientChangeRequest = {
                 id: Date.now().toString() + "client",
                 rig: selectedRigCardId,
                 client: selectedClient === "" ? "Sin Contrato" : selectedClient,
-                system: "REASIGNACIÓN",
+                system: "REASIGNACIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN",
                 modality: selectedClient === "" ? "Sin Contrato" : selectedClient,
                 date: new Date().toISOString()
             };
             requestsHistory.unshift(clientChangeRequest);
             
             // Guardar base de datos
-            localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
-            localStorage.setItem('drill_requests_history', JSON.stringify(requestsHistory));
+            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
+            requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
             
             // Refrescar vistas
             renderRigsGrid();
@@ -1154,7 +1048,7 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
 });
 
 // ==============================================================
-// 8.5 PLANILLA DE CARGA RÁPIDA TIPO EXCEL (V1.0.9)
+// 8.5 PLANILLA DE CARGA RÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂPIDA TIPO EXCEL (V1.0.9)
 // ==============================================================
 
 // Estructura en memoria para conservar los datos temporales del Excel (5 filas)
@@ -1166,7 +1060,7 @@ let excelTempData = Array.from({ length: 5 }, () => ({
     date: ''
 }));
 
-// Renderiza la planilla dinámica con exactamente 5 filas
+// Renderiza la planilla dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡mica con exactamente 5 filas
 function renderExcelSpreadsheet() {
     const tbody = document.getElementById('excelTableBody');
     if (!tbody) return;
@@ -1186,7 +1080,7 @@ function renderExcelSpreadsheet() {
             rigOptions += `<option value="${rig}" ${rowData.rig === rig ? 'selected' : ''}>${rig}</option>`;
         });
 
-        // Dropdown de Servicios (Sistemas de automatización)
+        // Dropdown de Servicios (Sistemas de automatizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n)
         let systemOptions = '<option value="">-- Servicio --</option>';
         OFFICIAL_SYSTEMS.forEach(sys => {
             systemOptions += `<option value="${sys}" ${rowData.system === sys ? 'selected' : ''}>${sys}</option>`;
@@ -1227,7 +1121,7 @@ function renderExcelSpreadsheet() {
     }
 }
 
-// Renderiza las últimas 5 solicitudes procesadas de correo electrónico (modo lectura)
+// Renderiza las ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºltimas 5 solicitudes procesadas de correo electrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³nico (modo lectura)
 function renderExcelHistory() {
     const tbody = document.getElementById('excelHistoryTableBody');
     if (!tbody) return;
@@ -1237,7 +1131,7 @@ function renderExcelHistory() {
     // Filtrar solicitudes del tipo SOLICITADO_MAIL
     const mailRequests = requestsHistory.filter(req => req.modality === MODALITIES.SOLICITADO_MAIL);
 
-    // Tomar las 5 más recientes
+    // Tomar las 5 mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s recientes
     for (let i = 0; i < 5; i++) {
         const req = mailRequests[i];
         const tr = document.createElement('tr');
@@ -1368,8 +1262,8 @@ window.processExcelRow = function(rowIndex) {
     requestsHistory.unshift(newRequest);
 
     // Guardar
-    localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
-    localStorage.setItem('drill_requests_history', JSON.stringify(requestsHistory));
+    rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
+    requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
 
     // Limpiar fila procesada
     window.clearExcelRow(rowIndex);
@@ -1441,8 +1335,8 @@ if (btnExcelProcessAll) {
         }
 
         if (anyChange) {
-            localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
-            localStorage.setItem('drill_requests_history', JSON.stringify(requestsHistory));
+            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
+            requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
 
             renderRigsGrid();
             renderRequestsTable();
@@ -1450,7 +1344,7 @@ if (btnExcelProcessAll) {
             calculateKPIs();
             updateAdminPanelState();
 
-            alert(`Se procesaron ${processedCount} solicitudes de correo con éxito.`);
+            alert(`Se procesaron ${processedCount} solicitudes de correo con ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©xito.`);
         } else {
             alert("No hay filas completas para procesar. Seleccione al menos un Rig y Servicio.");
         }
@@ -1461,7 +1355,7 @@ const btnExcelClearAll = document.getElementById('btnExcelClearAll');
 if (btnExcelClearAll) {
     btnExcelClearAll.addEventListener('click', () => {
         if (!currentUser) return;
-        if (confirm("¿Confirmar limpieza completa de las 5 filas de la planilla? Se perderá lo que no haya sido procesado.")) {
+        if (confirm("ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿Confirmar limpieza completa de las 5 filas de la planilla? Se perderÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ lo que no haya sido procesado.")) {
             for (let i = 0; i < 5; i++) {
                 window.clearExcelRow(i);
             }
@@ -1470,10 +1364,10 @@ if (btnExcelClearAll) {
 }
 
 // ==============================================================
-// 8.8 LÓGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS TÉCNICOS)
+// 8.8 LÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS TÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°CNICOS)
 // ==============================================================
 
-// Alternar Pestaña Global (Automatización / RigLine / Versiones)
+// Alternar PestaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a Global (AutomatizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n / RigLine / Versiones)
 window.switchGlobalTab = function(tabId) {
     const globalTabAutomation = document.getElementById('globalTabAutomation');
     const globalTabRigLine = document.getElementById('globalTabRigLine');
@@ -1525,7 +1419,7 @@ window.switchGlobalTab = function(tabId) {
     }
 };
 
-// Rellenar dinámicamente los pozos en los filtros y formulario de RigLine
+// Rellenar dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡micamente los pozos en los filtros y formulario de RigLine
 function populateRigLineDropdowns() {
     if (!rlFilterRig || !rlRigSelect) return;
     
@@ -1545,7 +1439,7 @@ function populateRigLineDropdowns() {
     });
 }
 
-// Renderizar la lista de casos RigLine según estado y filtros
+// Renderizar la lista de casos RigLine segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn estado y filtros
 function renderRigLineCases() {
     if (!rlCasesGrid) return;
     
@@ -1556,7 +1450,7 @@ function renderRigLineCases() {
     const rigVal = rlFilterRig ? rlFilterRig.value : '';
     const statusVal = rlFilterStatus ? rlFilterStatus.value : 'PENDIENTE';
     
-    // Filtrar casos según estado y filtros
+    // Filtrar casos segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn estado y filtros
     const filteredCases = riglineCases.filter(c => {
         // Filtro de estado
         if (statusVal === 'PENDIENTE' && c.status !== 'PENDIENTE') return false;
@@ -1587,7 +1481,7 @@ function renderRigLineCases() {
     filteredCases.forEach(c => {
         const card = document.createElement('div');
         
-        // Estilo según prioridad para el borde neon sutil
+        // Estilo segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn prioridad para el borde neon sutil
         let priorityClass = 'low-priority';
         let badgeClass = 'low';
         if (c.priority === 'Alta') {
@@ -1598,7 +1492,7 @@ function renderRigLineCases() {
             badgeClass = 'medium';
         }
         
-        // Aplicar clase resolved-case si está resuelto
+        // Aplicar clase resolved-case si estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ resuelto
         if (c.status === 'RESUELTO') {
             card.className = `case-card resolved-case`;
         } else {
@@ -1624,7 +1518,7 @@ function renderRigLineCases() {
             closedTimeLabel = `<span class="case-time" style="color: var(--color-green); opacity: 0.9; margin-top: 2px;">Cerrado: ${dateStr} - ${timeStr}</span>`;
         }
         
-        // Visibilidad y control de acción de cierre según permisos (Editor)
+        // Visibilidad y control de acciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de cierre segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn permisos (Editor)
         let actionHtml = '';
         if (currentUser) {
             const deleteBtnHtml = `
@@ -1654,7 +1548,7 @@ function renderRigLineCases() {
             if (c.status === "PENDIENTE") {
                 actionHtml = `
                     <div class="action-lock-box">
-                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia sesión como Editor para resolver este caso" disabled>
+                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n como Editor para resolver este caso" disabled>
                             Resolver y Cerrar
                         </button>
                         <span class="action-lock-label">
@@ -1670,7 +1564,7 @@ function renderRigLineCases() {
         
         let resolvedBadge = '';
         if (c.status === "RESUELTO") {
-            resolvedBadge = `<span class="case-priority-badge resolved">✅ Resuelto</span>`;
+            resolvedBadge = `<span class="case-priority-badge resolved">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Resuelto</span>`;
         }
         
         card.innerHTML = `
@@ -1690,8 +1584,8 @@ function renderRigLineCases() {
             </div>
             <div class="case-footer">
                 <div class="case-meta">
-                    <span class="case-reporter">Reportó: <strong style="color: var(--text-primary);">${c.reporter}</strong></span>
-                    ${c.resolver ? `<span class="case-reporter">Resolvió: <strong style="color: var(--text-primary);">${c.resolver}</strong></span>` : ''}
+                    <span class="case-reporter">ReportÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³: <strong style="color: var(--text-primary);">${c.reporter}</strong></span>
+                    ${c.resolver ? `<span class="case-reporter">ResolviÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³: <strong style="color: var(--text-primary);">${c.resolver}</strong></span>` : ''}
                     <span class="case-time">${timeLabel}</span>
                     ${closedTimeLabel}
                 </div>
@@ -1705,7 +1599,7 @@ function renderRigLineCases() {
     });
 }
 
-// Calcular métricas de RigLine y refrescar en pantalla
+// Calcular mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©tricas de RigLine y refrescar en pantalla
 function calculateRigLineKPIs() {
     if (!riglineCases) return;
     
@@ -1722,7 +1616,7 @@ function calculateRigLineKPIs() {
     // 3. Casos Resueltos Totales en Historial
     if (kpiRlClosedCount) kpiRlClosedCount.textContent = closedCases.length;
     
-    // 4. Equipo (Rig) más afectado por fallas técnicas pendientes
+    // 4. Equipo (Rig) mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s afectado por fallas tÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cnicas pendientes
     let rigCounts = {};
     pendingCases.forEach(c => {
         rigCounts[c.rig] = (rigCounts[c.rig] || 0) + 1;
@@ -1738,7 +1632,7 @@ function calculateRigLineKPIs() {
     }
     if (kpiRlMostAffected) kpiRlMostAffected.textContent = mostAffectedRig;
     
-    // 5. Badge contador naranja de la pestaña global RigLine
+    // 5. Badge contador naranja de la pestaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a global RigLine
     if (riglineActiveCasesBadge) {
         const activeCount = pendingCases.length;
         if (activeCount > 0) {
@@ -1756,7 +1650,7 @@ function calculateRigLineKPIs() {
     }
 }
 
-// Generar e insertar un nuevo caso técnico reportado
+// Generar e insertar un nuevo caso tÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cnico reportado
 if (rlReportForm) {
     rlReportForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -1773,10 +1667,10 @@ if (rlReportForm) {
             return;
         }
         
-        // Validar que el identificador ingresado sea único
+        // Validar que el identificador ingresado sea ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºnico
         const caseExists = riglineCases.some(c => c.id.toLowerCase() === caseId.toLowerCase());
         if (caseExists) {
-            alert(`Error: Ya existe un caso registrado bajo el número "${caseId}". Por favor, introduce un identificador único.`);
+            alert(`Error: Ya existe un caso registrado bajo el nÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºmero "${caseId}". Por favor, introduce un identificador ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºnico.`);
             return;
         }
         
@@ -1792,19 +1686,19 @@ if (rlReportForm) {
         };
         
         riglineCases.unshift(newCase);
-        localStorage.setItem('drill_rigline_cases', JSON.stringify(riglineCases));
+        riglineCases.forEach(c => db.collection('rigline').doc(c.id).set(c));
         
         // Resetear el formulario
         rlReportForm.reset();
         
-        // Refrescar vistas y métricas de RigLine y del Centro de Control
+        // Refrescar vistas y mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©tricas de RigLine y del Centro de Control
         renderRigLineCases();
         calculateRigLineKPIs();
         renderRigsGrid();
         calculateKPIs();
         renderRigLineHistory();
         
-        alert(`Caso creado con éxito bajo el registro ${caseId}. Se dará seguimiento inmediato.`);
+        alert(`Caso creado con ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©xito bajo el registro ${caseId}. Se darÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ seguimiento inmediato.`);
     });
 }
 
@@ -1812,17 +1706,17 @@ if (rlReportForm) {
 // Resolver y cerrar un caso (Exclusivo de Editores autorizados)
 window.closeRigLineCase = function(caseId) {
     if (!can('resolve')) {
-        alert("Acceso denegado. Necesitás permisos de Operador o superior para cerrar casos.");
+        alert("Acceso denegado. NecesitÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s permisos de Operador o superior para cerrar casos.");
         return;
     }
     
-    if (!confirm(`¿Confirmar marcado de resolución para el caso ${caseId}? Se archivará del panel activo.`)) {
+    if (!confirm(`ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿Confirmar marcado de resoluciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n para el caso ${caseId}? Se archivarÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ del panel activo.`)) {
         return;
     }
     
     const caseIndex = riglineCases.findIndex(c => c.id === caseId);
     if (caseIndex !== -1) {
-        // Encontrar tarjeta para animación de salida sutil
+        // Encontrar tarjeta para animaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de salida sutil
         const card = document.querySelector(`[data-case-id="${caseId}"]`);
         if (card) {
             card.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease';
@@ -1835,7 +1729,7 @@ window.closeRigLineCase = function(caseId) {
             riglineCases[caseIndex].resolver = `${currentUser.name} ${currentUser.lastName}`;
             riglineCases[caseIndex].closedDate = new Date().toISOString();
             
-            localStorage.setItem('drill_rigline_cases', JSON.stringify(riglineCases));
+            riglineCases.forEach(c => db.collection('rigline').doc(c.id).set(c));
             
             // Refrescar vistas
             renderRigLineCases();
@@ -1843,33 +1737,33 @@ window.closeRigLineCase = function(caseId) {
             renderRigsGrid();
             calculateKPIs();
             renderRigLineHistory();
-        }, 350); // Sincronizado con la duración de la animación
+        }, 350); // Sincronizado con la duraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de la animaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
     }
 };
 
-// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseña)
+// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a)
 window.deleteRigLineCase = function(caseId) {
     if (!can('delete')) {
-        alert("Acceso denegado. Necesitás permisos de Administrador o superior para eliminar casos permanentemente.");
+        alert("Acceso denegado. NecesitÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s permisos de Administrador o superior para eliminar casos permanentemente.");
         return;
     }
     
-    // Solicitar contraseña de confirmación
-    const typedPassword = prompt(`ADVERTENCIA: ¿Confirmar la eliminación permanente del caso ${caseId}?\n\nEsta acción no se puede deshacer. Ingrese su contraseña de Editor (Número de documento) para confirmar:`);
+    // Solicitar contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a de confirmaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
+    const typedPassword = prompt(`ADVERTENCIA: ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¿Confirmar la eliminaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n permanente del caso ${caseId}?\n\nEsta acciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n no se puede deshacer. Ingrese su contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a de Editor (NÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºmero de documento) para confirmar:`);
     
     if (typedPassword === null) {
-        // El usuario canceló el prompt
+        // El usuario cancelÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ el prompt
         return;
     }
     
     if (typedPassword.trim() !== currentUser.doc) {
-        alert("Contraseña incorrecta. La eliminación del caso ha sido cancelada.");
+        alert("ContraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a incorrecta. La eliminaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del caso ha sido cancelada.");
         return;
     }
     
     const caseIndex = riglineCases.findIndex(c => c.id === caseId);
     if (caseIndex !== -1) {
-        // Encontrar tarjeta para animación de salida sutil de rotación y escala
+        // Encontrar tarjeta para animaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de salida sutil de rotaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y escala
         const card = document.querySelector(`[data-case-id="${caseId}"]`);
         if (card) {
             card.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease';
@@ -1879,7 +1773,7 @@ window.deleteRigLineCase = function(caseId) {
         
         setTimeout(() => {
             riglineCases.splice(caseIndex, 1);
-            localStorage.setItem('drill_rigline_cases', JSON.stringify(riglineCases));
+            riglineCases.forEach(c => db.collection('rigline').doc(c.id).set(c));
             
             // Refrescar vistas
             renderRigLineCases();
@@ -1887,12 +1781,12 @@ window.deleteRigLineCase = function(caseId) {
             renderRigsGrid();
             calculateKPIs();
             renderRigLineHistory();
-        }, 350); // Sincronizado con la duración de la animación
+        }, 350); // Sincronizado con la duraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de la animaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
     }
 };
 
 // ==============================================================
-// 8.9 EXPORTACIÓN DE CASOS RIGLINE A TXT
+// 8.9 EXPORTACIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN DE CASOS RIGLINE A TXT
 // ==============================================================
 const btnExportRigLine = document.getElementById('btnExportRigLine');
 if (btnExportRigLine) {
@@ -1907,7 +1801,7 @@ if (btnExportRigLine) {
 
         // Helper de fecha
         const fmtDate = (iso) => {
-            if (!iso) return '—';
+            if (!iso) return 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â';
             const d = new Date(iso);
             return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
         };
@@ -1921,13 +1815,13 @@ if (btnExportRigLine) {
 
         pendingCases.forEach(c => {
             txtContent += `-----------------------------------------------------------------\r\n`;
-            txtContent += `Nº CASO   : ${c.id}\r\n`;
+            txtContent += `NÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âº CASO   : ${c.id}\r\n`;
             txtContent += `EQUIPO    : ${c.rig}\r\n`;
             txtContent += `SISTEMA   : ${c.system}\r\n`;
             txtContent += `PRIORIDAD : ${c.priority}\r\n`;
             txtContent += `FECHA     : ${fmtDate(c.date)}\r\n`;
             txtContent += `REPORTANTE: ${c.reporter}\r\n`;
-            txtContent += `DESCRIPCIÓN:\r\n${c.description}\r\n`;
+            txtContent += `DESCRIPCIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN:\r\n${c.description}\r\n`;
         });
         
         txtContent += `-----------------------------------------------------------------\r\n`;
@@ -1953,9 +1847,9 @@ if (rlFilterPriority) rlFilterPriority.addEventListener('change', renderRigLineC
 if (rlFilterRig) rlFilterRig.addEventListener('change', renderRigLineCases);
 if (rlFilterStatus) rlFilterStatus.addEventListener('change', renderRigLineCases);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HISTORIAL COMPLETO DE CASOS RIGLINE — Planilla al pie de página
-// ─────────────────────────────────────────────────────────────────────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
+// HISTORIAL COMPLETO DE CASOS RIGLINE ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Planilla al pie de pÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡gina
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
 function renderRigLineHistory() {
     const tbody = document.getElementById('rlHistoryTableBody');
     const countEl = document.getElementById('rlHistoryTotalCount');
@@ -1964,10 +1858,10 @@ function renderRigLineHistory() {
 
     const query = searchEl ? searchEl.value.toLowerCase().trim() : '';
 
-    // Ordenar todos los casos de más reciente a más antiguo (por fecha de apertura)
+    // Ordenar todos los casos de mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s reciente a mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s antiguo (por fecha de apertura)
     const sorted = [...riglineCases].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Aplicar búsqueda rápida sobre todos los campos visibles
+    // Aplicar bÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºsqueda rÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡pida sobre todos los campos visibles
     const filtered = query
         ? sorted.filter(c =>
             c.id.toLowerCase().includes(query) ||
@@ -1986,7 +1880,7 @@ function renderRigLineHistory() {
         tbody.innerHTML = `
             <tr>
                 <td colspan="9" class="rl-history-empty">
-                    ${query ? 'No se encontraron casos para "' + query + '".' : 'No hay casos registrados aún.'}
+                    ${query ? 'No se encontraron casos para "' + query + '".' : 'No hay casos registrados aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn.'}
                 </td>
             </tr>`;
         return;
@@ -1994,7 +1888,7 @@ function renderRigLineHistory() {
 
     // Helper de formato de fecha compacta
     function fmtDate(iso) {
-        if (!iso) return '—';
+        if (!iso) return 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â';
         const d = new Date(iso);
         const dd = String(d.getDate()).padStart(2, '0');
         const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -2008,11 +1902,11 @@ function renderRigLineHistory() {
         const prioClass = c.priority === 'Alta' ? 'alta' : c.priority === 'Media' ? 'media' : 'baja';
         const rowClass  = `rl-row-${prioClass}${c.status === 'RESUELTO' ? ' rl-row-resuelto' : ''}`;
         const statusBadge = c.status === 'RESUELTO'
-            ? `<span class="rl-status-badge resuelto">✓ Resuelto</span>`
-            : `<span class="rl-status-badge pendiente">● Pendiente</span>`;
+            ? `<span class="rl-status-badge resuelto">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ Resuelto</span>`
+            : `<span class="rl-status-badge pendiente">ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬ÂÃƒâ€šÃ‚Â Pendiente</span>`;
         const closedDateHtml = c.closedDate
             ? `<span class="rl-history-date closed">${fmtDate(c.closedDate)}</span>`
-            : `<span style="color: var(--color-inactive); font-size: 0.7rem;">—</span>`;
+            : `<span style="color: var(--color-inactive); font-size: 0.7rem;">ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â</span>`;
 
         return `
             <tr class="${rowClass}">
@@ -2021,7 +1915,7 @@ function renderRigLineHistory() {
                 <td style="color: var(--text-primary); max-width: 140px; overflow: hidden; text-overflow: ellipsis;">${c.system}</td>
                 <td><span class="rl-priority-dot ${prioClass}">${c.priority}</span></td>
                 <td style="color: var(--text-muted);">${c.reporter}</td>
-                <td style="color: var(--text-muted);">${c.resolver || '<span style="opacity:0.4;">—</span>'}</td>
+                <td style="color: var(--text-muted);">${c.resolver || '<span style="opacity:0.4;">ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â</span>'}</td>
                 <td class="rl-history-date">${fmtDate(c.date)}</td>
                 <td>${closedDateHtml}</td>
                 <td>${statusBadge}</td>
@@ -2029,25 +1923,71 @@ function renderRigLineHistory() {
     }).join('');
 }
 
-// Conectar la búsqueda del historial en tiempo real
+// Conectar la bÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºsqueda del historial en tiempo real
 const rlHistorySearch = document.getElementById('rlHistorySearch');
 if (rlHistorySearch) rlHistorySearch.addEventListener('input', renderRigLineHistory);
 
 
-// 9. INICIALIZACIÓN COMPLETA AL CARGAR LA APP
+// 9. INICIALIZACIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN COMPLETA AL CARGAR LA APP (FIREBASE)
 window.addEventListener('DOMContentLoaded', () => {
-    populateRigLineDropdowns(); // Rellenar selects e filtros de RigLine
-    renderRigsGrid();
-    renderRequestsTable();
-    calculateKPIs();
-    
-    // Inicializar RigLine
-    renderRigLineCases();
-    calculateRigLineKPIs();
-    renderRigLineHistory();
-    
-    checkSession();
+    // 1. Escuchar Rigs
+    db.collection('rigs').onSnapshot(snapshot => {
+        rigsData = snapshot.docs.map(doc => doc.data());
+        populateRigLineDropdowns();
+        renderRigsGrid();
+        if (typeof renderVersionsGrid === 'function') renderVersionsGrid();
+        calculateKPIs();
+        updateUIByRole(); // Refrescar UI si llegan datos y estamos logueados
+    });
+
+    // 2. Escuchar Historial de Solicitudes
+    db.collection('history').orderBy('date', 'desc').onSnapshot(snapshot => {
+        requestsHistory = snapshot.docs.map(doc => doc.data());
+        renderRequestsTable();
+        calculateKPIs();
+    });
+
+    // 3. Escuchar Usuarios
+    db.collection('users').onSnapshot(snapshot => {
+        usersList = snapshot.docs.map(doc => doc.data());
+        checkSession();
+        if (typeof renderUsersTable === 'function') renderUsersTable();
+    });
+
+    // 4. Escuchar Casos RigLine
+    db.collection('rigline').orderBy('date', 'desc').onSnapshot(snapshot => {
+        riglineCases = snapshot.docs.map(doc => doc.data());
+        renderRigLineCases();
+        calculateRigLineKPIs();
+        renderRigLineHistory();
+    });
 });
+
+// FunciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de MigraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n (Solo corre 1 vez por el Admin para subir datos a la nube)
+async function runFirebaseMigration() {
+    if (!currentUser || currentUser.doc !== '31434249') return; // Solo Fer
+    
+    // Check if Cloud is empty by checking rigs
+    const rigsSnap = await db.collection('rigs').get();
+    if (!rigsSnap.empty) return; // Ya estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ migrado
+    
+    showToast('Iniciando migraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a la Nube (Firebase)...');
+    
+    const localRigs = JSON.parse(localStorage.getItem('drill_rigs_data')) || [];
+    const localUsers = JSON.parse(localStorage.getItem('drill_users_list')) || [];
+    const localHistory = JSON.parse(localStorage.getItem('drill_requests_history')) || [];
+    const localRigline = JSON.parse(localStorage.getItem('drill_rigline_cases')) || [];
+
+    const batch = db.batch();
+    
+    localRigs.forEach(rig => batch.set(db.collection('rigs').doc(rig.id), rig));
+    localUsers.forEach(user => batch.set(db.collection('users').doc(user.doc), user));
+    localHistory.forEach(hist => batch.set(db.collection('history').doc(hist.id), hist));
+    localRigline.forEach(caseItem => batch.set(db.collection('rigline').doc(caseItem.id), caseItem));
+    
+    await batch.commit();
+    showToast('ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡MigraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a Firebase Completada con ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°xito!');
+}
 
 // ==============================================================
 // 10. CONTROL DE VERSIONES
@@ -2116,7 +2056,7 @@ window.saveSystemVersion = function(rigId, systemName, newVersion) {
         const currentVal = rigsData[rigIndex].versions[systemName] || '';
         if (currentVal !== newVersion.trim()) {
             rigsData[rigIndex].versions[systemName] = newVersion.trim();
-            localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
+            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
             showVersionToast(`Rig ${rigId} - ${systemName} actualizado`);
         }
     }
@@ -2145,7 +2085,7 @@ function showVersionToast(message) {
     }, 2500);
 }
 
-// Registro de Service Worker para PWA (Instalación fácil en celulares)
+// Registro de Service Worker para PWA (InstalaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n fÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡cil en celulares)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
@@ -2153,3 +2093,129 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.warn('Error al registrar Service Worker', err));
     });
 }
+
+
+// ==============================================================
+// 11. PERFILES DE USUARIO Y SEGURIDAD
+// ==============================================================
+
+// Cerrar Modales
+document.getElementById('btnCloseProfile').addEventListener('click', () => {
+    document.getElementById('userProfileModal').classList.add('hidden');
+});
+document.getElementById('btnCloseRecovery').addEventListener('click', () => {
+    document.getElementById('recoveryModal').classList.add('hidden');
+});
+
+// Abrir Perfil al hacer clic en el nombre de usuario arriba a la derecha
+document.getElementById('activeUserBadge').addEventListener('click', () => {
+    if (!currentUser) return;
+    
+    // Generar Iniciales
+    const initials = (currentUser.name.charAt(0) + currentUser.lastName.charAt(0)).toUpperCase();
+    document.getElementById('profileAvatarLarge').textContent = initials;
+    
+    document.getElementById('profileNameDisplay').textContent = currentUser.name + ' ' + currentUser.lastName;
+    document.getElementById('profileRoleDisplay').textContent = ROLE_LABELS[currentUser.role] || currentUser.role;
+    document.getElementById('profileEmailDisplay').textContent = currentUser.email || 'Sin correo registrado';
+    
+    document.getElementById('userProfileModal').classList.remove('hidden');
+});
+
+// Abrir RecuperaciÃƒÆ’Ã‚Â³n
+document.getElementById('btnForgotPassword').addEventListener('click', () => {
+    document.getElementById('recoveryModal').classList.remove('hidden');
+});
+
+// Guardar ConfiguraciÃƒÆ’Ã‚Â³n Inicial (Primer Login)
+document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const pass1 = document.getElementById('flPassword').value.trim();
+    const pass2 = document.getElementById('flPasswordConfirm').value.trim();
+    const errorMsg = document.getElementById('flError');
+    
+    if (pass1 !== pass2) {
+        errorMsg.textContent = 'Las contraseÃƒÆ’Ã‚Â±as no coinciden.';
+        errorMsg.classList.remove('hidden');
+        return;
+    }
+    
+    errorMsg.classList.add('hidden');
+    
+    // Guardar en Firebase
+    db.collection('users').doc(currentUser.doc).update({
+        
+        password: pass1
+    }).then(() => {
+        
+        currentUser.password = pass1;
+        localStorage.setItem('drill_current_user', JSON.stringify(currentUser));
+        document.getElementById('firstLoginModal').classList.add('hidden');
+        showToast('ConfiguraciÃƒÆ’Ã‚Â³n guardada exitosamente.');
+    }).catch(err => {
+        errorMsg.textContent = 'Error al guardar en la nube.';
+        errorMsg.classList.remove('hidden');
+        console.error(err);
+    });
+});
+
+// Cambiar ContraseÃƒÆ’Ã‚Â±a desde el Perfil
+document.getElementById('changePasswordForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newPass = document.getElementById('cpNew').value.trim();
+    const msg = document.getElementById('cpMessage');
+    
+    db.collection('users').doc(currentUser.doc).update({
+        password: newPass
+    }).then(() => {
+        currentUser.password = newPass;
+        localStorage.setItem('drill_current_user', JSON.stringify(currentUser));
+        msg.textContent = 'ContraseÃƒÆ’Ã‚Â±a actualizada.';
+        msg.style.color = 'var(--color-success)';
+        msg.classList.remove('hidden');
+        document.getElementById('changePasswordForm').reset();
+        setTimeout(() => msg.classList.add('hidden'), 3000);
+    }).catch(err => {
+        msg.textContent = 'Error al actualizar.';
+        msg.style.color = 'var(--color-danger)';
+        msg.classList.remove('hidden');
+    });
+});
+
+// Solicitar RecuperaciÃƒÆ’Ã‚Â³n (Mail al Administrador)
+document.getElementById('recoveryForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const userStr = document.getElementById('recoveryUser').value.trim().toLowerCase();
+    const msg = document.getElementById('recoveryMessage');
+    
+    // Buscar si el usuario existe
+    const matchedUser = usersList.find(u => {
+        const username = \\.\\.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return username === userStr;
+    });
+    
+    if (!matchedUser) {
+        msg.textContent = 'Usuario no encontrado.';
+        msg.style.color = 'var(--color-danger)';
+        msg.classList.remove('hidden');
+        return;
+    }
+    
+    msg.textContent = 'Abriendo tu cliente de correo...';
+    msg.style.color = 'var(--color-success)';
+    msg.classList.remove('hidden');
+    
+    // Enviar email al administrador (Fernando Volpi)
+    const adminEmail = 'volpi.fc@gmail.com'; // O el correo que sea
+    const subject = encodeURIComponent(\Solicitud de RecuperaciÃƒÆ’Ã‚Â³n de ContraseÃƒÆ’Ã‚Â±a - \ \\);
+    const body = encodeURIComponent(\Hola Fernando,\n\nHe olvidado mi contraseÃƒÆ’Ã‚Â±a y solicito un reseteo.\n\nUsuario: \\nDocumento: \\n\nPor favor envÃƒÆ’Ã‚Â­ame una nueva clave provisoria.\n\nGracias.\);
+    
+    window.location.href = \mailto:\?subject=\&body=\\;
+    
+    setTimeout(() => {
+        document.getElementById('recoveryModal').classList.add('hidden');
+        msg.classList.add('hidden');
+        document.getElementById('recoveryForm').reset();
+    }, 2000);
+});

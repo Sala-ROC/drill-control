@@ -11,7 +11,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icon-180x180.png">
-    <meta name="theme-color" content="#00D2FF">
+    <meta name="theme-color" content="#0b0f19">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Drill Control">
@@ -21,6 +21,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FIREBASE SDK (Compat Mode for Vanilla JS) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -36,15 +40,16 @@
             <p class="auth-instructions" style="margin-bottom: 15px;">Ingreso Restringido. Introduce tus credenciales.</p>
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="loginName">Usuario (Nombre y Apellido)</label>
+                    <label for="loginName">Usuario (nombre.apellido)</label>
                     <input type="text" id="loginName" required>
                 </div>
                 <div class="form-group">
-                    <label for="loginPassword">Contraseña (Documento)</label>
+                    <label for="loginPassword">Contraseña (Documento / DNI)</label>
                     <input type="password" id="loginPassword" required>
                 </div>
                 <div class="error-message hidden" id="loginError">Credenciales incorrectas o acceso denegado.</div>
                 <button type="submit" class="btn btn-primary btn-full" style="margin-top: 10px; font-size: 0.9rem; padding: 8px;">Acceder al Centro de Control</button>
+                <button type="button" id="btnForgotPassword" class="btn-text btn-full" style="margin-top: 5px; font-size: 0.8rem; opacity: 0.8;">¿Olvidaste tu contraseña?</button>
             </form>
         </div>
 
@@ -82,16 +87,14 @@
                 </div>
                 <!-- Botón de Login Viejo Eliminado -->
                 
-                <div class="admin-profile hidden" id="adminProfile">
-                    <div class="avatar">AD</div>
-                    <div class="profile-info">
-                        <span class="profile-name" id="activeUserName">Editor</span>
-                        <span class="profile-role role-badge role-badge-inline" id="profileRoleLabel">Operaciones</span>
-                    </div>
-                    <button class="btn btn-icon-small" id="logoutBtn" title="Cerrar Sesión">
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    </button>
-                </div>
+                <div class="user-badge" id="activeUserBadge" title="Sesión activa">
+                <span class="user-name" id="activeUserName">Cargando...</span>
+                <span class="user-role" id="activeUserRole">...</span>
+                <button class="btn-logout" id="btnLogout" title="Cerrar sesión">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                </button>
+            </div>
+            <span class="version-tag">v2.0.0 Cloud</span>
             </div>
         </header>
 
@@ -127,7 +130,7 @@
                     <div class="hero-stats-row">
                         <div class="hero-stat-item">
                             <span class="stat-num" id="heroActiveRigsCount">0</span>
-                            <span class="stat-lbl">Pozos Activos</span>
+                            <span class="stat-lbl">Equipos Activos</span>
                         </div>
                         <div class="hero-divider"></div>
                         <div class="hero-stat-item">
@@ -345,7 +348,7 @@
                 <div class="tab-content hidden" id="contentUsers">
                     <div class="users-panel-header">
                         <h3>Gestión de Usuarios</h3>
-                        <p class="description-text">Solo el Super Administrador puede registrar usuarios, asignar roles y eliminar cuentas. El número de documento (DNI) sirve como contraseña de acceso.</p>
+                        <p class="description-text">Solo el Super Administrador puede registrar usuarios, asignar roles y eliminar cuentas. El nombre de usuario es <strong>nombre.apellido</strong> (en minúsculas, sin tildes). El número de documento (DNI) sirve como contraseña de acceso.</p>
                     </div>
 
                     <!-- Formulario de creación de usuarios (Solo visible para Editores) -->
@@ -581,27 +584,27 @@
                     </div>
 
                     <!-- Filtros de búsqueda en la lista de casos -->
-                    <div class="rigline-filter-row glass" style="padding: 12px; border-radius: 8px; margin-bottom: 5px; display: flex; gap: 12px; align-items: center; border-color: rgba(255, 255, 255, 0.05); margin-top: 10px;">
-                        <div class="search-input-wrapper" style="flex: 1;">
+                    <div class="rigline-filter-row glass rl-filter-bar">
+                        <div class="search-input-wrapper rl-search">
                             <input type="text" id="rlSearchInput" placeholder="Buscar por N° caso, equipo, sistema o falla..." style="padding: 8px 12px;">
                         </div>
-                        <div class="filter-selectors" style="width: auto; display: flex; gap: 8px;">
-                            <button id="btnExportRigLine" class="btn btn-operator btn-operator-none" style="padding: 6px 12px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(0, 210, 255, 0.4);" title="Descargar reporte .txt">
+                        <div class="rl-filter-selectors">
+                            <button id="btnExportRigLine" class="btn btn-operator btn-operator-none rl-export-btn" title="Descargar reporte .txt">
                                 <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                                 Exportar TXT
                             </button>
-                            <select id="rlFilterStatus" style="padding: 6px 10px; width: 140px;">
+                            <select id="rlFilterStatus" class="rl-select">
                                 <option value="PENDIENTE">Solo Pendientes</option>
                                 <option value="RESUELTO">Solo Resueltos</option>
                                 <option value="TODOS">Todos los Casos</option>
                             </select>
-                            <select id="rlFilterPriority" style="padding: 6px 10px; width: 150px;">
+                            <select id="rlFilterPriority" class="rl-select">
                                 <option value="">Todas las Prioridades</option>
                                 <option value="Alta">Prioridad Alta</option>
                                 <option value="Media">Prioridad Media</option>
                                 <option value="Baja">Prioridad Baja</option>
                             </select>
-                            <select id="rlFilterRig" style="padding: 6px 10px; width: 110px;">
+                            <select id="rlFilterRig" class="rl-select">
                                 <option value="">Todos los Rigs</option>
                                 <!-- Inyectado dinámicamente -->
                             </select>
@@ -748,6 +751,81 @@
     </div> <!-- FIN DE .app-container -->
 
     <!-- EL MODAL DE INICIO DE SESIÓN FLOTANTE FUE ELIMINADO -->
+    <!-- MODAL DE PRIMER INGRESO (CONFIGURACIÓN DE SEGURIDAD) -->
+    <div id="firstLoginModal" class="modal-overlay hidden" style="z-index: 10000; background: rgba(0,0,0,0.9);">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Configuración de Seguridad Obligatoria</h3>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--color-text-dim);">Para proteger tu cuenta, es necesario establecer una nueva contraseña privada.</p>
+                <form id="firstLoginForm">
+                    <div class="form-group">
+                        <label for="flPassword">Nueva Contraseña</label>
+                        <input type="password" id="flPassword" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="flPasswordConfirm">Confirmar Contraseña</label>
+                        <input type="password" id="flPasswordConfirm" required minlength="6">
+                    </div>
+                    <div class="error-message hidden" id="flError">Las contraseñas no coinciden.</div>
+                    <button type="submit" class="btn btn-primary btn-full" style="margin-top: 15px;">Guardar Contraseña y Continuar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE PERFIL DE USUARIO -->
+    <div id="userProfileModal" class="modal-overlay hidden" style="z-index: 9999;">
+        <div class="modal-card" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Mi Cuenta</h3>
+                <button type="button" class="btn-close" id="btnCloseProfile">×</button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <div class="profile-avatar-large" id="profileAvatarLarge" style="width: 80px; height: 80px; border-radius: 50%; background: var(--color-cyan); color: #000; font-size: 2rem; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                    FV
+                </div>
+                <h4 id="profileNameDisplay" style="margin: 0; font-size: 1.2rem;">Cargando...</h4>
+                <p id="profileRoleDisplay" style="color: var(--color-text-dim); margin-top: 5px; font-size: 0.9rem;">...</p>
+                <p id="profileEmailDisplay" style="color: var(--color-text-dim); margin-top: 5px; font-size: 0.9rem;">...</p>
+                
+                <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+                
+                <form id="changePasswordForm" style="text-align: left;">
+                    <h5 style="margin-bottom: 10px;">Cambiar Contraseña</h5>
+                    <div class="form-group">
+                        <label for="cpNew">Nueva Contraseña</label>
+                        <input type="password" id="cpNew" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-full">Actualizar Contraseña</button>
+                    <div class="error-message hidden" id="cpMessage" style="margin-top: 10px;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE RECUPERACIÓN DE CONTRASEÑA -->
+    <div id="recoveryModal" class="modal-overlay hidden" style="z-index: 10001;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Recuperar Contraseña</h3>
+                <button type="button" class="btn-close" id="btnCloseRecovery">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--color-text-dim);">Ingresa tu Usuario (nombre.apellido). Te enviaremos un correo a la dirección vinculada a tu cuenta con las instrucciones.</p>
+                <form id="recoveryForm">
+                    <div class="form-group">
+                        <label for="recoveryUser">Usuario</label>
+                        <input type="text" id="recoveryUser" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Solicitar Recuperación</button>
+                    <div class="error-message hidden" id="recoveryMessage" style="margin-top: 10px;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPT DE LA APLICACIÓN -->
     <script src="app.js"></script>
 </body>

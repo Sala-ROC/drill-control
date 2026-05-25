@@ -1602,6 +1602,46 @@ body {
 }
 
 /* Filtros RigLine */
+.rl-filter-bar {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.rl-search {
+    flex: 1;
+    min-width: 180px;
+}
+
+.rl-filter-selectors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.rl-select {
+    padding: 6px 10px;
+    flex: 1;
+    min-width: 110px;
+}
+
+.rl-export-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(0, 210, 255, 0.4);
+    white-space: nowrap;
+}
+
 .rigline-filter-row input, .rigline-filter-row select {
     background: rgba(0, 0, 0, 0.3) !important;
     border: 1px solid var(--glass-border) !important;

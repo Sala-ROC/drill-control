@@ -1,8 +1,10 @@
 {
+  "id": "/drill-control/",
+  "scope": "/drill-control/",
   "name": "Drill Control — Centro de Operaciones",
   "short_name": "Drill Control",
   "description": "Sistema de automatización y control de equipos de perforación. Centro de operaciones RigLine.",
-  "start_url": "./index.html",
+  "start_url": "/drill-control/index.html",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#0b0f19",
