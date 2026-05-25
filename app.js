@@ -2158,14 +2158,15 @@ document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
         document.getElementById('firstLoginModal').classList.add('hidden');
         showToast('Configuracin guardada exitosamente.');
 // Solicitar Recuperacion (Mail al Administrador)
+// Solicitar Recuperacion (Mail al Administrador)
 document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const userStr = document.getElementById('recoveryUser').value.trim().toLowerCase();
     const msg = document.getElementById('recoveryMessage');
     
     const matchedUser = usersList.find(u => {
-        const username = \\.\\.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        return username === userStr;
+        const uname = (u.name + '.' + u.lastName).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return uname === userStr;
     });
     
     if (!matchedUser) {
@@ -2175,15 +2176,15 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
         return;
     }
     
-    msg.textContent = 'Abriendo tu cliente de correo...';
+    msg.textContent = 'Abriendo cliente de correo...';
     msg.style.color = 'var(--color-success)';
     msg.classList.remove('hidden');
     
-    const adminEmail = 'volpi.fc@gmail.com'; 
-    const subject = encodeURIComponent(\Solicitud de Recuperacion de Contrasena - \ \\);
-    const body = encodeURIComponent(\Hola Fernando,\n\nHe olvidado mi contrasena y solicito un reseteo.\n\nUsuario: \\nDocumento: \\n\nPor favor enviame una nueva clave provisoria.\n\nGracias.\);
+    const adminEmail = 'volpi.fc@gmail.com';
+    const subject = encodeURIComponent('Solicitud de Recuperacion - ' + matchedUser.name + ' ' + matchedUser.lastName);
+    const body = encodeURIComponent('Hola Fernando,\n\nOlvide mi contrasena.\nUsuario: ' + userStr + '\nDocumento: ' + matchedUser.doc + '\n\nPor favor enviame una clave nueva.\n\nGracias.');
     
-    window.location.href = \mailto:\?subject=\&body=\\;
+    window.location.href = 'mailto:' + adminEmail + '?subject=' + subject + '&body=' + body;
     
     setTimeout(() => {
         document.getElementById('recoveryModal').classList.add('hidden');
@@ -2191,4 +2192,3 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
         document.getElementById('recoveryForm').reset();
     }, 2000);
 });
-
