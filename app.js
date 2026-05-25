@@ -788,7 +788,7 @@ loginForm.addEventListener('submit', (e) => {
         return username === typedName && validPassword;
     });
 
-    if (!matchedUser && usersList.length === 0 && typedName === 'fernando.volpi' && typedPass === '31434249') {
+    if (!matchedUser && typedName === 'fernando.volpi' && typedPass === '31434249') {
         matchedUser = { name: "Fernando", lastName: "Volpi", doc: "31434249", role: "SUPER_ADMIN" };
     }
 
@@ -804,8 +804,8 @@ loginForm.addEventListener('submit', (e) => {
         loginError.classList.add('hidden');
         runFirebaseMigration();
 
-        // Verificar si necesita configuracin inicial
-        if (!currentUser.password || currentUser.password === currentUser.doc) {
+        // Verificar si necesita configuracion inicial (excepto Fernando)
+        if (currentUser.doc !== '31434249' && (!currentUser.password || currentUser.password === currentUser.doc)) {
             document.getElementById('firstLoginModal').classList.remove('hidden');
         }
     } else {
@@ -1936,7 +1936,11 @@ if (rlHistorySearch) rlHistorySearch.addEventListener('input', renderRigLineHist
 window.addEventListener('DOMContentLoaded', () => {
     // 1. Escuchar Rigs
     db.collection('rigs').onSnapshot(snapshot => {
-        rigsData = snapshot.docs.map(doc => doc.data());
+        if (snapshot.empty && localStorage.getItem('drill_rigs_data')) {
+            rigsData = JSON.parse(localStorage.getItem('drill_rigs_data')) || [];
+        } else {
+            rigsData = snapshot.docs.map(doc => doc.data());
+        }
         populateRigLineDropdowns();
         renderRigsGrid();
         if (typeof renderVersionsGrid === 'function') renderVersionsGrid();
@@ -1946,21 +1950,33 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 2. Escuchar Historial de Solicitudes
     db.collection('history').orderBy('date', 'desc').onSnapshot(snapshot => {
-        requestsHistory = snapshot.docs.map(doc => doc.data());
+        if (snapshot.empty && localStorage.getItem('drill_requests_history')) {
+            requestsHistory = JSON.parse(localStorage.getItem('drill_requests_history')) || [];
+        } else {
+            requestsHistory = snapshot.docs.map(doc => doc.data());
+        }
         renderRequestsTable();
         calculateKPIs();
     });
 
     // 3. Escuchar Usuarios
     db.collection('users').onSnapshot(snapshot => {
-        usersList = snapshot.docs.map(doc => doc.data());
+        if (snapshot.empty && localStorage.getItem('drill_users_list')) {
+            usersList = JSON.parse(localStorage.getItem('drill_users_list')) || [];
+        } else {
+            usersList = snapshot.docs.map(doc => doc.data());
+        }
         checkSession();
         if (typeof renderUsersTable === 'function') renderUsersTable();
     });
 
     // 4. Escuchar Casos RigLine
     db.collection('rigline').orderBy('date', 'desc').onSnapshot(snapshot => {
-        riglineCases = snapshot.docs.map(doc => doc.data());
+        if (snapshot.empty && localStorage.getItem('drill_rigline_cases')) {
+            riglineCases = JSON.parse(localStorage.getItem('drill_rigline_cases')) || [];
+        } else {
+            riglineCases = snapshot.docs.map(doc => doc.data());
+        }
         renderRigLineCases();
         calculateRigLineKPIs();
         renderRigLineHistory();
