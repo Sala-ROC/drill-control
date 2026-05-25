@@ -2132,6 +2132,7 @@ document.getElementById('btnForgotPassword').addEventListener('click', () => {
 });
 
 // Guardar Configuracin Inicial (Primer Login)
+// Guardar Configuracion Inicial (Primer Login)
 document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
     e.preventDefault();
     
@@ -2140,7 +2141,7 @@ document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
     const errorMsg = document.getElementById('flError');
     
     if (pass1 !== pass2) {
-        errorMsg.textContent = 'Las contraseas no coinciden.';
+        errorMsg.textContent = 'Las contrasenas no coinciden.';
         errorMsg.classList.remove('hidden');
         return;
     }
@@ -2149,15 +2150,19 @@ document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
     
     // Guardar en Firebase
     db.collection('users').doc(currentUser.doc).update({
-        
         password: pass1
     }).then(() => {
-        
         currentUser.password = pass1;
         localStorage.setItem('drill_current_user', JSON.stringify(currentUser));
         document.getElementById('firstLoginModal').classList.add('hidden');
-        showToast('Configuracin guardada exitosamente.');
-// Solicitar Recuperacion (Mail al Administrador)
+        showToast('Configuracion guardada exitosamente.');
+    }).catch(err => {
+        errorMsg.textContent = 'Error al guardar en la nube.';
+        errorMsg.classList.remove('hidden');
+        console.error(err);
+    });
+});
+
 // Solicitar Recuperacion (Mail al Administrador)
 document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -2192,6 +2197,3 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
         document.getElementById('recoveryForm').reset();
     }, 2000);
 });
-
-}
-}
