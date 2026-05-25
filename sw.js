@@ -1,8 +1,9 @@
-﻿// Service Worker â€” Drill Control v2.1.3
-const CACHE_NAME = 'drill-control-v2.1.3';
+// Service Worker - Drill Control v2.2.14
+const CACHE_NAME = 'drill-control-v2.2.14';
 const ASSETS = [
     './',
     './index.html',
+    './404.html',
     './style.css',
     './app_v2.js',
     './manifest.json',
@@ -18,7 +19,7 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('[SW] Drill Control v1.4.0 â€” archivos almacenados en cachÃ©');
+                console.log('[SW] Drill Control v1.4.0 â€” archivos almacenados en caché©');
                 return cache.addAll(ASSETS);
             })
             .then(() => self.skipWaiting())
@@ -49,7 +50,7 @@ self.addEventListener('fetch', event => {
     const isHTML = event.request.destination === 'document';
 
     if (isHTML) {
-        // Network First: busca en la red, si falla usa la cachÃ©
+        // Network First: busca en la red, si falla usa la caché©
         event.respondWith(
             fetch(event.request)
                 .then(response => {

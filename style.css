@@ -2533,30 +2533,34 @@ body {
     right: 0;
     bottom: 0;
     background-color: var(--bg-dark);
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden; /* No scroll en login */
     z-index: 9999;
 }
 
 .auth-scroll-area {
-    position: relative;
+    position: absolute;
     width: 100%;
-    min-height: 200vh; /* Fuerza el scroll en el contenedor interno */
+    height: 100%;
+}
+
+/* Animación sutil de la imagen moviéndose de arriba a abajo */
+@keyframes panBackground {
+    0% { background-position: 50% 0%; }
+    50% { background-position: 50% 100%; }
+    100% { background-position: 50% 0%; }
 }
 
 .auth-scroll-area::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: -10%; left: -10%; right: -10%; bottom: -10%; /* Más grande para poder animar */
     background-image: url('rig_bg.png');
     background-size: cover;
-    background-position: top center;
+    background-position: center;
     background-repeat: no-repeat;
     opacity: 0.35;
     z-index: -2;
+    animation: panBackground 45s ease-in-out infinite; /* Mueve solo la imagen! */
 }
 
 .auth-scroll-area::after {
@@ -2572,8 +2576,10 @@ body {
 }
 
 .auth-card {
-    position: relative;
-    margin: 15vh auto 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centrado perfecto y fijo */
     width: 100%;
     max-width: 280px;
     padding: 20px;
@@ -2608,9 +2614,8 @@ body {
 
 .auth-logo p {
     font-size: 0.75rem;
-    color: var(--color-cyan);
+    color: rgba(14, 116, 144, 0.6);
     margin: 0;
-    opacity: 0.9;
 }
 
 .auth-instructions {

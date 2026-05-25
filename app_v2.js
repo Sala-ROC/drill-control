@@ -1,10 +1,10 @@
-// DRILL CONTROL SYSTEM v1.4.0  PWA Release
+﻿// DRILL CONTROL SYSTEM v1.4.0  PWA Release
 // Lgica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
 
 // 1. ESTRUCTURAS DE DATOS INICIALES (Listados oficiales)
-const OFFICIAl_RIGS = ["F03", "F07", "F35", "M1211", "990", "F10", "F19", "F24", "F34", "F37", "991", "F15", "F26", "F36"];
-const OFFICIAL_CLIENTS = ["YPF", "Tecpetrol", "Vista Energy", "TOTAL Energy", "Phoenix", "Geopark"];
-const OFFICIAL_SYSTEMS = ["REVit", "SmartDrill", "SmartSlide", "SmartNav", "AutoDownlinks", "Predictive Drilling", "Operador"];
+let OFFICIAl_RIGS = JSON.parse(localStorage.getItem('drill_official_rigs')) || ["F03", "F07", "F35", "M1211", "990", "F10", "F19", "F24", "F34", "F37", "991", "F15", "F26", "F36"];
+let OFFICIAL_CLIENTS = JSON.parse(localStorage.getItem('drill_official_clients')) || ["YPF", "Tecpetrol", "Vista Energy", "TOTAL Energy", "Phoenix", "Geopark"];
+const OFFICIAL_systems = ["REVit", "SmartDrill", "SmartSlide", "SmartNav", "AutoDownlinks", "Predictive Drilling", "Operador"];
 
 // Modalidades de Servicio
 const MODALITIES = {
@@ -61,13 +61,29 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 // ESTADO GLOBAL DE LA APLICACIN (Ahora en memoria, alimentado por Firebase)
-let rigsData = [];
-let requestsHistory = [];
-let usersList = [];
-let riglineCases = [];
+let requestsHistory = JSON.parse(localStorage.getItem('drill_requests_history')) || [];
+let usersList = JSON.parse(localStorage.getItem('drill_users_list')) || [];
+let riglineCases = JSON.parse(localStorage.getItem('drill_rigline_cases')) || [];
 
-// Mantenemos la sesin del usuario actual en localStorage para no perderla al refrescar
-let currentUser = JSON.parse(localStorage.getItem('drill_current_user')) || null;
+// // Mantenemos la sesión del usuario actual en localStorage para no perderla al refrescar
+let currentUser = JSON.parse(localStorage.getItem('drill_current_user_v2')) || null;
+
+// AUTOGENERAR EQUIPOS SI LA MEMORIA ESTA VACIA (IGUAL QUE EN v1.4.0)
+let rigsData = JSON.parse(localStorage.getItem('drill_rigs_data'));
+if (!rigsData || rigsData.length === 0) {
+    rigsData = OFFICIAl_RIGS.map((rig, idx) => {
+        const sysMap = {};
+        OFFICIAL_systems.forEach(s => sysMap[s] = 'INACTIVO');
+        return {
+            id: rig,
+            client: OFFICIAL_CLIENTS[idx % OFFICIAL_CLIENTS.length],
+            systems: sysMap
+        };
+    });
+    localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
+} else {
+    rigsData = rigsData || [];
+}
 
 // 3. ELEMENTOS DEL DOM (Selectores de Interfaz)
 const rigsGrid = document.getElementById('rigsGrid');
@@ -124,7 +140,7 @@ const rlSearchInput = document.getElementById('rlSearchInput');
 const rlFilterPriority = document.getElementById('rlFilterPriority');
 const rlFilterRig = document.getElementById('rlFilterRig');
 const rlRigSelect = document.getElementById('rlRigSelect');
-const rlSystemSelect = document.getElementById('rlSystemSelect');
+const rlsystemselect = document.getElementById('rlsystemselect');
 const rlPrioritySelect = document.getElementById('rlPrioritySelect');
 const rlReporterName = document.getElementById('rlReporterName');
 const rlDescription = document.getElementById('rlDescription');
@@ -157,7 +173,7 @@ function renderRigsGrid() {
         if (isCritical) {
             criticalClass = hasHighPriority ? 'critical-rig' : 'warning-rig';
             const iconColor = hasHighPriority ? 'var(--color-orange)' : 'var(--color-amber)';
-            const titleTooltip = hasHighPriority ? 'Estado Crtico! Caso tcnico de prioridad alta activo en RigLine.' : 'Advertencia: Falla tcnica activa en RigLine.';
+            const titleTooltip = hasHighPriority ? 'Estado Crtico! Caso técnico de prioridad alta activo en RigLine.' : 'Advertencia: Falla tcnica activa en RigLine.';
             warningBadge = `
                 <span class="rig-warning-badge" style="color: ${iconColor}; font-size: 0.72rem; display: inline-flex; align-items: center;" title="${titleTooltip}">
                     <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -171,7 +187,7 @@ function renderRigsGrid() {
         card.setAttribute('data-id', rig.id);
         
         let systemsHtml = '';
-        OFFICIAL_SYSTEMS.forEach(sys => {
+        OFFICIAL_systems.forEach(sys => {
             const statusClass = `status-${rig.systems[sys]}`;
             const label = sys;
             const dot = `<span class="dot"></span>`;
@@ -214,12 +230,12 @@ function renderRigsGrid() {
 
 
 // Renderiza el configurador de sistemas en el formulario
-function renderSystemsConfigForm(rigId) {
+function rendersystemsConfigForm(rigId) {
     systemsConfigList.innerHTML = '';
     const rigObj = rigsData.find(r => r.id === rigId);
     if (!rigObj) return;
     
-    OFFICIAL_SYSTEMS.forEach(sys => {
+    OFFICIAL_systems.forEach(sys => {
         const currentModality = rigObj.systems[sys] || MODALITIES.INACTIVO;
         const isContract = currentModality === MODALITIES.CONTRATO;
         
@@ -275,7 +291,7 @@ function selectRigCard(rigId) {
     // Si somos editores, actualizamos el estado de administracin y cargamos sistemas
     if (currentUser) {
         updateAdminPanelState();
-        renderSystemsConfigForm(rigId);
+        rendersystemsConfigForm(rigId);
         switchTab('tabAdminActions');
     } else {
         // Si no somos editores, filtramos la tabla de historial con este rig
@@ -388,7 +404,7 @@ function renderRequestsTable() {
         const infoTr = document.createElement('tr');
         infoTr.innerHTML = `
             <td colspan="${currentUser ? '5' : '4'}" style="text-align: center; color: var(--color-cyan); padding: 10px; font-size: 0.72rem; font-style: italic; background: rgba(0, 210, 255, 0.02); border-top: 1px dashed rgba(0, 210, 255, 0.15);">
-                Mostrando los 15 registros ms recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
+                Mostrando los 15 registros más recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
             </td>
         `;
         requestsTableBody.appendChild(infoTr);
@@ -403,7 +419,7 @@ function calculateKPIs() {
     let requestedMailCount = 0;
 
     rigsData.forEach(rig => {
-        OFFICIAL_SYSTEMS.forEach(sys => {
+        OFFICIAL_systems.forEach(sys => {
             const mod = rig.systems[sys];
             if (mod !== MODALITIES.INACTIVO) {
                 if (mod === MODALITIES.CONTRATO) {
@@ -421,22 +437,22 @@ function calculateKPIs() {
     kpiRequestedServices.textContent = requestedMailCount;
 
     // Calcular cantidad de pozos activos en el Hero Banner (con al menos un sistema operativo)
-    let activeRigsWithSystems = 0;
+    let activeRigsWithsystems = 0;
     rigsData.forEach(rig => {
         let hasActive = false;
-        OFFICIAL_SYSTEMS.forEach(sys => {
+        OFFICIAL_systems.forEach(sys => {
             if (rig.systems[sys] !== MODALITIES.INACTIVO) {
                 hasActive = true;
             }
         });
-        if (hasActive) activeRigsWithSystems++;
+        if (hasActive) activeRigsWithsystems++;
     });
     const heroActiveRigsCount = document.getElementById('heroActiveRigsCount');
     if (heroActiveRigsCount) {
-        heroActiveRigsCount.textContent = activeRigsWithSystems;
+        heroActiveRigsCount.textContent = activeRigsWithsystems;
     }
 
-    // Calcular Tasa con Operador Tcnico (Porcentaje de Rigs activos con Operador asignado)
+    // Calcular Tasa con Operador técnico (Porcentaje de Rigs activos con Operador asignado)
     let activeRigsCount = 0;
     let rigsWithOperatorCount = 0;
 
@@ -444,7 +460,7 @@ function calculateKPIs() {
         let hasActiveAutomation = false;
         let hasOperator = false;
 
-        OFFICIAL_SYSTEMS.forEach(sys => {
+        OFFICIAL_systems.forEach(sys => {
             const mod = rig.systems[sys];
             if (mod !== MODALITIES.INACTIVO) {
                 if (sys !== "Operador") {
@@ -471,7 +487,7 @@ function calculateKPIs() {
     kpiOperatorRate.textContent = `${rate}%`;
 }
 
-// 6. GESTIN DE SESIN, PERMISOS Y LOGIN
+// 6. GESTIN DE sesión, PERMISOS Y LOGIN
 
 // Verifica si el usuario actual tiene permiso para una accin especfica
 function can(action) {
@@ -487,7 +503,7 @@ function can(action) {
     return (perms[action] || []).includes(role);
 }
 
-// Comprobar la sesin al cargar y actualizar la UI segn el rol
+// Comprobar la sesión al cargar y actualizar la UI segn el rol
 function checkSession() {
     if (currentUser) {
         updateUIByRole();
@@ -535,14 +551,17 @@ function updateUIByRole() {
     }
 
     // Panel Usuarios: SOLO SUPER_ADMIN puede ver y gestionar
+    const masterConfigBox = document.getElementById('masterConfigBox');
     if (can('manage_users')) {
         usersPanelNoAccess.classList.add('hidden');
         createUserFormWrapper.classList.remove('hidden');
         usersListWrapper.classList.remove('hidden');
+        if (masterConfigBox) masterConfigBox.classList.remove('hidden');
         renderUsersList();
     } else {
         usersPanelNoAccess.classList.remove('hidden');
         createUserFormWrapper.classList.add('hidden');
+        if (masterConfigBox) masterConfigBox.classList.add('hidden');
         usersListWrapper.classList.add('hidden');
     }
 
@@ -583,7 +602,7 @@ function updateUIByRole() {
 // Actualiza el estado del formulario de reporte RigLine segn permisos del usuario
 function updateRLFormByRole() {
     if (!rlReportForm) return;
-    // Eliminar lock msg anterior
+    // Eliminar lock másg anterior
     const existingLock = document.getElementById('rlFormLockMsg');
     if (existingLock) existingLock.remove();
 
@@ -611,7 +630,7 @@ function updateRLFormByRole() {
                 <span style="font-size:0.75rem;">
                     ${currentUser
                         ? `Tu rol actual es <strong style="color:var(--color-amber);">${roleLabel}</strong>. Necesits permisos de <strong>Cargador</strong> o superior.`
-                        : 'Inici sesin con permisos de <strong>Cargador</strong> o superior para reportar casos.'
+                        : 'Inici sesión con permisos de <strong>Cargador</strong> o superior para reportar casos.'
                     }
                 </span>
             </div>
@@ -783,7 +802,7 @@ loginForm.addEventListener('submit', (e) => {
         const username = `${u.name}.${u.lastName}`.toLowerCase()
             .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // quitar tildes
         
-        // Verifica si la contrasea coincide. Si no tiene contrasea seteada, usa el DNI (doc).
+        // Verifica si la contraseña coincide. Si no tiene contraseña seteada, usa el DNI (doc).
         const validPassword = u.password ? u.password === typedPass : u.doc === typedPass;
         return username === typedName && validPassword;
     });
@@ -794,7 +813,7 @@ loginForm.addEventListener('submit', (e) => {
 
     if (matchedUser) {
         currentUser = matchedUser;
-        localStorage.setItem('drill_current_user', JSON.stringify(currentUser));
+        localStorage.setItem('drill_current_user_v2', JSON.stringify(currentUser));
         
         // Actualizar estado a Online en la Nube
         db.collection('users').doc(currentUser.doc).update({ status: 'online' }).catch(console.error);
@@ -891,12 +910,48 @@ createUserForm.addEventListener('submit', (e) => {
     if (!newUName || !newULastName || !newUDoc) { alert('Complet todos los campos.'); return; }
     if (newUDoc === SUPER_ADMIN_DOC) { alert('Ese DNI est reservado para el Super Admin principal.'); return; }
     if (usersList.some(u => u.doc === newUDoc)) { alert('Error: Ya existe un usuario con ese nmero de documento.'); return; }
-    usersList.push({ name: newUName, lastName: newULastName, doc: newUDoc, role: newURole });
-    usersList.forEach(u => db.collection('users').doc(u.doc).set(u));
+    usersList.push({ name: newUName, lastName: newULastName, doc: newUDoc, role: newURole, status: 'offline' });
+    
+    // Save to localStorage immediately as a fallback
+    localStorage.setItem('drill_users_list', JSON.stringify(usersList));
+    
+    // Save only the new user to Firebase, instead of looping through all users
+    db.collection('users').doc(newUDoc).set({ name: newUName, lastName: newULastName, doc: newUDoc, role: newURole, status: 'offline' })
+      .catch(err => console.error("Error guardando en Firebase:", err));
+      
     renderUsersList();
     createUserForm.reset();
     alert(`Usuario ${newUName} ${newULastName} creado con rol: ${ROLE_LABELS[newURole] || newURole}.`);
 });
+
+const btnAddRig = document.getElementById('btnAddRig');
+if (btnAddRig) {
+    btnAddRig.addEventListener('click', () => {
+        if (!can('manage_users')) return;
+        const rigName = prompt("Ingrese el nombre del nuevo Equipo (Ej: F99):");
+        if (rigName && rigName.trim() !== "") {
+            OFFICIAl_RIGS.push(rigName.trim());
+            localStorage.setItem('drill_official_rigs', JSON.stringify(OFFICIAl_RIGS));
+            renderRigsGrid();
+            alert(`Equipo ${rigName.trim()} agregado con éxito.`);
+        }
+    });
+}
+
+const btnAddClient = document.getElementById('btnAddClient');
+if (btnAddClient) {
+    btnAddClient.addEventListener('click', () => {
+        if (!can('manage_users')) return;
+        const clientName = prompt("Ingrese el nombre de la nueva Operadora:");
+        if (clientName && clientName.trim() !== "") {
+            OFFICIAL_CLIENTS.push(clientName.trim());
+            localStorage.setItem('drill_official_clients', JSON.stringify(OFFICIAL_CLIENTS));
+            // Actualizar selects de clientes si es necesario en otras vistas, pero renderRigsGrid no muestra clientes, 
+            // solo cuando se edita un rig.
+            alert(`Operadora ${clientName.trim()} agregada con éxito.`);
+        }
+    });
+}
 
 // Eliminar Registro de Solicitud (Solo ADMIN+)
 window.deleteRequest = function(reqId) {
@@ -912,7 +967,7 @@ window.deleteRequest = function(reqId) {
         requestsHistory.splice(reqIndex, 1);
         requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
 
-        // Comprobar si hay alguna solicitud ms reciente para ese mismo Rig + Sistema
+        // Comprobar si hay alguna solicitud más reciente para ese mismo Rig + Sistema
         // Si no la hay, el Rig vuelve a estar INACTIVO en ese sistema
         const hasMoreRecent = requestsHistory.find(r => r.rig === reqObj.rig && r.system === reqObj.system);
         
@@ -943,23 +998,33 @@ window.deleteUser = function(docId) {
 };
 
 const mainLogoutBtn = document.getElementById('btnLogout') || document.getElementById('logoutBtn');
-if (mainLogoutBtn) {
+const logoutModal = document.getElementById('logoutModal');
+const btnCloseLogout = document.getElementById('btnCloseLogout');
+const btnCancelLogout = document.getElementById('btnCancelLogout');
+const btnConfirmLogout = document.getElementById('btnConfirmLogout');
+
+if (mainLogoutBtn && logoutModal) {
     mainLogoutBtn.addEventListener('click', () => {
-        if (currentUser) {
-            db.collection('users').doc(currentUser.doc).update({ status: 'offline' })
-              .then(() => {
-                  currentUser = null;
-                  localStorage.removeItem('drill_current_user');
-                  window.location.reload();
-              }).catch(() => {
-                  currentUser = null;
-                  localStorage.removeItem('drill_current_user');
-                  window.location.reload();
-              });
-        } else {
-            window.location.reload();
-        }
+        logoutModal.classList.remove('hidden');
     });
+    
+    const closeLogoutModal = () => logoutModal.classList.add('hidden');
+    
+    if (btnCloseLogout) btnCloseLogout.addEventListener('click', closeLogoutModal);
+    if (btnCancelLogout) btnCancelLogout.addEventListener('click', closeLogoutModal);
+    
+    if (btnConfirmLogout) {
+        btnConfirmLogout.addEventListener('click', () => {
+            if (currentUser) {
+                db.collection('users').doc(currentUser.doc).update({ status: 'offline' }).catch(() => {});
+                currentUser = null;
+                localStorage.removeItem('drill_current_user_v2');
+                window.location.reload();
+            } else {
+                window.location.reload();
+            }
+        });
+    }
 }
 
 // 8. ASOCIACIN DE BOTONES SIMPLES Y EVENTOS GENERALES
@@ -969,7 +1034,7 @@ tabRequests.addEventListener('click', () => switchTab('tabRequests'));
 tabUsers.addEventListener('click', () => switchTab('tabUsers'));
 tabAdminActions.addEventListener('click', () => switchTab('tabAdminActions'));
 
-// Eventos de Bsqueda y Filtros
+// Eventos de búsqueda y Filtros
 searchInput.addEventListener('input', renderRequestsTable);
 filterClient.addEventListener('change', renderRequestsTable);
 filterSystem.addEventListener('change', renderRequestsTable);
@@ -1017,11 +1082,11 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
         }
         
         // Confirmar reasignacin directa o liberacin de contrato
-        const confirmMsg = selectedClient === "" 
+        const confirmmásg = selectedClient === "" 
             ? `Confirmar dejar al Rig ${selectedRigCardId} Sin Contrato?` 
             : `Confirmar vinculacin rpida del Rig ${selectedRigCardId} a ${selectedClient}?`;
             
-        if (confirm(confirmMsg)) {
+        if (confirm(confirmmásg)) {
             rigsData[rigIndex].client = selectedClient;
             
             // Inyectar el registro de auditora en el historial
@@ -1046,7 +1111,7 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
             updateAdminPanelState();
             
             // Recargar formulario de sistemas para este rig (por si cambio de cliente afecta la cabecera)
-            renderSystemsConfigForm(selectedRigCardId);
+            rendersystemsConfigForm(selectedRigCardId);
         }
     });
 });
@@ -1086,7 +1151,7 @@ function renderExcelSpreadsheet() {
 
         // Dropdown de Servicios (Sistemas de automatizacin)
         let systemOptions = '<option value="">-- Servicio --</option>';
-        OFFICIAL_SYSTEMS.forEach(sys => {
+        OFFICIAL_systems.forEach(sys => {
             systemOptions += `<option value="${sys}" ${rowData.system === sys ? 'selected' : ''}>${sys}</option>`;
         });
 
@@ -1108,7 +1173,7 @@ function renderExcelSpreadsheet() {
                 <input type="text" class="excel-input excel-ourcontact-input" data-row="${i}" placeholder="Contacto Previo (Ej: Juan)..." value="${rowData.ourContact || ''}" ${isEditable} oninput="window.updateExcelTempData(${i}, 'ourContact', this.value)">
             </td>
             <td>
-                <input type="text" class="excel-input excel-sender-input" data-row="${i}" placeholder="Remitente (Ej: correo@ypf.com)..." value="${rowData.sender || ''}" ${isEditable} oninput="window.updateExcelTempData(${i}, 'sender', this.value)">
+                <input type="email" class="excel-input excel-sender-input" data-row="${i}" placeholder="Remitente (Ej: correo@ypf.com)..." list="emailHistoryList" autocomplete="off" value="${rowData.sender || ''}" ${isEditable} oninput="window.updateExcelTempData(${i}, 'sender', this.value)">
             </td>
             <td>
                 <input type="date" class="excel-input excel-date-input" data-row="${i}" value="${rowData.date || ''}" ${isEditable} onchange="window.updateExcelTempData(${i}, 'date', this.value)">
@@ -1127,6 +1192,16 @@ function renderExcelSpreadsheet() {
 
 // Renderiza las ltimas 5 solicitudes procesadas de correo electrnico (modo lectura)
 function renderExcelHistory() {
+    // Generar o actualizar el datalist de historico de correos para el autocomplete
+    let datalist = document.getElementById('emailHistoryList');
+    if (!datalist) {
+        datalist = document.createElement('datalist');
+        datalist.id = 'emailHistoryList';
+        document.body.appendChild(datalist);
+    }
+    const uniqueEmails = [...new Set(requestsHistory.map(req => req.sender ? req.sender.trim() : '').filter(e => e !== ''))];
+    datalist.innerHTML = uniqueEmails.map(email => `<option value="${email}"></option>`).join('');
+
     const tbody = document.getElementById('excelHistoryTableBody');
     if (!tbody) return;
 
@@ -1135,7 +1210,7 @@ function renderExcelHistory() {
     // Filtrar solicitudes del tipo SOLICITADO_MAIL
     const mailRequests = requestsHistory.filter(req => req.modality === MODALITIES.SOLICITADO_MAIL);
 
-    // Tomar las 5 ms recientes
+    // Tomar las 5 más recientes
     for (let i = 0; i < 5; i++) {
         const req = mailRequests[i];
         const tr = document.createElement('tr');
@@ -1348,7 +1423,7 @@ if (btnExcelProcessAll) {
             calculateKPIs();
             updateAdminPanelState();
 
-            alert(`Se procesaron ${processedCount} solicitudes de correo con xito.`);
+            alert(`Se procesaron ${processedCount} solicitudes de correo con éxito.`);
         } else {
             alert("No hay filas completas para procesar. Seleccione al menos un Rig y Servicio.");
         }
@@ -1368,7 +1443,7 @@ if (btnExcelClearAll) {
 }
 
 // ==============================================================
-// 8.8 LGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS TCNICOS)
+// 8.8 LGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS técnicoS)
 // ==============================================================
 
 // Alternar Pestaa Global (Automatizacin / RigLine / Versiones)
@@ -1552,7 +1627,7 @@ function renderRigLineCases() {
             if (c.status === "PENDIENTE") {
                 actionHtml = `
                     <div class="action-lock-box">
-                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia sesin como Editor para resolver este caso" disabled>
+                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia sesión como Editor para resolver este caso" disabled>
                             Resolver y Cerrar
                         </button>
                         <span class="action-lock-label">
@@ -1620,7 +1695,7 @@ function calculateRigLineKPIs() {
     // 3. Casos Resueltos Totales en Historial
     if (kpiRlClosedCount) kpiRlClosedCount.textContent = closedCases.length;
     
-    // 4. Equipo (Rig) ms afectado por fallas tcnicas pendientes
+    // 4. Equipo (Rig) más afectado por fallas tcnicas pendientes
     let rigCounts = {};
     pendingCases.forEach(c => {
         rigCounts[c.rig] = (rigCounts[c.rig] || 0) + 1;
@@ -1654,14 +1729,14 @@ function calculateRigLineKPIs() {
     }
 }
 
-// Generar e insertar un nuevo caso tcnico reportado
+// Generar e insertar un nuevo caso técnico reportado
 if (rlReportForm) {
     rlReportForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
         const caseId = rlCaseIdInput.value.trim();
         const rigId = rlRigSelect.value;
-        const system = rlSystemSelect.value;
+        const system = rlsystemselect.value;
         const priority = rlPrioritySelect.value;
         const reporterName = rlReporterName.value.trim();
         const description = rlDescription.value.trim();
@@ -1702,7 +1777,7 @@ if (rlReportForm) {
         calculateKPIs();
         renderRigLineHistory();
         
-        alert(`Caso creado con xito bajo el registro ${caseId}. Se dar seguimiento inmediato.`);
+        alert(`Caso creado con éxito bajo el registro ${caseId}. Se dar seguimiento inmediato.`);
     });
 }
 
@@ -1745,15 +1820,15 @@ window.closeRigLineCase = function(caseId) {
     }
 };
 
-// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contrasea)
+// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseña)
 window.deleteRigLineCase = function(caseId) {
     if (!can('delete')) {
         alert("Acceso denegado. Necesits permisos de Administrador o superior para eliminar casos permanentemente.");
         return;
     }
     
-    // Solicitar contrasea de confirmacin
-    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminacin permanente del caso ${caseId}?\n\nEsta accin no se puede deshacer. Ingrese su contrasea de Editor (Nmero de documento) para confirmar:`);
+    // Solicitar contraseña de Confirmación
+    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminacin permanente del caso ${caseId}?\n\nEsta accin no se puede deshacer. Ingrese su contraseña de Editor (Nmero de documento) para confirmar:`);
     
     if (typedPassword === null) {
         // El usuario cancel el prompt
@@ -1761,7 +1836,7 @@ window.deleteRigLineCase = function(caseId) {
     }
     
     if (typedPassword.trim() !== currentUser.doc) {
-        alert("Contrasea incorrecta. La eliminacin del caso ha sido cancelada.");
+        alert("contraseña incorrecta. La eliminacin del caso ha sido cancelada.");
         return;
     }
     
@@ -1862,10 +1937,10 @@ function renderRigLineHistory() {
 
     const query = searchEl ? searchEl.value.toLowerCase().trim() : '';
 
-    // Ordenar todos los casos de ms reciente a ms antiguo (por fecha de apertura)
+    // Ordenar todos los casos de más reciente a más antiguo (por fecha de apertura)
     const sorted = [...riglineCases].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Aplicar bsqueda rpida sobre todos los campos visibles
+    // Aplicar búsqueda rpida sobre todos los campos visibles
     const filtered = query
         ? sorted.filter(c =>
             c.id.toLowerCase().includes(query) ||
@@ -1927,19 +2002,46 @@ function renderRigLineHistory() {
     }).join('');
 }
 
-// Conectar la bsqueda del historial en tiempo real
+// Conectar la búsqueda del historial en tiempo real
 const rlHistorySearch = document.getElementById('rlHistorySearch');
 if (rlHistorySearch) rlHistorySearch.addEventListener('input', renderRigLineHistory);
 
 
 // 9. INICIALIZACIN COMPLETA AL CARGAR LA APP (FIREBASE)
 window.addEventListener('DOMContentLoaded', () => {
-    // 1. Escuchar Rigs
+
+    // RENDERIZADO INMEDIATO con datos locales (igual que v1.4.0 - sin esperar la nube)
+    populateRigLineDropdowns();
+    renderRigsGrid();
+    renderRequestsTable();
+    calculateKPIs();
+    renderRigLineCases();
+    calculateRigLineKPIs();
+    if (typeof renderVersionsGrid === 'function') renderVersionsGrid();
+    checkSession(); // Mostrar el usuario logueado de inmediato
+
+    // SINCRONIZACION CON FIREBASE en segundo plano (actualiza si hay cambios en la nube)
     db.collection('rigs').onSnapshot(snapshot => {
         if (snapshot.empty && localStorage.getItem('drill_rigs_data')) {
             rigsData = JSON.parse(localStorage.getItem('drill_rigs_data')) || [];
         } else {
             rigsData = snapshot.docs.map(doc => doc.data());
+        }
+
+        // Si despus de leer Firebase y LocalStorage seguimos en CERO, autogenerar los 14 equipos oficiales
+        if (!rigsData || rigsData.length === 0) {
+            rigsData = OFFICIAl_RIGS.map((rig, idx) => {
+                const sysMap = {};
+                OFFICIAL_systems.forEach(s => sysMap[s] = 'INACTIVO');
+                return {
+                    id: rig,
+                    client: OFFICIAL_CLIENTS[idx % OFFICIAL_CLIENTS.length], // Repartir operadoras
+                    systems: sysMap
+                };
+            });
+            localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
+            // Subirlos a Firebase para que queden guardados en la nube para siempre
+            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r).catch(()=>{}));
         }
         populateRigLineDropdowns();
         renderRigsGrid();
@@ -1965,9 +2067,11 @@ window.addEventListener('DOMContentLoaded', () => {
             usersList = JSON.parse(localStorage.getItem('drill_users_list')) || [];
         } else {
             usersList = snapshot.docs.map(doc => doc.data());
+            localStorage.setItem('drill_users_list', JSON.stringify(usersList));
         }
         checkSession();
         if (typeof renderUsersTable === 'function') renderUsersTable();
+        if (typeof renderUsersList === 'function') renderUsersList();
     });
 
     // 4. Escuchar Casos RigLine
@@ -2006,7 +2110,7 @@ async function runFirebaseMigration() {
     localRigline.forEach(caseItem => batch.set(db.collection('rigline').doc(caseItem.id), caseItem));
     
     await batch.commit();
-    showToast('Migracin a Firebase Completada con xito!');
+    showToast('Migracin a Firebase Completada con éxito!');
 }
 
 // ==============================================================
@@ -2026,7 +2130,7 @@ window.renderVersionsGrid = function() {
         card.className = 'rig-version-card';
         
         let systemsHtml = '';
-        OFFICIAL_SYSTEMS.forEach(sys => {
+        OFFICIAL_systems.forEach(sys => {
             const versionValue = (rig.versions && rig.versions[sys]) ? rig.versions[sys] : '';
             
             let valueElement = '';
@@ -2147,34 +2251,34 @@ document.getElementById('btnForgotPassword').addEventListener('click', () => {
     document.getElementById('recoveryModal').classList.remove('hidden');
 });
 
-// Guardar Configuracin Inicial (Primer Login)
+// Guardar Configuración Inicial (Primer Login)
 // Guardar Configuracion Inicial (Primer Login)
 document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
     e.preventDefault();
     
     const pass1 = document.getElementById('flPassword').value.trim();
     const pass2 = document.getElementById('flPasswordConfirm').value.trim();
-    const errorMsg = document.getElementById('flError');
+    const errormásg = document.getElementById('flError');
     
     if (pass1 !== pass2) {
-        errorMsg.textContent = 'Las contrasenas no coinciden.';
-        errorMsg.classList.remove('hidden');
+        errormásg.textContent = 'Las contrasenas no coinciden.';
+        errormásg.classList.remove('hidden');
         return;
     }
     
-    errorMsg.classList.add('hidden');
+    errormásg.classList.add('hidden');
     
     // Guardar en Firebase
     db.collection('users').doc(currentUser.doc).update({
         password: pass1
     }).then(() => {
         currentUser.password = pass1;
-        localStorage.setItem('drill_current_user', JSON.stringify(currentUser));
+        localStorage.setItem('drill_current_user_v2', JSON.stringify(currentUser));
         document.getElementById('firstLoginModal').classList.add('hidden');
-        showToast('Configuracion guardada exitosamente.');
+        showToast('Configuracion guardada eéxitosamente.');
     }).catch(err => {
-        errorMsg.textContent = 'Error al guardar en la nube.';
-        errorMsg.classList.remove('hidden');
+        errormásg.textContent = 'Error al guardar en la nube.';
+        errormásg.classList.remove('hidden');
         console.error(err);
     });
 });
@@ -2183,7 +2287,7 @@ document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
 document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const userStr = document.getElementById('recoveryUser').value.trim().toLowerCase();
-    const msg = document.getElementById('recoveryMessage');
+    const másg = document.getElementById('recoveryMessage');
     
     const matchedUser = usersList.find(u => {
         const uname = (u.name + '.' + u.lastName).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -2191,15 +2295,15 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     });
     
     if (!matchedUser) {
-        msg.textContent = 'Usuario no encontrado.';
-        msg.style.color = 'var(--color-danger)';
-        msg.classList.remove('hidden');
+        másg.textContent = 'Usuario no encontrado.';
+        másg.style.color = 'var(--color-danger)';
+        másg.classList.remove('hidden');
         return;
     }
     
-    msg.textContent = 'Abriendo cliente de correo...';
-    msg.style.color = 'var(--color-success)';
-    msg.classList.remove('hidden');
+    másg.textContent = 'Abriendo cliente de correo...';
+    másg.style.color = 'var(--color-success)';
+    másg.classList.remove('hidden');
     
     const adminEmail = 'volpi.fc@gmail.com';
     const subject = encodeURIComponent('Solicitud de Recuperacion - ' + matchedUser.name + ' ' + matchedUser.lastName);
@@ -2209,10 +2313,11 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     
     setTimeout(() => {
         document.getElementById('recoveryModal').classList.add('hidden');
-        msg.classList.add('hidden');
+        másg.classList.add('hidden');
         document.getElementById('recoveryForm').reset();
     }, 2000);
 });
 
 // Ejecutar inmediatamente para ocultar login si ya hay sesion
 checkSession();
+
