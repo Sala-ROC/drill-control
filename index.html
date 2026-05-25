@@ -1,13 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drill Control — Centro de Operaciones</title>
-    <meta name="description" content="Sistema de automatización y control de equipos de perforación. Centro de operaciones RigLine.">
+    <title>Drill Control â€” Centro de Operaciones</title>
+    <meta name="description" content="Sistema de automatizaciÃ³n y control de equipos de perforaciÃ³n. Centro de operaciones RigLine.">
     <meta name="application-name" content="Drill Control">
 
-    <!-- PWA: Manifest e íconos -->
+    <!-- PWA: Manifest e Ã­conos -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="icon-180x180.png">
@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-title" content="Drill Control">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- Google Fonts para aspecto gerencial y técnico -->
+    <!-- Google Fonts para aspecto gerencial y tÃ©cnico -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
             <div class="auth-logo" style="margin-bottom: 15px;">
                 <svg viewBox="0 0 24 24" width="36" height="36" stroke="var(--color-cyan)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(0,210,255,0.6)); margin-bottom: 8px;"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
                 <h2>DRILL CONTROL</h2>
-                <p>Sistemas de Automatización</p>
+                <p>Sistemas de AutomatizaciÃ³n</p>
             </div>
             <p class="auth-instructions" style="margin-bottom: 15px;">Ingreso Restringido. Introduce tus credenciales.</p>
             <form id="loginForm">
@@ -44,21 +44,21 @@
                     <input type="text" id="loginName" required>
                 </div>
                 <div class="form-group">
-                    <label for="loginPassword">Contraseña (Documento / DNI)</label>
+                    <label for="loginPassword">ContraseÃ±a (Documento / DNI)</label>
                     <input type="password" id="loginPassword" required>
                 </div>
                 <div class="error-message hidden" id="loginError">Credenciales incorrectas o acceso denegado.</div>
                 <button type="submit" class="btn btn-primary btn-full" style="margin-top: 10px; font-size: 0.9rem; padding: 8px;">Acceder al Centro de Control</button>
-                <button type="button" id="btnForgotPassword" class="btn-text btn-full" style="margin-top: 5px; font-size: 0.8rem; opacity: 0.8;">¿Olvidaste tu contraseña?</button>
+                <button type="button" id="btnForgotPassword" class="btn-text btn-full" style="margin-top: 5px; font-size: 0.8rem; opacity: 0.8;">Â¿Olvidaste tu contraseÃ±a?</button>
             </form>
         </div>
 
         <div class="auth-footer">
-            <a href="https://wa.me/5492995157594" target="_blank" class="wa-contact-link" title="Soporte Técnico por WhatsApp">
+            <a href="https://wa.me/5492995157594" target="_blank" class="wa-contact-link" title="Soporte TÃ©cnico por WhatsApp">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
                 </svg>
-                Inconvenientes Técnicos Sala ROC: +54 9 299 515-7594
+                Inconvenientes TÃ©cnicos Sala ROC: +54 9 299 515-7594
             </a>
         </div>
         </div> <!-- End of auth-scroll-area -->
@@ -75,22 +75,22 @@
                 </div>
                 <div class="logo-text">
                     <h1>DRILL CONTROL</h1>
-                    <span class="sub-logo">Sistemas de Automatización | Centro de Operaciones | v1.4.0</span>
+                    <span class="sub-logo">Sistemas de AutomatizaciÃ³n | Centro de Operaciones | v1.4.0</span>
                 </div>
             </div>
 
-            <!-- Indicador de Sincronización y Acceso -->
+            <!-- Indicador de SincronizaciÃ³n y Acceso -->
             <div class="header-actions">
                 <div class="db-status-badge offline" id="dbStatus">
                     <span class="status-dot"></span>
                     <span id="dbStatusText">Base de Datos Local (Offline)</span>
                 </div>
-                <!-- Botón de Login Viejo Eliminado -->
+                <!-- BotÃ³n de Login Viejo Eliminado -->
                 
-                <div class="user-badge" id="activeUserBadge" title="Sesión activa">
+                <div class="user-badge" id="activeUserBadge" title="SesiÃ³n activa">
                 <span class="user-name" id="activeUserName">Cargando...</span>
                 <span class="user-role" id="activeUserRole">...</span>
-                <button class="btn-logout" id="btnLogout" title="Cerrar sesión">
+                <button class="btn-logout" id="btnLogout" title="Cerrar sesiÃ³n">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                 </button>
             </div>
@@ -98,11 +98,11 @@
             </div>
         </header>
 
-        <!-- NAVEGACIÓN GLOBAL DE PESTAÑAS -->
+        <!-- NAVEGACIÃ“N GLOBAL DE PESTAÃ‘AS -->
         <nav class="global-nav-tabs">
             <button class="global-tab-btn active" id="globalTabAutomation" onclick="switchGlobalTab('automation')">
                 <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon-spacing"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
-                Centro de Control (Automatización)
+                Centro de Control (AutomatizaciÃ³n)
             </button>
             <button class="global-tab-btn" id="globalTabRigLine" onclick="switchGlobalTab('rigline')">
                 <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon-spacing"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
@@ -115,18 +115,18 @@
             </button>
         </nav>
 
-        <!-- PESTAÑA 1: CONTENIDO ORIGINAL DE AUTOMATIZACIÓN -->
+        <!-- PESTAÃ‘A 1: CONTENIDO ORIGINAL DE AUTOMATIZACIÃ“N -->
         <div id="tabContentAutomation" class="global-tab-content active">
 
-            <!-- HERO BANNER CON TORRE DE PERFORACIÓN NEÓN ILUMINADA -->
+            <!-- HERO BANNER CON TORRE DE PERFORACIÃ“N NEÃ“N ILUMINADA -->
             <section class="dashboard-hero-banner glass">
                 <div class="hero-content">
                     <div class="hero-badge">
                         <span class="pulse-indicator"></span>
                         CENTRO DE OPERACIONES ACTIVO
                     </div>
-                    <h2>Sala de Control de Perforación</h2>
-                    <p>Monitoreo inteligente y despacho automatizado de sistemas direccionales y de optimización de perforación. Análisis de KPIs y seguimiento de incidentes RigLine en tiempo real.</p>
+                    <h2>Sala de Control de PerforaciÃ³n</h2>
+                    <p>Monitoreo inteligente y despacho automatizado de sistemas direccionales y de optimizaciÃ³n de perforaciÃ³n. AnÃ¡lisis de KPIs y seguimiento de incidentes RigLine en tiempo real.</p>
                     <div class="hero-stats-row">
                         <div class="hero-stat-item">
                             <span class="stat-num" id="heroActiveRigsCount">0</span>
@@ -140,7 +140,7 @@
                     </div>
                 </div>
                 <div class="hero-illustration">
-                    <!-- SVG DE TORRE DE PERFORACIÓN CON BRILLO Y ESTRUCTURA -->
+                    <!-- SVG DE TORRE DE PERFORACIÃ“N CON BRILLO Y ESTRUCTURA -->
                     <svg viewBox="0 0 200 300" class="drilling-rig-svg">
                         <defs>
                             <radialGradient id="neonGlow" cx="50%" cy="50%" r="50%">
@@ -156,16 +156,16 @@
                         <!-- Aura Brillante de Fondo -->
                         <circle cx="100" cy="120" r="70" fill="url(#neonGlow)" class="rig-glow-pulse" />
 
-                        <!-- Estratos Geológicos Subterráneos (Blueprint) -->
+                        <!-- Estratos GeolÃ³gicos SubterrÃ¡neos (Blueprint) -->
                         <g stroke="rgba(0, 210, 255, 0.12)" stroke-width="1.2" stroke-dasharray="4 3" fill="none">
                             <path d="M 10 230 C 50 220, 150 240, 190 230" />
                             <path d="M 10 250 C 60 245, 140 265, 190 250" />
                             <path d="M 10 270 C 40 262, 160 282, 190 270" />
                         </g>
-                        <!-- Reservorio de Petróleo/Gas Iluminado -->
+                        <!-- Reservorio de PetrÃ³leo/Gas Iluminado -->
                         <ellipse cx="100" cy="270" rx="35" ry="10" fill="rgba(0, 210, 255, 0.05)" stroke="rgba(0, 210, 255, 0.25)" stroke-width="1" />
 
-                        <!-- Estructura del Taladro / Torre de Perforación -->
+                        <!-- Estructura del Taladro / Torre de PerforaciÃ³n -->
                         <!-- Subestructura Base -->
                         <rect x="40" y="200" width="120" height="20" rx="2" fill="#0b0f19" stroke="#00d2ff" stroke-width="1.5" />
                         <rect x="65" y="185" width="70" height="15" fill="#101626" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1" />
@@ -203,20 +203,20 @@
                         <!-- Corona (Polea Superior) -->
                         <circle cx="100" cy="35" r="5" fill="#00d2ff" stroke="#00d2ff" stroke-width="1" filter="url(#glow-effect-rig)" />
 
-                        <!-- Tubería de Perforación (Drill String) descendiendo -->
+                        <!-- TuberÃ­a de PerforaciÃ³n (Drill String) descendiendo -->
                         <line x1="100" y1="35" x2="100" y2="265" stroke="#00d2ff" stroke-width="2" class="drill-string-glow" />
 
-                        <!-- Trépano (Drill Bit) al fondo realizando fricción -->
+                        <!-- TrÃ©pano (Drill Bit) al fondo realizando fricciÃ³n -->
                         <path d="M 97 265 L 103 265 L 100 271 Z" fill="#ffaa00" stroke="#ffaa00" stroke-width="1" filter="url(#glow-effect-rig)" class="drill-bit-pulse" />
 
-                        <!-- Ondas y Chispas de Perforación en el fondo -->
+                        <!-- Ondas y Chispas de PerforaciÃ³n en el fondo -->
                         <circle cx="100" cy="270" r="4" fill="none" stroke="#00d2ff" stroke-width="0.8" class="drilling-spark-1" />
                         <circle cx="100" cy="270" r="8" fill="none" stroke="#ffaa00" stroke-width="0.8" class="drilling-spark-2" />
                     </svg>
                 </div>
             </section>
 
-        <!-- DASHBOARD GERENCIAL (Métricas Clave) -->
+        <!-- DASHBOARD GERENCIAL (MÃ©tricas Clave) -->
         <section class="kpi-section">
             <div class="kpi-card glass">
                 <div class="kpi-icon cyan">
@@ -254,7 +254,7 @@
                 </div>
                 <div class="kpi-data">
                     <span class="kpi-value" id="kpiOperatorRate">0%</span>
-                    <span class="kpi-label">Tasa con Operador Técnico</span>
+                    <span class="kpi-label">Tasa con Operador TÃ©cnico</span>
                 </div>
             </div>
         </section>
@@ -265,29 +265,29 @@
             <!-- PANEL IZQUIERDO: VISTA GERENCIAL DE EQUIPOS (RIGS) -->
             <section class="rigs-section">
                 <div class="section-title-bar">
-                    <h2>Estado General de Equipos de Perforación</h2>
+                    <h2>Estado General de Equipos de PerforaciÃ³n</h2>
                     <span class="section-subtitle">Haz clic en un equipo para gestionar o ver detalles</span>
                 </div>
                 
                 <div class="rigs-grid" id="rigsGrid">
-                    <!-- Los Rigs (F03, F07, etc.) serán inyectados dinámicamente desde JavaScript -->
+                    <!-- Los Rigs (F03, F07, etc.) serÃ¡n inyectados dinÃ¡micamente desde JavaScript -->
                 </div>
             </section>
 
             <!-- PANEL DERECHO: PANEL DE ACCIONES E HISTORIAL -->
             <aside class="details-aside glass" id="detailsAside">
                 
-                <!-- Pestañas de Navegación del Panel Derecho -->
+                <!-- PestaÃ±as de NavegaciÃ³n del Panel Derecho -->
                 <div class="aside-tabs">
                     <button class="tab-btn active" id="tabRequests">Solicitudes</button>
                     <button class="tab-btn" id="tabUsers">Usuarios</button>
-                    <button class="tab-btn hidden" id="tabAdminActions">Administración</button>
+                    <button class="tab-btn hidden" id="tabAdminActions">AdministraciÃ³n</button>
                 </div>
 
                 <!-- CONTENIDO: SOLICITUDES / HISTORIAL -->
                 <div class="tab-content" id="contentRequests">
                     <div class="filter-bar">
-                        <h3>Búsqueda Rápida</h3>
+                        <h3>BÃºsqueda RÃ¡pida</h3>
                         <div class="search-input-wrapper">
                             <input type="text" id="searchInput" placeholder="Buscar por equipo, operadora o servicio...">
                         </div>
@@ -338,7 +338,7 @@
                                 </tr>
                             </thead>
                             <tbody id="requestsTableBody">
-                                <!-- Filas de solicitudes cargadas dinámicamente -->
+                                <!-- Filas de solicitudes cargadas dinÃ¡micamente -->
                             </tbody>
                         </table>
                     </div>
@@ -347,11 +347,11 @@
                 <!-- CONTENIDO: USUARIOS -->
                 <div class="tab-content hidden" id="contentUsers">
                     <div class="users-panel-header">
-                        <h3>Gestión de Usuarios</h3>
-                        <p class="description-text">Solo el Super Administrador puede registrar usuarios, asignar roles y eliminar cuentas. El nombre de usuario es <strong>nombre.apellido</strong> (en minúsculas, sin tildes). El número de documento (DNI) sirve como contraseña de acceso.</p>
+                        <h3>GestiÃ³n de Usuarios</h3>
+                        <p class="description-text">Solo el Super Administrador puede registrar usuarios, asignar roles y eliminar cuentas. El nombre de usuario es <strong>nombre.apellido</strong> (en minÃºsculas, sin tildes). El nÃºmero de documento (DNI) sirve como contraseÃ±a de acceso.</p>
                     </div>
 
-                    <!-- Formulario de creación de usuarios (Solo visible para Editores) -->
+                    <!-- Formulario de creaciÃ³n de usuarios (Solo visible para Editores) -->
                     <div id="createUserFormWrapper" class="admin-action-box glass hidden">
                         <h4>Registrar Nuevo Usuario</h4>
                         <form id="createUserForm">
@@ -361,20 +361,20 @@
                             </div>
                             <div class="form-group">
                                 <label for="uLastName">Apellido</label>
-                                <input type="text" id="uLastName" required placeholder="Ej: Pérez">
+                                <input type="text" id="uLastName" required placeholder="Ej: PÃ©rez">
                             </div>
                             <div class="form-group">
-                                <label for="uDoc">Número de Documento (Contraseña de acceso)</label>
+                                <label for="uDoc">NÃºmero de Documento (ContraseÃ±a de acceso)</label>
                                 <input type="password" id="uDoc" required placeholder="Ej: 34567890">
                             </div>
                             <div class="form-group">
                                 <label for="uRole">Nivel de Permiso</label>
                                 <select id="uRole" required>
-                                    <option value="VIEWER">Solo Lectura — Solo puede visualizar</option>
-                                    <option value="REPORTER">Cargador — Ver + Reportar casos</option>
-                                    <option value="RESOLVER" selected>Operador — Ver + Reportar + Cerrar</option>
-                                    <option value="ADMIN">Administrador — Ver + Cargar + Cerrar + Editar + Borrar</option>
-                                    <option value="SUPER_ADMIN">Super Administrador — Control total + Gestión de usuarios</option>
+                                    <option value="VIEWER">Solo Lectura â€” Solo puede visualizar</option>
+                                    <option value="REPORTER">Cargador â€” Ver + Reportar casos</option>
+                                    <option value="RESOLVER" selected>Operador â€” Ver + Reportar + Cerrar</option>
+                                    <option value="ADMIN">Administrador â€” Ver + Cargar + Cerrar + Editar + Borrar</option>
+                                    <option value="SUPER_ADMIN">Super Administrador â€” Control total + GestiÃ³n de usuarios</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-success btn-full">Crear Usuario</button>
@@ -384,32 +384,32 @@
                     <!-- Mensaje para no autorizados -->
                     <div id="usersPanelNoAccess" class="no-access-box">
                         <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <p>Inicia sesión como Editor para ver, crear o administrar los usuarios autorizados.</p>
+                        <p>Inicia sesiÃ³n como Editor para ver, crear o administrar los usuarios autorizados.</p>
                     </div>
 
                     <!-- Lista de usuarios creados (Solo visible para Editores) -->
                     <div id="usersListWrapper" class="users-list-section hidden">
                         <h4>Usuarios Habilitados</h4>
                         <ul class="users-list" id="usersList">
-                            <!-- Inyectado dinámicamente -->
+                            <!-- Inyectado dinÃ¡micamente -->
                         </ul>
                     </div>
                 </div>
 
-                <!-- CONTENIDO: ACCIONES DE ADMINISTRACIÓN (CARGA DE SOLICITUDES) -->
+                <!-- CONTENIDO: ACCIONES DE ADMINISTRACIÃ“N (CARGA DE SOLICITUDES) -->
                 <div class="tab-content hidden" id="contentAdminActions">
                     <div class="admin-action-box">
                         <h3>Registrar / Modificar Servicio</h3>
-                        <p class="description-text">Carga de forma manual el estado y modalidad del servicio de automatización para un equipo específico.</p>
+                        <p class="description-text">Carga de forma manual el estado y modalidad del servicio de automatizaciÃ³n para un equipo especÃ­fico.</p>
                         
-                        <!-- BLOQUE 1: VINCULAR OPERADORA (SÚPER FÁCIL) -->
+                        <!-- BLOQUE 1: VINCULAR OPERADORA (SÃšPER FÃCIL) -->
                         <div class="admin-action-box">
                             <h3>Vincular Equipo a Operadora</h3>
-                            <p class="description-text">Selecciona un equipo arriba y haz clic en la operadora para vincularlo instantáneamente:</p>
+                            <p class="description-text">Selecciona un equipo arriba y haz clic en la operadora para vincularlo instantÃ¡neamente:</p>
                             
                             <!-- Indicador de Rig Seleccionado en este bloque -->
                             <div class="selected-rig-display" id="selectedRigDisplay">
-                                Ningún equipo seleccionado
+                                NingÃºn equipo seleccionado
                             </div>
 
                             <div class="operator-quick-bind" id="operatorQuickBind">
@@ -423,15 +423,15 @@
                             </div>
                         </div>
 
-                        <!-- BLOQUE 2: CONFIGURACIÓN DE SISTEMAS -->
+                        <!-- BLOQUE 2: CONFIGURACIÃ“N DE SISTEMAS -->
                         <div class="admin-action-box">
-                            <h3>Sistemas de Automatización</h3>
+                            <h3>Sistemas de AutomatizaciÃ³n</h3>
                             <p class="description-text">Tilda los sistemas cubiertos por Contrato o selecciona su estado de Solicitud por Mail:</p>
                             
                             <form id="requestForm">
                                 <div class="form-group">
                                     <div class="systems-config-list" id="systemsConfigList">
-                                        <!-- Generado dinámicamente en app.js -->
+                                        <!-- Generado dinÃ¡micamente en app.js -->
                                     </div>
                                 </div>
 
@@ -447,7 +447,7 @@
             </aside>
         </main>
 
-        <!-- PLANILLA DE CARGA RÁPIDA TIPO EXCEL -->
+        <!-- PLANILLA DE CARGA RÃPIDA TIPO EXCEL -->
         <section class="excel-section glass">
             <div class="excel-header">
                 <div class="excel-title-block">
@@ -455,8 +455,8 @@
                         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                     </div>
                     <div>
-                        <h2>Planilla de Carga Rápida de Mails (Eventuales)</h2>
-                        <p class="section-subtitle">Registra manualmente múltiples solicitudes de correo. Al hacer clic en Procesar, la fila se guardará y se auto-limpiará.</p>
+                        <h2>Planilla de Carga RÃ¡pida de Mails (Eventuales)</h2>
+                        <p class="section-subtitle">Registra manualmente mÃºltiples solicitudes de correo. Al hacer clic en Procesar, la fila se guardarÃ¡ y se auto-limpiarÃ¡.</p>
                     </div>
                 </div>
                 
@@ -474,7 +474,7 @@
             <!-- Alerta para no autorizados (Solo lectura) -->
             <div id="excelPanelNoAccess" class="excel-no-access-box">
                 <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                <span>Modo Solo Lectura. Inicia sesión como Editor para habilitar la carga rápida tipo Excel.</span>
+                <span>Modo Solo Lectura. Inicia sesiÃ³n como Editor para habilitar la carga rÃ¡pida tipo Excel.</span>
             </div>
 
             <!-- Tabla tipo Excel -->
@@ -492,17 +492,17 @@
                         </tr>
                     </thead>
                     <tbody id="excelTableBody">
-                        <!-- Las 5 filas de carga rápida se inyectarán de forma dinámica en app.js -->
+                        <!-- Las 5 filas de carga rÃ¡pida se inyectarÃ¡n de forma dinÃ¡mica en app.js -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- Histórico de últimas 5 solicitudes procesadas -->
+            <!-- HistÃ³rico de Ãºltimas 5 solicitudes procesadas -->
             <div class="excel-history-header" style="margin-top: 25px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-top: 1px dashed rgba(217, 70, 239, 0.15); padding-top: 15px;">
                 <div class="excel-icon" style="width: 30px; height: 30px; background: rgba(0, 210, 255, 0.08); color: var(--color-cyan); display: flex; align-items: center; justify-content: center; border-radius: 6px;">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 </div>
-                <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin: 0;">Histórico de las Últimas 5 Solicitudes Procesadas (Mail)</h3>
+                <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin: 0;">HistÃ³rico de las Ãšltimas 5 Solicitudes Procesadas (Mail)</h3>
             </div>
 
             <div class="excel-table-container">
@@ -519,7 +519,7 @@
                         </tr>
                     </thead>
                     <tbody id="excelHistoryTableBody">
-                        <!-- Filas del histórico inyectadas de forma dinámica en app.js -->
+                        <!-- Filas del histÃ³rico inyectadas de forma dinÃ¡mica en app.js -->
                     </tbody>
                 </table>
             </div>
@@ -527,7 +527,7 @@
         
         </div> <!-- FIN DE #tabContentAutomation -->
 
-        <!-- PESTAÑA 2: CONTENIDO RIGLINE (SEGUIMIENTO DE CASOS) -->
+        <!-- PESTAÃ‘A 2: CONTENIDO RIGLINE (SEGUIMIENTO DE CASOS) -->
         <div id="tabContentRigLine" class="global-tab-content hidden">
             
             <!-- KPIs ESPECIALIZADOS DE RIGLINE -->
@@ -558,7 +558,7 @@
                     </div>
                     <div class="kpi-data">
                         <span class="kpi-value" id="kpiRlMostAffected">-</span>
-                        <span class="kpi-label">Equipo más Afectado</span>
+                        <span class="kpi-label">Equipo mÃ¡s Afectado</span>
                     </div>
                 </div>
 
@@ -573,20 +573,20 @@
                 </div>
             </section>
 
-            <!-- CUERPO PRINCIPAL DEL MÓDULO RIGLINE -->
+            <!-- CUERPO PRINCIPAL DEL MÃ“DULO RIGLINE -->
             <main class="dashboard-body">
                 
-                <!-- SECCIÓN IZQUIERDA: LISTADO DE CASOS PENDIENTES -->
+                <!-- SECCIÃ“N IZQUIERDA: LISTADO DE CASOS PENDIENTES -->
                 <section class="rigs-section">
                     <div class="section-title-bar" style="border-left-color: var(--color-amber);">
                         <h2>Panel de Casos RigLine Activos</h2>
-                        <span class="section-subtitle">Casos técnicos pendientes de resolución. Los resueltos desaparecen de esta cuadrícula y se archivan.</span>
+                        <span class="section-subtitle">Casos tÃ©cnicos pendientes de resoluciÃ³n. Los resueltos desaparecen de esta cuadrÃ­cula y se archivan.</span>
                     </div>
 
-                    <!-- Filtros de búsqueda en la lista de casos -->
+                    <!-- Filtros de bÃºsqueda en la lista de casos -->
                     <div class="rigline-filter-row glass rl-filter-bar">
                         <div class="search-input-wrapper rl-search">
-                            <input type="text" id="rlSearchInput" placeholder="Buscar por N° caso, equipo, sistema o falla..." style="padding: 8px 12px;">
+                            <input type="text" id="rlSearchInput" placeholder="Buscar por NÂ° caso, equipo, sistema o falla..." style="padding: 8px 12px;">
                         </div>
                         <div class="rl-filter-selectors">
                             <button id="btnExportRigLine" class="btn btn-operator btn-operator-none rl-export-btn" title="Descargar reporte .txt">
@@ -606,17 +606,17 @@
                             </select>
                             <select id="rlFilterRig" class="rl-select">
                                 <option value="">Todos los Rigs</option>
-                                <!-- Inyectado dinámicamente -->
+                                <!-- Inyectado dinÃ¡micamente -->
                             </select>
                         </div>
                     </div>
                     
                     <div class="rigline-cases-grid" id="rlCasesGrid">
-                        <!-- Las tarjetas de casos RigLine serán inyectadas de forma dinámica en app.js -->
+                        <!-- Las tarjetas de casos RigLine serÃ¡n inyectadas de forma dinÃ¡mica en app.js -->
                     </div>
                 </section>
 
-                <!-- SECCIÓN DERECHA: FORMULARIO DE REPORTE -->
+                <!-- SECCIÃ“N DERECHA: FORMULARIO DE REPORTE -->
                 <aside class="details-aside glass" style="padding: 16px; display: flex; flex-direction: column; gap: 16px;">
                     <div class="admin-action-box" style="margin-bottom: 0; background: none; border: none; padding: 0;">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
@@ -625,11 +625,11 @@
                             </div>
                             <h3 style="font-size: 1.05rem; margin: 0; font-family: 'Outfit', sans-serif; font-weight: 600;">Reportar Incidente en RigLine</h3>
                         </div>
-                        <p class="description-text">Reporta incidentes técnicos y de conectividad. Cada caso queda vinculado a tu usuario, equipo, fecha y hora de registro automáticamente.</p>
+                        <p class="description-text">Reporta incidentes tÃ©cnicos y de conectividad. Cada caso queda vinculado a tu usuario, equipo, fecha y hora de registro automÃ¡ticamente.</p>
                         
                         <form id="rlReportForm" style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
                             <div class="form-group" style="margin-bottom: 0;">
-                                <label for="rlCaseIdInput">Número de Caso (RigLine) *</label>
+                                <label for="rlCaseIdInput">NÃºmero de Caso (RigLine) *</label>
                                 <input type="text" id="rlCaseIdInput" placeholder="Ej: RL-8421 o 12345..." required>
                             </div>
 
@@ -637,7 +637,7 @@
                                 <label for="rlRigSelect">Equipo (Rig) Afectado *</label>
                                 <select id="rlRigSelect" required>
                                     <option value="">-- Seleccionar Rig --</option>
-                                    <!-- Inyectado dinámicamente -->
+                                    <!-- Inyectado dinÃ¡micamente -->
                                 </select>
                             </div>
 
@@ -652,7 +652,7 @@
                                     <option value="AutoDownlinks">AutoDownlinks</option>
                                     <option value="Predictive Drilling">Predictive Drilling</option>
                                     <option value="Hardware / Conectividad">Hardware / Conectividad</option>
-                                    <option value="Otros / Soporte Informático">Otros / Soporte Informático</option>
+                                    <option value="Otros / Soporte InformÃ¡tico">Otros / Soporte InformÃ¡tico</option>
                                 </select>
                             </div>
 
@@ -661,19 +661,19 @@
                                 <select id="rlPrioritySelect" required>
                                     <option value="Baja">Baja (Incidente menor)</option>
                                     <option value="Media" selected>Media (Falla intermitente / Parcial)</option>
-                                    <option value="Alta">Alta (Operación de Perforación Detenida)</option>
+                                    <option value="Alta">Alta (OperaciÃ³n de PerforaciÃ³n Detenida)</option>
                                 </select>
                             </div>
 
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label for="rlReporterName">Registrado como</label>
-                                <input type="text" id="rlReporterName" placeholder="Iniciá sesión para reportar..." readonly>
-                                <span style="font-size: 0.68rem; color: var(--text-muted); margin-top: 3px; display: block;">Vinculado automáticamente a tu usuario y hora de registro.</span>
+                                <input type="text" id="rlReporterName" placeholder="IniciÃ¡ sesiÃ³n para reportar..." readonly>
+                                <span style="font-size: 0.68rem; color: var(--text-muted); margin-top: 3px; display: block;">Vinculado automÃ¡ticamente a tu usuario y hora de registro.</span>
                             </div>
 
                             <div class="form-group" style="margin-bottom: 0;">
-                                <label for="rlDescription">Descripción Detallada de la Falla *</label>
-                                <textarea id="rlDescription" rows="4" placeholder="Describe brevemente la falla informática, pérdida de señal o comportamiento del sistema..." required style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 0.82rem; outline: none; resize: none; transition: var(--transition-smooth);"></textarea>
+                                <label for="rlDescription">DescripciÃ³n Detallada de la Falla *</label>
+                                <textarea id="rlDescription" rows="4" placeholder="Describe brevemente la falla informÃ¡tica, pÃ©rdida de seÃ±al o comportamiento del sistema..." required style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border); color: var(--text-primary); padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 0.82rem; outline: none; resize: none; transition: var(--transition-smooth);"></textarea>
                             </div>
 
                             <button type="submit" class="btn btn-success btn-full" style="padding: 12px; margin-top: 8px;">
@@ -686,9 +686,9 @@
 
             </main>
 
-        <!-- ═══════════════════════════════════════════════════════════
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
              HISTORIAL COMPLETO DE CASOS RIGLINE (Planilla al Pie)
-             ═══════════════════════════════════════════════════════════ -->
+             â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
         <section class="rl-history-section glass" id="rlHistorySection">
             <div class="rl-history-header">
                 <div class="rl-history-title-block">
@@ -697,7 +697,7 @@
                     </div>
                     <div>
                         <h3>Historial Completo de Casos RigLine</h3>
-                        <span class="rl-history-subtitle">Registro permanente · Todos los estados · Ordenado por fecha de apertura</span>
+                        <span class="rl-history-subtitle">Registro permanente Â· Todos los estados Â· Ordenado por fecha de apertura</span>
                     </div>
                 </div>
                 <div class="rl-history-controls">
@@ -714,19 +714,19 @@
                 <table class="rl-history-table">
                     <thead>
                         <tr>
-                            <th>N° Caso</th>
+                            <th>NÂ° Caso</th>
                             <th>Rig</th>
                             <th>Sistema</th>
                             <th>Prioridad</th>
-                            <th>Reportó</th>
-                            <th>Resolvió</th>
+                            <th>ReportÃ³</th>
+                            <th>ResolviÃ³</th>
                             <th>Fecha Apertura</th>
                             <th>Fecha Cierre</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody id="rlHistoryTableBody">
-                        <!-- Inyectado dinámicamente -->
+                        <!-- Inyectado dinÃ¡micamente -->
                     </tbody>
                 </table>
             </div>
@@ -734,12 +734,12 @@
 
         </div> <!-- FIN DE #tabContentRigLine -->
 
-        <!-- PESTAÑA 3: CONTROL DE VERSIONES -->
+        <!-- PESTAÃ‘A 3: CONTROL DE VERSIONES -->
         <div id="tabContentVersions" class="global-tab-content hidden">
             <section class="dashboard-hero-banner glass" style="margin-bottom: 25px; min-height: auto; padding: 25px 40px;">
                 <div class="hero-content">
                     <h2 style="font-size: 1.8rem; margin-bottom: 10px;">Control de Versiones de Sistemas</h2>
-                    <p style="font-size: 0.95rem; opacity: 0.8; max-width: 800px;">Registro centralizado de versiones de software. El panel permite la búsqueda rápida y edición (requiere permisos de Administrador).</p>
+                    <p style="font-size: 0.95rem; opacity: 0.8; max-width: 800px;">Registro centralizado de versiones de software. El panel permite la bÃºsqueda rÃ¡pida y ediciÃ³n (requiere permisos de Administrador).</p>
                 </div>
             </section>
             
@@ -750,26 +750,26 @@
 
     </div> <!-- FIN DE .app-container -->
 
-    <!-- EL MODAL DE INICIO DE SESIÓN FLOTANTE FUE ELIMINADO -->
-    <!-- MODAL DE PRIMER INGRESO (CONFIGURACIÓN DE SEGURIDAD) -->
+    <!-- EL MODAL DE INICIO DE SESIÃ“N FLOTANTE FUE ELIMINADO -->
+    <!-- MODAL DE PRIMER INGRESO (CONFIGURACIÃ“N DE SEGURIDAD) -->
     <div id="firstLoginModal" class="modal-overlay hidden" style="z-index: 10000; background: rgba(0,0,0,0.9);">
         <div class="modal-card">
             <div class="modal-header">
-                <h3>Configuración de Seguridad Obligatoria</h3>
+                <h3>ConfiguraciÃ³n de Seguridad Obligatoria</h3>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--color-text-dim);">Para proteger tu cuenta, es necesario establecer una nueva contraseña privada.</p>
+                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--color-text-dim);">Para proteger tu cuenta, es necesario establecer una nueva contraseÃ±a privada.</p>
                 <form id="firstLoginForm">
                     <div class="form-group">
-                        <label for="flPassword">Nueva Contraseña</label>
+                        <label for="flPassword">Nueva ContraseÃ±a</label>
                         <input type="password" id="flPassword" required minlength="6">
                     </div>
                     <div class="form-group">
-                        <label for="flPasswordConfirm">Confirmar Contraseña</label>
+                        <label for="flPasswordConfirm">Confirmar ContraseÃ±a</label>
                         <input type="password" id="flPasswordConfirm" required minlength="6">
                     </div>
-                    <div class="error-message hidden" id="flError">Las contraseñas no coinciden.</div>
-                    <button type="submit" class="btn btn-primary btn-full" style="margin-top: 15px;">Guardar Contraseña y Continuar</button>
+                    <div class="error-message hidden" id="flError">Las contraseÃ±as no coinciden.</div>
+                    <button type="submit" class="btn btn-primary btn-full" style="margin-top: 15px;">Guardar ContraseÃ±a y Continuar</button>
                 </form>
             </div>
         </div>
@@ -780,7 +780,7 @@
         <div class="modal-card" style="max-width: 400px;">
             <div class="modal-header">
                 <h3>Mi Cuenta</h3>
-                <button type="button" class="btn-close" id="btnCloseProfile">×</button>
+                <button type="button" class="btn-close" id="btnCloseProfile">Ã—</button>
             </div>
             <div class="modal-body" style="text-align: center;">
                 <div class="profile-avatar-large" id="profileAvatarLarge" style="width: 80px; height: 80px; border-radius: 50%; background: var(--color-cyan); color: #000; font-size: 2rem; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
@@ -793,40 +793,41 @@
                 <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
                 
                 <form id="changePasswordForm" style="text-align: left;">
-                    <h5 style="margin-bottom: 10px;">Cambiar Contraseña</h5>
+                    <h5 style="margin-bottom: 10px;">Cambiar ContraseÃ±a</h5>
                     <div class="form-group">
-                        <label for="cpNew">Nueva Contraseña</label>
+                        <label for="cpNew">Nueva ContraseÃ±a</label>
                         <input type="password" id="cpNew" required minlength="6">
                     </div>
-                    <button type="submit" class="btn btn-secondary btn-full">Actualizar Contraseña</button>
+                    <button type="submit" class="btn btn-secondary btn-full">Actualizar ContraseÃ±a</button>
                     <div class="error-message hidden" id="cpMessage" style="margin-top: 10px;"></div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE RECUPERACIÓN DE CONTRASEÑA -->
+    <!-- MODAL DE RECUPERACIÃ“N DE CONTRASEÃ‘A -->
     <div id="recoveryModal" class="modal-overlay hidden" style="z-index: 10001;">
         <div class="modal-card">
             <div class="modal-header">
-                <h3>Recuperar Contraseña</h3>
-                <button type="button" class="btn-close" id="btnCloseRecovery">×</button>
+                <h3>Recuperar ContraseÃ±a</h3>
+                <button type="button" class="btn-close" id="btnCloseRecovery">Ã—</button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--color-text-dim);">Ingresa tu Usuario (nombre.apellido). Te enviaremos un correo a la dirección vinculada a tu cuenta con las instrucciones.</p>
+                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--color-text-dim);">Ingresa tu Usuario (nombre.apellido). Te enviaremos un correo a la direcciÃ³n vinculada a tu cuenta con las instrucciones.</p>
                 <form id="recoveryForm">
                     <div class="form-group">
                         <label for="recoveryUser">Usuario</label>
                         <input type="text" id="recoveryUser" required>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-full">Solicitar Recuperación</button>
+                    <button type="submit" class="btn btn-primary btn-full">Solicitar RecuperaciÃ³n</button>
                     <div class="error-message hidden" id="recoveryMessage" style="margin-top: 10px;"></div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DE LA APLICACIÓN -->
-    <script src="app.js"></script>
+    <!-- SCRIPT DE LA APLICACIÃ“N -->
+    <script src="app_v2.js"></script>
 </body>
 </html>
+

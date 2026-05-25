@@ -1,10 +1,10 @@
-﻿// Service Worker â€” Drill Control v2.1.2
-const CACHE_NAME = 'drill-control-v2.1.2';
+﻿// Service Worker â€” Drill Control v2.1.3
+const CACHE_NAME = 'drill-control-v2.1.3';
 const ASSETS = [
     './',
     './index.html',
     './style.css',
-    './app.js',
+    './app_v2.js',
     './manifest.json',
     './rig_bg.png',
     './icon-32x32.png',
@@ -72,4 +72,5 @@ self.addEventListener('fetch', event => {
         );
     }
 });
+
 
