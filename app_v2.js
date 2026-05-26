@@ -2149,7 +2149,23 @@ async function runFirebaseMigration() {
     localRigline.forEach(caseItem => { if(caseItem && caseItem.id) batch.set(db.collection('rigline').doc(String(caseItem.id).trim()), caseItem); });
     
     await batch.commit();
-    showToast('Migracin a Firebase Completada con éxito!');
+    showToast('Migracion a Firebase Completada con exito!');
+}
+
+window.forceFirebaseSync = async function() {
+    if (!currentUser || currentUser.role !== 'SUPER_ADMIN') { alert('No autorizado'); return; }
+    showToast('Iniciando sincronizacion forzada a la Nube...');
+    const localRigs = JSON.parse(localStorage.getItem('drill_rigs_data')) || [];
+    const localUsers = JSON.parse(localStorage.getItem('drill_users_list')) || [];
+    const localHistory = JSON.parse(localStorage.getItem('drill_requests_history')) || [];
+    const localRigline = JSON.parse(localStorage.getItem('drill_rigline_cases')) || [];
+    const batch = db.batch();
+    localRigs.forEach(rig => { if(rig && rig.id) batch.set(db.collection('rigs').doc(String(rig.id).trim()), rig); });
+    localUsers.forEach(user => { if(user && user.doc) batch.set(db.collection('users').doc(String(user.doc).trim()), user); });
+    localHistory.forEach(hist => { if(hist && hist.id) batch.set(db.collection('history').doc(String(hist.id).trim()), hist); });
+    localRigline.forEach(caseItem => { if(caseItem && caseItem.id) batch.set(db.collection('rigline').doc(String(caseItem.id).trim()), caseItem); });
+    await batch.commit();
+    showToast('Sincronizacion forzada completada con exito.');
 }
 
 // ==============================================================
@@ -2359,6 +2375,7 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
 
 // Ejecutar inmediatamente para ocultar login si ya hay sesion
 checkSession();
+
 
 
 
