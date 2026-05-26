@@ -1,3 +1,4 @@
+window.showToast = function(msg) { console.log('Toast:', msg); alert(msg); };
 // DRILL CONTROL SYSTEM v1.4.0  PWA Release
 // Lgica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
 
@@ -2375,6 +2376,8 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
 
 // Ejecutar inmediatamente para ocultar login si ya hay sesion
 checkSession();
+
+
 
 
 
