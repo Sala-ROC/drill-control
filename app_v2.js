@@ -916,9 +916,16 @@ createUserForm.addEventListener('submit', (e) => {
     // Save to localStorage immediately as a fallback
     localStorage.setItem('drill_users_list', JSON.stringify(usersList));
     
-    // Guardar TODOS los usuarios en Firebase para asegurar sincronización de datos locales huérfanos
+    // Guardar TODOS los usuarios en Firebase de forma segura
     usersList.forEach(u => {
-        db.collection('users').doc(u.doc).set(u).catch(err => console.error("Error guardando en Firebase:", err));
+        try {
+            if (!u || !u.doc) return; // Saltar registros corruptos
+            const docId = String(u.doc).trim();
+            if (docId === '') return;
+            db.collection('users').doc(docId).set(u).catch(err => console.error("Error Firebase:", err));
+        } catch(e) {
+            console.error("Error procesando usuario local:", e);
+        }
     });
       
     renderUsersList();
