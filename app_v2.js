@@ -2143,10 +2143,10 @@ async function runFirebaseMigration() {
 
     const batch = db.batch();
     
-    localRigs.forEach(rig => batch.set(db.collection('rigs').doc(rig.id), rig));
-    localUsers.forEach(user => batch.set(db.collection('users').doc(user.doc), user));
-    localHistory.forEach(hist => batch.set(db.collection('history').doc(hist.id), hist));
-    localRigline.forEach(caseItem => batch.set(db.collection('rigline').doc(caseItem.id), caseItem));
+    localRigs.forEach(rig => { if(rig && rig.id) batch.set(db.collection('rigs').doc(String(rig.id).trim()), rig); });
+    localUsers.forEach(user => { if(user && user.doc) batch.set(db.collection('users').doc(String(user.doc).trim()), user); });
+    localHistory.forEach(hist => { if(hist && hist.id) batch.set(db.collection('history').doc(String(hist.id).trim()), hist); });
+    localRigline.forEach(caseItem => { if(caseItem && caseItem.id) batch.set(db.collection('rigline').doc(String(caseItem.id).trim()), caseItem); });
     
     await batch.commit();
     showToast('Migracin a Firebase Completada con éxito!');
@@ -2359,4 +2359,5 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
 
 // Ejecutar inmediatamente para ocultar login si ya hay sesion
 checkSession();
+
 
