@@ -916,9 +916,10 @@ createUserForm.addEventListener('submit', (e) => {
     // Save to localStorage immediately as a fallback
     localStorage.setItem('drill_users_list', JSON.stringify(usersList));
     
-    // Save only the new user to Firebase, instead of looping through all users
-    db.collection('users').doc(newUDoc).set({ name: newUName, lastName: newULastName, doc: newUDoc, role: newURole, status: 'offline' })
-      .catch(err => console.error("Error guardando en Firebase:", err));
+    // Guardar TODOS los usuarios en Firebase para asegurar sincronización de datos locales huérfanos
+    usersList.forEach(u => {
+        db.collection('users').doc(u.doc).set(u).catch(err => console.error("Error guardando en Firebase:", err));
+    });
       
     renderUsersList();
     createUserForm.reset();
