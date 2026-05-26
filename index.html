@@ -388,7 +388,7 @@
                             Gestión Maestra
                         </h4>
                         <p style="font-size: 0.85rem; color: #a1a1aa; margin-bottom: 15px;">Añade nuevos equipos o clientes operativos al sistema.</p>
-                        <div style="display: flex; gap: 10px;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                             <button id="btnAddRig" type="button" class="btn" style="flex: 1; background: rgba(245, 158, 11, 0.1); color: var(--color-amber); border: 1px solid var(--color-amber);">
                                 + Añadir Equipo
                             </button>
@@ -396,6 +396,10 @@
                                 + Añadir Operadora
                             </button>
                         </div>
+                        <button onclick="window.forceFirebaseSync()" type="button" class="btn btn-full" style="background: rgba(0, 210, 255, 0.15); color: var(--color-cyan); border: 1px solid var(--color-cyan); font-weight: bold;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:text-bottom; margin-right:5px;"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                            Forzar Sincronización a la Nube
+                        </button>
                     </div>
 
                     <!-- Mensaje para no autorizados -->
