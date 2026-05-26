@@ -789,47 +789,72 @@ window.changeUserRole = function(docId, newRole) {
     }
 };
 
-// 7. EVENTOS DE FORMULARIOS Y ACCIONES
+// Función auxiliar que valida credenciales contra una lista de usuarios
+function tryMatchUser(list, typedName, typedPass) {
+    return list.find(u => {
+        if (!u || !u.name || !u.lastName) return false;
+        const username = `${u.name}.${u.lastName}`.toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, '');
+        const validPassword = u.password ? u.password === typedPass : u.doc === typedPass;
+        return username === typedName && validPassword;
+    });
+}
+
+function doLogin(matchedUser) {
+    currentUser = matchedUser;
+    localStorage.setItem('drill_current_user_v2', JSON.stringify(currentUser));
+    db.collection('users').doc(currentUser.doc).update({ status: 'online' }).catch(console.error);
+    updateUIByRole();
+    loginForm.reset();
+    loginError.classList.add('hidden');
+    runFirebaseMigration();
+    if (currentUser.doc !== '31434249' && (!currentUser.password || currentUser.password === currentUser.doc)) {
+        document.getElementById('firstLoginModal').classList.remove('hidden');
+    }
+}
 
 // Evento Formulario Login
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    // Normalizamos quitando espacios para evitar errores si escriben "nombre. apellido" o si tienen nombres compuestos
     const typedName = loginName.value.trim().toLowerCase().replace(/\s+/g, '');
     const typedPass = loginPassword.value.trim();
 
-    let matchedUser = usersList.find(u => {
-        const username = `${u.name}.${u.lastName}`.toLowerCase()
-            .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quitar tildes
-            .replace(/\s+/g, ''); // quitar cualquier espacio interno
-        
-        // Verifica si la contraseña coincide. Si no tiene contraseña seteada, usa el DNI (doc).
-        const validPassword = u.password ? u.password === typedPass : u.doc === typedPass;
-        return username === typedName && validPassword;
-    });
+    // 1. Buscar en la lista local (rápido)
+    let matchedUser = tryMatchUser(usersList, typedName, typedPass);
 
+    // 2. Fallback: usuario hardcodeado Fernando
     if (!matchedUser && typedName === 'fernando.volpi' && typedPass === '31434249') {
         matchedUser = { name: "Fernando", lastName: "Volpi", doc: "31434249", role: "SUPER_ADMIN" };
     }
 
     if (matchedUser) {
-        currentUser = matchedUser;
-        localStorage.setItem('drill_current_user_v2', JSON.stringify(currentUser));
-        
-        // Actualizar estado a Online en la Nube
-        db.collection('users').doc(currentUser.doc).update({ status: 'online' }).catch(console.error);
-
-        updateUIByRole();
-        loginForm.reset();
-        loginError.classList.add('hidden');
-        runFirebaseMigration();
-
-        // Verificar si necesita configuracion inicial (excepto Fernando)
-        if (currentUser.doc !== '31434249' && (!currentUser.password || currentUser.password === currentUser.doc)) {
-            document.getElementById('firstLoginModal').classList.remove('hidden');
-        }
+        doLogin(matchedUser);
     } else {
-        loginError.classList.remove('hidden');
+        // 3. No encontrado localmente → consultar Firebase directamente
+        loginError.classList.add('hidden');
+        loginName.disabled = true;
+        loginPassword.disabled = true;
+        db.collection('users').get().then(snapshot => {
+            const firebaseUsers = snapshot.docs.map(doc => doc.data());
+            // Actualizar la lista local con los datos de Firebase
+            if (firebaseUsers.length > 0) {
+                usersList = firebaseUsers;
+                localStorage.setItem('drill_users_list', JSON.stringify(usersList));
+            }
+            const foundUser = tryMatchUser(firebaseUsers, typedName, typedPass);
+            if (foundUser) {
+                doLogin(foundUser);
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        }).catch(err => {
+            console.error("Error consultando Firebase en login:", err);
+            loginError.classList.remove('hidden');
+        }).finally(() => {
+            loginName.disabled = false;
+            loginPassword.disabled = false;
+        });
     }
 });
 
