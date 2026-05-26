@@ -1,4 +1,4 @@
-﻿// DRILL CONTROL SYSTEM v1.4.0  PWA Release
+// DRILL CONTROL SYSTEM v1.4.0  PWA Release
 // Lgica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
 
 // 1. ESTRUCTURAS DE DATOS INICIALES (Listados oficiales)
@@ -794,13 +794,14 @@ window.changeUserRole = function(docId, newRole) {
 // Evento Formulario Login
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const typedName = loginName.value.trim().toLowerCase();
+    // Normalizamos quitando espacios para evitar errores si escriben "nombre. apellido" o si tienen nombres compuestos
+    const typedName = loginName.value.trim().toLowerCase().replace(/\s+/g, '');
     const typedPass = loginPassword.value.trim();
 
-    // Formato de usuario: nombre.apellido (sin tildes, sin espacios, todo minusculas)
     let matchedUser = usersList.find(u => {
         const username = `${u.name}.${u.lastName}`.toLowerCase()
-            .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // quitar tildes
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quitar tildes
+            .replace(/\s+/g, ''); // quitar cualquier espacio interno
         
         // Verifica si la contraseña coincide. Si no tiene contraseña seteada, usa el DNI (doc).
         const validPassword = u.password ? u.password === typedPass : u.doc === typedPass;
