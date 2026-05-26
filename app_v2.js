@@ -2063,6 +2063,8 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     // 3. Escuchar Usuarios
+    // Carga inicial inmediata por si Firebase falla o demora
+    usersList = JSON.parse(localStorage.getItem('drill_users_list')) || [];
     db.collection('users').onSnapshot(snapshot => {
         if (snapshot.empty && localStorage.getItem('drill_users_list')) {
             usersList = JSON.parse(localStorage.getItem('drill_users_list')) || [];
@@ -2073,6 +2075,9 @@ window.addEventListener('DOMContentLoaded', () => {
         checkSession();
         if (typeof renderUsersTable === 'function') renderUsersTable();
         if (typeof renderUsersList === 'function') renderUsersList();
+    }, error => {
+        console.error("Error cargando usuarios de Firebase:", error);
+        checkSession(); // Asegurar que inicie incluso con error
     });
 
     // 4. Escuchar Casos RigLine
