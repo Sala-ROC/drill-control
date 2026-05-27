@@ -174,7 +174,7 @@ function renderRigsGrid() {
         if (isCritical) {
             criticalClass = hasHighPriority ? 'critical-rig' : 'warning-rig';
             const iconColor = hasHighPriority ? 'var(--color-orange)' : 'var(--color-amber)';
-            const titleTooltip = hasHighPriority ? 'Estado Crtico! Caso técnico de prioridad alta activo en RigLine.' : 'Advertencia: Falla tcnica activa en RigLine.';
+            const titleTooltip = hasHighPriority ? 'Estado Crítico! Caso técnico de prioridad alta activo en RigLine.' : 'Advertencia: Falla técnica activa en RigLine.';
             warningBadge = `
                 <span class="rig-warning-badge" style="color: ${iconColor}; font-size: 0.72rem; display: inline-flex; align-items: center;" title="${titleTooltip}">
                     <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -188,6 +188,8 @@ function renderRigsGrid() {
         card.setAttribute('data-id', rig.id);
         
         let systemsHtml = '';
+        const isAdmin = can('delete');
+
         OFFICIAL_systems.forEach(sys => {
             const statusClass = `status-${rig.systems[sys]}`;
             const label = sys;
@@ -197,12 +199,24 @@ function renderRigsGrid() {
                           rig.systems[sys] === MODALITIES.SOLICITADO_CON_OP ? 'Con Op.' :
                           rig.systems[sys] === MODALITIES.SOLICITADO_SIN_OP ? 'Sin Op.' : 'Va Mail';
             
+            let finBtnHtml = '';
+            if (isAdmin && rig.systems[sys] === MODALITIES.SOLICITADO_MAIL) {
+                finBtnHtml = `<button class="btn-fin-service" onclick="event.stopPropagation(); window.finalizeService('${rig.id}', '${sys}')" title="Finalizar Servicio" style="background: rgba(217, 70, 239, 0.15); color: #d946ef; border: 1px solid rgba(217, 70, 239, 0.4); border-radius: 4px; padding: 3px 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; box-shadow: 0 0 5px rgba(217, 70, 239, 0.3);">Fin</button>`;
+            }
+
             systemsHtml += `
-                <div class="rig-system-item">
-                    <span class="system-name">${label}</span>
-                    <span class="system-status-dot-label ${statusClass}">
-                        ${dot} ${statusLabel}
-                    </span>
+                <div class="rig-system-item" style="display: flex; align-items: center; width: 100%;">
+                    <div style="flex: 1; display: flex; justify-content: flex-start;">
+                        <span class="system-name">${label}</span>
+                    </div>
+                    <div style="flex: 1; display: flex; justify-content: center;">
+                        ${finBtnHtml}
+                    </div>
+                    <div style="flex: 1; display: flex; justify-content: flex-end;">
+                        <span class="system-status-dot-label ${statusClass}">
+                            ${dot} ${statusLabel}
+                        </span>
+                    </div>
                 </div>
             `;
         });
@@ -220,7 +234,7 @@ function renderRigsGrid() {
             </div>
         `;
 
-        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de edicin
+        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de edición
         card.addEventListener('click', () => {
             selectRigCard(rig.id);
         });
@@ -228,6 +242,42 @@ function renderRigsGrid() {
         rigsGrid.appendChild(card);
     });
 }
+
+
+
+// Finaliza un servicio solicitado por mail
+window.finalizeService = function(rigId, sys) {
+    if (!confirm(`¿Estás seguro de que deseas finalizar el servicio eventual de ${sys} en el Rig ${rigId}?`)) return;
+
+    const rigIndex = rigsData.findIndex(r => r.id === rigId);
+    if (rigIndex === -1) return;
+
+    rigsData[rigIndex].systems[sys] = MODALITIES.INACTIVO;
+    
+    // Registrar en el historial general para mantener la traza
+    const newRequest = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+        rig: rigId,
+        client: rigsData[rigIndex].client || "Sin Contrato",
+        system: sys,
+        modality: MODALITIES.INACTIVO,
+        date: new Date().toISOString()
+    };
+    requestsHistory.unshift(newRequest);
+
+    // Guardar en Firebase
+    db.collection('history').doc(newRequest.id).set(newRequest);
+    db.collection('rigs').doc(rigId).update({
+        [`systems.${sys}`]: MODALITIES.INACTIVO
+    });
+
+    renderRigsGrid();
+    renderRequestsTable();
+    calculateKPIs();
+    renderExcelSpreadsheet();
+    renderExcelHistory();
+    if(typeof showToast === 'function') showToast(`Servicio finalizado exitosamente.`, 'success');
+};
 
 
 // Renderiza el configurador de sistemas en el formulario
@@ -239,15 +289,7 @@ function rendersystemsConfigForm(rigId) {
     OFFICIAL_systems.forEach(sys => {
         const currentModality = rigObj.systems[sys] || MODALITIES.INACTIVO;
         const isContract = currentModality === MODALITIES.CONTRATO;
-        
-        let mailValue = 'INACTIVO';
-        if (currentModality === MODALITIES.SOLICITADO_MAIL ||
-            currentModality === MODALITIES.SOLICITADO_CON_OP ||
-            currentModality === MODALITIES.SOLICITADO_SIN_OP) {
-            mailValue = 'SOLICITADO_MAIL';
-        }
-
-        const row = document.createElement('div');
+                const row = document.createElement('div');
         row.className = 'system-config-row';
         row.innerHTML = `
             <span class="sys-name-label">${sys}</span>
@@ -255,23 +297,7 @@ function rendersystemsConfigForm(rigId) {
                 <input type="checkbox" class="sys-contract-check" data-system="${sys}" ${isContract ? 'checked' : ''}>
                 Contrato
             </label>
-            <select class="select-mail-status" data-system="${sys}" ${isContract ? 'disabled' : ''}>
-                <option value="INACTIVO" ${mailValue === 'INACTIVO' ? 'selected' : ''}>Inactivo</option>
-                <option value="SOLICITADO_MAIL" ${mailValue === 'SOLICITADO_MAIL' ? 'selected' : ''}>Solicitado va Mail (Eventual)</option>
-            </select>
         `;
-
-        const check = row.querySelector('.sys-contract-check');
-        const select = row.querySelector('.select-mail-status');
-        
-        check.addEventListener('change', () => {
-            if (check.checked) {
-                select.value = 'INACTIVO';
-                select.disabled = true;
-            } else {
-                select.disabled = false;
-            }
-        });
 
         systemsConfigList.appendChild(row);
     });
@@ -847,11 +873,11 @@ loginForm.addEventListener('submit', (e) => {
             if (foundUser) {
                 doLogin(foundUser);
             } else {
-                loginError.classList.remove('hidden');
+                loginError.classList.add('hidden');
             }
         }).catch(err => {
             console.error("Error consultando Firebase en login:", err);
-            loginError.classList.remove('hidden');
+            loginError.classList.add('hidden');
         }).finally(() => {
             loginName.disabled = false;
             loginPassword.disabled = false;
@@ -880,16 +906,19 @@ requestForm.addEventListener('submit', (e) => {
     rows.forEach(row => {
         const sys = row.querySelector('.sys-contract-check').getAttribute('data-system');
         const isContract = row.querySelector('.sys-contract-check').checked;
-        const mailStatus = row.querySelector('.select-mail-status').value;
+        const oldModality = rigsData[rigIndex].systems[sys];
 
-        let newModality = MODALITIES.INACTIVO;
+        let newModality = oldModality;
+
         if (isContract) {
             newModality = MODALITIES.CONTRATO;
-        } else if (mailStatus === 'SOLICITADO_MAIL') {
-            newModality = MODALITIES.SOLICITADO_MAIL;
+        } else {
+            // Si desmarcan contrato, y estaba en CONTRATO, vuelve a INACTIVO.
+            // Si ya estaba en SOLICITADO_MAIL, lo dejamos intacto (no lo pisamos).
+            if (oldModality === MODALITIES.CONTRATO) {
+                newModality = MODALITIES.INACTIVO;
+            }
         }
-
-        const oldModality = rigsData[rigIndex].systems[sys];
 
         // Registrar en el historial y base de datos si hubo cambios
         if (oldModality !== newModality) {
@@ -1155,23 +1184,191 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
 // 8.5 PLANILLA DE CARGA RPIDA TIPO EXCEL (V1.0.9)
 // ==============================================================
 
-// Estructura en memoria para conservar los datos temporales del Excel (5 filas)
-let excelTempData = Array.from({ length: 5 }, () => ({
+// Estructura en memoria para conservar los datos temporales del Excel (1 fila por defecto)
+let excelTempData = Array.from({ length: 1 }, () => ({
     rig: '',
     system: '',
     ourContact: '',
     sender: '',
-    date: ''
+    date: '',
+    time: ''
 }));
 
-// Renderiza la planilla dinmica con exactamente 5 filas
+// Helper para actualizar datos activos (Administradores)
+window.updateActiveRowData = function(reqId, field, value) {
+    const req = requestsHistory.find(r => r.id === reqId);
+    if (!req) return;
+    
+    if (field === 'date' || field === 'time') {
+        let d = req.date ? new Date(req.date) : new Date();
+        if (field === 'date') {
+            const [yyyy, mm, dd] = value.split('-');
+            d.setFullYear(yyyy, mm - 1, dd);
+        } else if (field === 'time') {
+            const [hh, min] = value.split(':');
+            d.setHours(hh, min, 0, 0);
+        }
+        req.date = d.toISOString();
+    } else {
+        req[field] = value;
+    }
+};
+
+window.saveActiveRow = function(reqId) {
+    const req = requestsHistory.find(r => r.id === reqId);
+    if (!req) return;
+    db.collection('history').doc(req.id).set(req);
+    renderExcelSpreadsheet();
+};
+
+window.enableEditRow = function(reqId) {
+    const tr = document.getElementById(`active-row-${reqId}`);
+    if (!tr) return;
+    tr.querySelectorAll('input').forEach(input => input.disabled = false);
+    
+    const btnEdit = tr.querySelector('.btn-edit-active');
+    const btnSave = tr.querySelector('.btn-save-active');
+    if (btnEdit) btnEdit.style.display = 'none';
+    if (btnSave) btnSave.style.display = 'inline-block';
+};
+
+window.deleteActiveRow = function(reqId) {
+    if (!confirm('¿Estás segura de que deseas eliminar este registro por completo? Esta acción lo borrará de la tabla y desactivará el estado "Va Mail" del equipo. Esta acción no se puede deshacer.')) return;
+
+    const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
+    if (reqIndex === -1) return;
+    
+    const req = requestsHistory[reqIndex];
+    
+    // Volver el estado del Rig a Inactivo
+    const rigIndex = rigsData.findIndex(r => r.id === req.rig);
+    if (rigIndex !== -1 && rigsData[rigIndex].systems[req.system] === MODALITIES.SOLICITADO_MAIL) {
+        rigsData[rigIndex].systems[req.system] = MODALITIES.INACTIVO;
+        db.collection('rigs').doc(req.rig).update({
+            [`systems.${req.system}`]: MODALITIES.INACTIVO
+        });
+    }
+
+    // Eliminar el registro
+    requestsHistory.splice(reqIndex, 1);
+    db.collection('history').doc(req.id).delete().then(() => {
+        renderExcelSpreadsheet();
+        renderExcelHistory();
+        renderRigsGrid();
+        calculateKPIs();
+        if(typeof showToast === 'function') showToast('Registro eliminado correctamente.', 'success');
+    });
+};
+
+window.deleteHistoryRow = function(reqId) {
+    if (!confirm('¿Estás segura de que deseas eliminar este registro del historial? Esta acción no se puede deshacer.')) return;
+
+    const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
+    if (reqIndex === -1) return;
+    
+    // Eliminar el registro de memoria
+    requestsHistory.splice(reqIndex, 1);
+    
+    // Eliminar de Firebase
+    db.collection('history').doc(reqId).delete().then(() => {
+        renderExcelHistory();
+        if(typeof showToast === 'function') showToast('Registro histórico eliminado.', 'success');
+    });
+};
+
+// Renderiza la planilla dinmica
 function renderExcelSpreadsheet() {
     const tbody = document.getElementById('excelTableBody');
     if (!tbody) return;
 
     tbody.innerHTML = '';
+    
+    let globalRowIndex = 0;
+    const isAdmin = can('delete');
 
-    for (let i = 0; i < 5; i++) {
+    // 1. Mostrar las solicitudes activas
+    const activeReqs = [];
+    rigsData.forEach(rig => {
+        OFFICIAL_systems.forEach(sys => {
+            if (rig.systems[sys] === MODALITIES.SOLICITADO_MAIL) {
+                const req = requestsHistory.find(r => r.rig === rig.id && r.system === sys && r.modality === MODALITIES.SOLICITADO_MAIL);
+                if (req) activeReqs.push(req);
+            }
+        });
+    });
+
+    activeReqs.forEach(req => {
+        globalRowIndex++;
+        const tr = document.createElement('tr');
+        tr.id = `active-row-${req.id}`;
+        
+        const isSuperAdmin = can('manage_users');
+        const isEditable = 'disabled';
+        
+        let dateVal = '';
+        let timeVal = '';
+        if (req.date) {
+            const d = new Date(req.date);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            const hh = String(d.getHours()).padStart(2, '0');
+            const min = String(d.getMinutes()).padStart(2, '0');
+            dateVal = `${yyyy}-${mm}-${dd}`;
+            timeVal = `${hh}:${min}`;
+        }
+
+        tr.innerHTML = `
+            <td class="excel-row-num" style="background: rgba(217, 70, 239, 0.1); color: #d946ef; font-weight: bold; text-align: center;" title="Servicio Activo">${globalRowIndex}</td>
+            <td>
+                <select class="excel-select excel-rig-select" disabled style="opacity: 0.8; color: #d946ef;">
+                    <option value="${req.rig}">${req.rig}</option>
+                </select>
+            </td>
+            <td>
+                <select class="excel-select excel-system-select" disabled style="opacity: 0.8; color: #d946ef;">
+                    <option value="${req.system}">${req.system}</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" class="excel-input excel-ourcontact-input" placeholder="Contacto Previo..." value="${req.ourContact || ''}" ${isEditable} onchange="window.updateActiveRowData('${req.id}', 'ourContact', this.value)">
+            </td>
+            <td>
+                <input type="email" class="excel-input excel-sender-input" placeholder="Remitente..." value="${req.sender || ''}" ${isEditable} onchange="window.updateActiveRowData('${req.id}', 'sender', this.value)">
+            </td>
+            <td>
+                <input type="date" class="excel-input excel-date-input" value="${dateVal}" ${isEditable} onchange="window.updateActiveRowData('${req.id}', 'date', this.value)">
+            </td>
+            <td>
+                <input type="time" class="excel-input excel-time-input" value="${timeVal}" ${isEditable} onchange="window.updateActiveRowData('${req.id}', 'time', this.value)">
+            </td>
+            <td>
+                <div class="excel-row-actions">
+                    ${isSuperAdmin ? `
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <div style="flex: 1; display: flex; justify-content: flex-start;">
+                                <span class="dot" style="background-color: #10b981; width: 18px; height: 18px; box-shadow: 0 0 8px rgba(16, 185, 129, 0.7); margin-left: 10px;" title="Procesada"></span>
+                            </div>
+                            <div style="flex: 1; display: flex; justify-content: center;">
+                                <button type="button" class="btn btn-operator btn-excel-action btn-edit-active" onclick="window.enableEditRow('${req.id}')" style="background: rgba(14, 116, 144, 0.1); color: var(--color-cyan); border: 1px solid rgba(14, 116, 144, 0.4); padding: 4px 12px; font-size: 0.8rem; margin: 0;">Editar</button>
+                                <button type="button" class="btn btn-operator btn-excel-action btn-save-active" onclick="window.saveActiveRow('${req.id}')" style="display: none; background: rgba(217, 70, 239, 0.15); color: #d946ef; border: 1px solid rgba(217, 70, 239, 0.4); padding: 4px 12px; font-size: 0.8rem; margin: 0;">Guardar</button>
+                            </div>
+                            <div style="flex: 1; display: flex; justify-content: flex-end;">
+                                <button type="button" class="btn btn-operator btn-excel-action" onclick="window.deleteActiveRow('${req.id}')" style="background: transparent; color: #ef4444; border: none; padding: 4px 10px; margin: 0; cursor: pointer;" title="Eliminar Registro">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                </button>
+                            </div>
+                        </div>
+                    ` : `<span style="font-size: 0.95rem; color: #10b981; display: flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600; text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Procesada</span>`}
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // 2. Mostrar las filas de carga nueva (excelTempData)
+    for (let i = 0; i < excelTempData.length; i++) {
+        globalRowIndex++;
         const rowData = excelTempData[i];
         const tr = document.createElement('tr');
         if (!currentUser) {
@@ -1191,9 +1388,10 @@ function renderExcelSpreadsheet() {
         });
 
         const isEditable = currentUser ? '' : 'disabled';
+        const showClearBtn = (currentUser && currentUser.role === 'SUPER_ADMIN') ? '' : 'display: none;';
 
         tr.innerHTML = `
-            <td class="excel-row-num">${i + 1}</td>
+            <td class="excel-row-num" style="text-align: center;">${globalRowIndex}</td>
             <td>
                 <select class="excel-select excel-rig-select" data-row="${i}" ${isEditable} onchange="window.updateExcelTempData(${i}, 'rig', this.value)">
                     ${rigOptions}
@@ -1214,9 +1412,12 @@ function renderExcelSpreadsheet() {
                 <input type="date" class="excel-input excel-date-input" data-row="${i}" value="${rowData.date || ''}" ${isEditable} onchange="window.updateExcelTempData(${i}, 'date', this.value)">
             </td>
             <td>
+                <input type="time" class="excel-input excel-time-input" data-row="${i}" value="${rowData.time || ''}" ${isEditable} onchange="window.updateExcelTempData(${i}, 'time', this.value)">
+            </td>
+            <td>
                 <div class="excel-row-actions">
                     <button type="button" class="btn btn-success btn-excel-action" ${isEditable} onclick="window.processExcelRow(${i})">Procesar</button>
-                    <button type="button" class="btn btn-operator btn-operator-none btn-excel-action" ${isEditable} style="border: 1px solid rgba(255, 68, 68, 0.4); text-shadow: none;" onclick="window.clearExcelRow(${i})">Limpiar</button>
+                    <button type="button" class="btn btn-operator btn-operator-none btn-excel-action" ${isEditable} style="border: 1px solid rgba(255, 68, 68, 0.4); text-shadow: none; ${showClearBtn}" onclick="window.clearExcelRow(${i})">Limpiar</button>
                 </div>
             </td>
         `;
@@ -1242,12 +1443,17 @@ function renderExcelHistory() {
 
     tbody.innerHTML = '';
 
-    // Filtrar solicitudes del tipo SOLICITADO_MAIL
-    const mailRequests = requestsHistory.filter(req => req.modality === MODALITIES.SOLICITADO_MAIL);
+    // Filtrar solicitudes finalizadas: Eran SOLICITADO_MAIL pero ya no estn activas
+    const finalizedMailReqs = requestsHistory.filter(req => {
+        if (req.modality !== MODALITIES.SOLICITADO_MAIL) return false;
+        const rigObj = rigsData.find(r => r.id === req.rig);
+        if (!rigObj) return true; // Si el rig fue borrado, se considera finalizado
+        return rigObj.systems[req.system] !== MODALITIES.SOLICITADO_MAIL;
+    });
 
-    // Tomar las 5 más recientes
-    for (let i = 0; i < 5; i++) {
-        const req = mailRequests[i];
+    // Tomar las 60 ms recientes
+    for (let i = 0; i < 60; i++) {
+        const req = finalizedMailReqs[i];
         const tr = document.createElement('tr');
 
         if (req) {
@@ -1268,9 +1474,20 @@ function renderExcelHistory() {
                 <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-secondary);">${req.sender}</td>
                 <td>${formattedDateStr}</td>
                 <td style="text-align: center;">
-                    <span class="system-status-dot-label status-SOLICITADO_MAIL" style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; background: rgba(217, 70, 239, 0.08); border: 1px solid rgba(217, 70, 239, 0.15); color: #f472b6;">
-                        <span class="dot" style="background-color: #d946ef;"></span> Procesado
+                    ${can('manage_users') ? `
+                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px;">
+                        <span style="font-size: 0.85rem; color: #3b82f6; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Cerrado
+                        </span>
+                        <button type="button" class="btn btn-operator btn-excel-action" onclick="window.deleteHistoryRow('${req.id}')" style="background: transparent; color: #ef4444; border: none; padding: 4px; margin: 0; cursor: pointer;" title="Eliminar Registro Histórico">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        </button>
+                    </div>
+                    ` : `
+                    <span style="font-size: 0.85rem; color: #3b82f6; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Cerrado
                     </span>
+                    `}
                 </td>
             `;
         } else {
@@ -1303,7 +1520,8 @@ window.clearExcelRow = function(rowIndex) {
             system: '',
             ourContact: '',
             sender: '',
-            date: ''
+            date: '',
+            time: ''
         };
     }
 
@@ -1316,6 +1534,7 @@ window.clearExcelRow = function(rowIndex) {
             rowEl.querySelector('.excel-ourcontact-input').value = '';
             rowEl.querySelector('.excel-sender-input').value = '';
             rowEl.querySelector('.excel-date-input').value = '';
+            rowEl.querySelector('.excel-time-input').value = '';
         }
     }
 };
@@ -1330,6 +1549,7 @@ window.processExcelRow = function(rowIndex) {
     const ourContact = row.ourContact ? row.ourContact.trim() : '';
     const sender = row.sender.trim();
     const dateVal = row.date;
+    const timeVal = row.time;
 
     if (!rigId) {
         alert(`Fila ${rowIndex + 1}: Seleccione un Equipo (Rig).`);
@@ -1343,15 +1563,28 @@ window.processExcelRow = function(rowIndex) {
         alert(`Fila ${rowIndex + 1}: Ingrese el Remitente de la solicitud.`);
         return;
     }
+    if (!dateVal) {
+        alert(`Fila ${rowIndex + 1}: Seleccione la Fecha de recepción.`);
+        return;
+    }
+    if (!timeVal) {
+        alert(`Fila ${rowIndex + 1}: Ingrese la Hora de recepción.`);
+        return;
+    }
 
     // Timezone safe-parsing
-    let isoDate;
+    let d = new Date();
     if (dateVal) {
-        isoDate = new Date(dateVal + "T12:00:00").toISOString();
-    } else {
-        const todayStr = new Date().toISOString().split('T')[0];
-        isoDate = new Date(todayStr + "T12:00:00").toISOString();
+        const [yyyy, mm, dd] = dateVal.split('-');
+        d.setFullYear(yyyy, mm - 1, dd);
     }
+    if (timeVal) {
+        const [hh, min] = timeVal.split(':');
+        d.setHours(hh, min, 0, 0);
+    } else {
+        d.setHours(12, 0, 0, 0);
+    }
+    let isoDate = d.toISOString();
 
     const rigIndex = rigsData.findIndex(r => r.id === rigId);
     if (rigIndex === -1) return;
@@ -1399,28 +1632,29 @@ if (btnExcelProcessAll) {
         let processedCount = 0;
         let anyChange = false;
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < excelTempData.length; i++) {
             const row = excelTempData[i];
             const rigId = row.rig;
             const system = row.system;
             const ourContact = row.ourContact ? row.ourContact.trim() : '';
             const sender = row.sender.trim();
             const dateVal = row.date;
+            const timeVal = row.time;
 
-            // Fila completa si tiene Rig y Servicio seleccionados
-            if (rigId && system) {
-                if (!sender) {
-                    alert(`Fila ${i + 1}: Falta ingresar el remitente.`);
-                    return; // Detiene el procesamiento grupal para corregir el dato
-                }
-
-                let isoDate;
+            // Fila completa si tiene todos los datos obligatorios
+            if (rigId && system && sender && dateVal && timeVal) {
+                let d = new Date();
                 if (dateVal) {
-                    isoDate = new Date(dateVal + "T12:00:00").toISOString();
-                } else {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    isoDate = new Date(todayStr + "T12:00:00").toISOString();
+                    const [yyyy, mm, dd] = dateVal.split('-');
+                    d.setFullYear(yyyy, mm - 1, dd);
                 }
+                if (timeVal) {
+                    const [hh, min] = timeVal.split(':');
+                    d.setHours(hh, min, 0, 0);
+                } else {
+                    d.setHours(12, 0, 0, 0);
+                }
+                let isoDate = d.toISOString();
 
                 const rigIndex = rigsData.findIndex(r => r.id === rigId);
                 if (rigIndex !== -1) {
@@ -2380,5 +2614,18 @@ checkSession();
 
 
 
+
+
+
+
+
+// Add Row Button
+const btnAddExcelRow = document.getElementById('btnAddExcelRow');
+if (btnAddExcelRow) {
+    btnAddExcelRow.addEventListener('click', () => {
+        excelTempData.push({ rig: '', system: '', ourContact: '', sender: '', date: '', time: '' });
+        renderExcelSpreadsheet();
+    });
+}
 
 

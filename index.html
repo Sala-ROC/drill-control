@@ -388,7 +388,7 @@
                             Gestión Maestra
                         </h4>
                         <p style="font-size: 0.85rem; color: #a1a1aa; margin-bottom: 15px;">Añade nuevos equipos o clientes operativos al sistema.</p>
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <div style="display: flex; gap: 10px;">
                             <button id="btnAddRig" type="button" class="btn" style="flex: 1; background: rgba(245, 158, 11, 0.1); color: var(--color-amber); border: 1px solid var(--color-amber);">
                                 + Añadir Equipo
                             </button>
@@ -396,10 +396,6 @@
                                 + Añadir Operadora
                             </button>
                         </div>
-                        <button onclick="window.forceFirebaseSync()" type="button" class="btn btn-full" style="background: rgba(0, 210, 255, 0.15); color: var(--color-cyan); border: 1px solid var(--color-cyan); font-weight: bold;">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:text-bottom; margin-right:5px;"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
-                            Forzar Sincronización a la Nube
-                        </button>
                     </div>
 
                     <!-- Mensaje para no autorizados -->
@@ -508,25 +504,26 @@
                             <th style="width: 180px;">Servicio Solicitado</th>
                             <th style="width: 200px;">Contacto Previo (Equipo)</th>
                             <th>Remitente (Cliente)</th>
-                            <th style="width: 160px;">Fecha Recibido (Mini-Calendario)</th>
+                            <th style="width: 160px;">Fecha Recibido</th>
+                            <th style="width: 120px;">Hora</th>
                             <th style="width: 150px; text-align: center;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="excelTableBody">
-                        <!-- Las 5 filas de carga rápida se inyectarán de forma dinámica en app.js -->
+                        <!-- Las filas se inyectarán de forma dinámica en app.js -->
                     </tbody>
                 </table>
+
             </div>
 
-            <!-- Histórico de últimas 5 solicitudes procesadas -->
+            <!-- Histórico de últimas solicitudes procesadas -->
             <div class="excel-history-header" style="margin-top: 25px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-top: 1px dashed rgba(217, 70, 239, 0.15); padding-top: 15px;">
                 <div class="excel-icon" style="width: 30px; height: 30px; background: rgba(0, 210, 255, 0.08); color: var(--color-cyan); display: flex; align-items: center; justify-content: center; border-radius: 6px;">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                 </div>
-                <h3 style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin: 0;">Histórico de las Últimas 5 Solicitudes Procesadas (Mail)</h3>
+                <h3 style="margin: 0; font-size: 1.1rem;">Histórico de últimas 60 solicitudes</h3>
             </div>
-
-            <div class="excel-table-container">
+            <div class="excel-table-container" style="max-height: 400px; overflow-y: auto;">
                 <table class="excel-table" style="min-width: 900px;">
                     <thead>
                         <tr>
