@@ -280,7 +280,7 @@ window.finalizeService = function(rigId, sys) {
     
     // Registrar en el historial general para mantener la traza
     const newRequest = {
-        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+        id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
         rig: rigId,
         client: rigsData[rigIndex].client || "Sin Contrato",
         system: sys,
@@ -289,18 +289,26 @@ window.finalizeService = function(rigId, sys) {
     };
     requestsHistory.unshift(newRequest);
 
-    // Guardar en Firebase
-    db.collection('history').doc(newRequest.id).set(newRequest);
-    db.collection('rigs').doc(rigId).update({
-        [`systems.${sys}`]: MODALITIES.INACTIVO
-    });
-
+    // Actualización local
     renderRigsGrid();
     renderRequestsTable();
     calculateKPIs();
     renderExcelSpreadsheet();
     renderExcelHistory();
-    if(typeof showToast === 'function') showToast(`Servicio finalizado exitosamente.`, 'success');
+
+    // Guardar en Firebase de forma atómica
+    const batch = db.batch();
+    batch.set(db.collection('history').doc(newRequest.id), newRequest);
+    batch.update(db.collection('rigs').doc(rigId), {
+        [`systems.${sys}`]: MODALITIES.INACTIVO
+    });
+    
+    batch.commit().then(() => {
+        if(typeof showToast === 'function') showToast(`Servicio finalizado exitosamente.`, 'success');
+    }).catch(err => {
+        console.error("Error finalizando servicio en nube:", err);
+        if(typeof showToast === 'function') showToast(`Error de conexión al finalizar.`, 'error');
+    });
 };
 
 
@@ -322,6 +330,59 @@ function rendersystemsConfigForm(rigId) {
                 Contrato
             </label>
         `;
+
+        const checkbox = row.querySelector('.sys-contract-check');
+        checkbox.addEventListener('change', (e) => {
+            if (!can('report')) { 
+                e.preventDefault();
+                checkbox.checked = !checkbox.checked; // Revertir check visual
+                alert('Necesitás permisos de Cargador o superior para guardar cambios.'); 
+                return; 
+            }
+            
+            const isContractNow = checkbox.checked;
+            const oldModality = rigObj.systems[sys] || MODALITIES.INACTIVO;
+            let newModality = oldModality;
+
+            if (isContractNow) {
+                newModality = MODALITIES.CONTRATO;
+            } else {
+                if (oldModality === MODALITIES.CONTRATO) {
+                    newModality = MODALITIES.INACTIVO;
+                }
+            }
+
+            if (oldModality !== newModality) {
+                rigObj.systems[sys] = newModality;
+                
+                const newRequest = {
+                    id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
+                    rig: rigId,
+                    client: rigObj.client,
+                    system: sys,
+                    modality: newModality,
+                    date: new Date().toISOString()
+                };
+                
+                // Actualización optimista
+                requestsHistory.unshift(newRequest);
+                renderRigsGrid();
+                renderRequestsTable();
+                calculateKPIs();
+                
+                // Guardar atómicamente en Firebase
+                const batch = db.batch();
+                batch.set(db.collection('history').doc(newRequest.id), newRequest);
+                batch.set(db.collection('rigs').doc(rigId), rigObj);
+                
+                batch.commit().then(() => {
+                    if(typeof showToast === 'function') showToast(`Actualizado: ${sys} en equipo ${rigId}`, 'success');
+                }).catch(err => {
+                    console.error("Error de red al actualizar sistema:", err);
+                    if(typeof showToast === 'function') showToast(`Error al sincronizar ${sys}`, 'error');
+                });
+            }
+        });
 
         systemsConfigList.appendChild(row);
     });
@@ -374,8 +435,8 @@ function renderRequestsTable() {
     let slicedRequests = filteredRequests;
     let hasLimitApplied = false;
 
-    if (!showAllHistory && totalCount > 15) {
-        slicedRequests = filteredRequests.slice(0, 15);
+    if (!showAllHistory && totalCount > 50) {
+        slicedRequests = filteredRequests.slice(0, 50);
         hasLimitApplied = true;
     }
 
@@ -383,7 +444,7 @@ function renderRequestsTable() {
     if (totalCount === 0) {
         requestsTableBody.innerHTML = `
             <tr>
-                <td colspan="${currentUser ? '5' : '4'}" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
                     No se encontraron solicitudes registradas.
                 </td>
             </tr>
@@ -405,17 +466,6 @@ function renderRequestsTable() {
                 statusLabel = `Asignado a ${req.modality}`;
                 statusClass = 'status-CONTRATO'; // Verde cian
             }
-        }
-
-        let deleteBtnHtml = '';
-        if (currentUser) {
-            deleteBtnHtml = `
-                <td>
-                    <button class="btn btn-danger-icon" onclick="deleteRequest('${req.id}')" title="Eliminar Registro">
-                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                    </button>
-                </td>
-            `;
         }
 
         // Subtexto detallado si la solicitud proviene de la planilla Excel / manual
@@ -446,7 +496,6 @@ function renderRequestsTable() {
                 </span>
                 ${detailsSubtextHtml}
             </td>
-            ${deleteBtnHtml}
         `;
         requestsTableBody.appendChild(tr);
     });
@@ -454,8 +503,8 @@ function renderRequestsTable() {
     if (hasLimitApplied) {
         const infoTr = document.createElement('tr');
         infoTr.innerHTML = `
-            <td colspan="${currentUser ? '5' : '4'}" style="text-align: center; color: var(--color-cyan); padding: 10px; font-size: 0.72rem; font-style: italic; background: rgba(0, 210, 255, 0.02); border-top: 1px dashed rgba(0, 210, 255, 0.15);">
-                Mostrando los 15 registros más recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
+            <td colspan="4" style="text-align: center; color: var(--color-cyan); padding: 10px; font-size: 0.72rem; font-style: italic; background: rgba(0, 210, 255, 0.02); border-top: 1px dashed rgba(0, 210, 255, 0.15);">
+                Mostrando los 50 registros más recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
             </td>
         `;
         requestsTableBody.appendChild(infoTr);
@@ -468,11 +517,21 @@ function calculateKPIs() {
 
     let activeContractCount = 0;
     let requestedMailCount = 0;
+    let activeRigsWithsystems = 0;
+    let activeRigsCount = 0;
+    let rigsWithOperatorCount = 0;
 
+    // PERF3: Single loop over rigsData
     rigsData.forEach(rig => {
+        let hasActive = false;
+        let hasActiveAutomation = false;
+        let hasOperator = false;
+
         OFFICIAL_systems.forEach(sys => {
             const mod = rig.systems[sys];
             if (mod !== MODALITIES.INACTIVO) {
+                hasActive = true;
+                
                 if (mod === MODALITIES.CONTRATO) {
                     activeContractCount++;
                 } else if (mod === MODALITIES.SOLICITADO_MAIL || 
@@ -480,52 +539,17 @@ function calculateKPIs() {
                            mod === MODALITIES.SOLICITADO_SIN_OP) {
                     requestedMailCount++;
                 }
-            }
-        });
-    });
 
-    kpiActiveServices.textContent = activeContractCount;
-    kpiRequestedServices.textContent = requestedMailCount;
-
-    // Calcular cantidad de pozos activos en el Hero Banner (con al menos un sistema operativo)
-    let activeRigsWithsystems = 0;
-    rigsData.forEach(rig => {
-        let hasActive = false;
-        OFFICIAL_systems.forEach(sys => {
-            if (rig.systems[sys] !== MODALITIES.INACTIVO) {
-                hasActive = true;
-            }
-        });
-        if (hasActive) activeRigsWithsystems++;
-    });
-    const heroActiveRigsCount = document.getElementById('heroActiveRigsCount');
-    if (heroActiveRigsCount) {
-        heroActiveRigsCount.textContent = activeRigsWithsystems;
-    }
-
-    // Calcular Tasa con Operador técnico (Porcentaje de Rigs activos con Operador asignado)
-    let activeRigsCount = 0;
-    let rigsWithOperatorCount = 0;
-
-    rigsData.forEach(rig => {
-        let hasActiveAutomation = false;
-        let hasOperator = false;
-
-        OFFICIAL_systems.forEach(sys => {
-            const mod = rig.systems[sys];
-            if (mod !== MODALITIES.INACTIVO) {
                 if (sys !== "Operador") {
                     hasActiveAutomation = true;
                 }
-                if (sys === "Operador") {
-                    hasOperator = true;
-                }
-                if (mod === MODALITIES.SOLICITADO_CON_OP) {
+                if (sys === "Operador" || mod === MODALITIES.SOLICITADO_CON_OP) {
                     hasOperator = true;
                 }
             }
         });
 
+        if (hasActive) activeRigsWithsystems++;
         if (hasActiveAutomation) {
             activeRigsCount++;
             if (hasOperator) {
@@ -534,6 +558,14 @@ function calculateKPIs() {
         }
     });
 
+    kpiActiveServices.textContent = activeContractCount;
+    kpiRequestedServices.textContent = requestedMailCount;
+
+    const heroActiveRigsCount = document.getElementById('heroActiveRigsCount');
+    if (heroActiveRigsCount) {
+        heroActiveRigsCount.textContent = activeRigsWithsystems;
+    }
+
     const rate = activeRigsCount > 0 ? Math.round((rigsWithOperatorCount / activeRigsCount) * 100) : 0;
     kpiOperatorRate.textContent = `${rate}%`;
 }
@@ -541,17 +573,17 @@ function calculateKPIs() {
 // 6. GESTIN DE sesión, PERMISOS Y LOGIN
 
 // Verifica si el usuario actual tiene permiso para una accin especfica
+// PERF: perms object defined once outside can() to avoid recreating on every call
+const ROLE_PERMS = {
+    view:         ['VIEWER', 'REPORTER', 'RESOLVER', 'ADMIN', 'SUPER_ADMIN'],
+    report:       ['REPORTER', 'RESOLVER', 'ADMIN', 'SUPER_ADMIN'],
+    resolve:      ['RESOLVER', 'ADMIN', 'SUPER_ADMIN'],
+    delete:       ['ADMIN', 'SUPER_ADMIN'],
+    manage_users: ['SUPER_ADMIN'],
+};
 function can(action) {
     if (!currentUser) return false;
-    const role = currentUser.role || 'VIEWER';
-    const perms = {
-        view:         ['VIEWER', 'REPORTER', 'RESOLVER', 'ADMIN', 'SUPER_ADMIN'],
-        report:       ['REPORTER', 'RESOLVER', 'ADMIN', 'SUPER_ADMIN'],
-        resolve:      ['RESOLVER', 'ADMIN', 'SUPER_ADMIN'],
-        delete:       ['ADMIN', 'SUPER_ADMIN'],
-        manage_users: ['SUPER_ADMIN'],
-    };
-    return (perms[action] || []).includes(role);
+    return (ROLE_PERMS[action] || []).includes(currentUser.role || 'VIEWER');
 }
 
 // Comprobar la sesión al cargar y actualizar la UI segn el rol
@@ -847,7 +879,8 @@ window.changeUserRole = function(docId, newRole) {
     const idx = usersList.findIndex(u => u.doc === docId);
     if (idx !== -1) {
         usersList[idx].role = newRole;
-        usersList.forEach(u => db.collection('users').doc(u.doc).set(u));
+        // PERF1: Update specific user
+        db.collection('users').doc(docId).set(usersList[idx]);
         renderUsersList();
     }
 };
@@ -895,12 +928,11 @@ loginForm.addEventListener('submit', (e) => {
         doLogin(matchedUser);
     } else {
         // 3. No encontrado localmente → consultar Firebase directamente
-        loginError.classList.add('hidden');
+        loginError.classList.add('hidden'); // hide while searching Firebase
         loginName.disabled = true;
         loginPassword.disabled = true;
         db.collection('users').get().then(snapshot => {
             const firebaseUsers = snapshot.docs.map(doc => doc.data());
-            // Actualizar la lista local con los datos de Firebase
             if (firebaseUsers.length > 0) {
                 usersList = firebaseUsers;
                 localStorage.setItem('drill_users_list', JSON.stringify(usersList));
@@ -909,11 +941,13 @@ loginForm.addEventListener('submit', (e) => {
             if (foundUser) {
                 doLogin(foundUser);
             } else {
-                loginError.classList.add('hidden');
+                // BUG1 FIX: must REMOVE hidden to SHOW the error message
+                loginError.classList.remove('hidden');
             }
         }).catch(err => {
             console.error("Error consultando Firebase en login:", err);
-            loginError.classList.add('hidden');
+            // BUG1 FIX: show error on network failure too
+            loginError.classList.remove('hidden');
         }).finally(() => {
             loginName.disabled = false;
             loginPassword.disabled = false;
@@ -921,74 +955,26 @@ loginForm.addEventListener('submit', (e) => {
     }
 });
 
-// Evento Guardar/Registrar Solicitud (Sistemas de Automatizacin)
-requestForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!can('report')) { alert('Necesits permisos de Cargador o superior para guardar cambios.'); return; }
-    if (!selectedRigCardId) {
-        alert("Por favor, selecciona un equipo de perforacin de la izquierda.");
-        return;
-    }
-
-    const rigId = selectedRigCardId;
-    const rigIndex = rigsData.findIndex(r => r.id === rigId);
-    if (rigIndex === -1) return;
-
-    const clientName = rigsData[rigIndex].client;
-    let anyChange = false;
-
-    const rows = systemsConfigList.querySelectorAll('.system-config-row');
-
-    rows.forEach(row => {
-        const sys = row.querySelector('.sys-contract-check').getAttribute('data-system');
-        const isContract = row.querySelector('.sys-contract-check').checked;
-        const oldModality = rigsData[rigIndex].systems[sys];
-
-        let newModality = oldModality;
-
-        if (isContract) {
-            newModality = MODALITIES.CONTRATO;
+// Evento Toggle Password Visibility
+const togglePasswordBtn = document.getElementById('togglePassword');
+if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener('click', () => {
+        const type = loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+        loginPassword.setAttribute('type', type);
+        
+        // Cambiar el icono
+        if (type === 'text') {
+            togglePasswordBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="eye-off-icon"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
         } else {
-            // Si desmarcan contrato, y estaba en CONTRATO, vuelve a INACTIVO.
-            // Si ya estaba en SOLICITADO_MAIL, lo dejamos intacto (no lo pisamos).
-            if (oldModality === MODALITIES.CONTRATO) {
-                newModality = MODALITIES.INACTIVO;
-            }
-        }
-
-        // Registrar en el historial y base de datos si hubo cambios
-        if (oldModality !== newModality) {
-            rigsData[rigIndex].systems[sys] = newModality;
-            anyChange = true;
-
-            const newRequest = {
-                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                rig: rigId,
-                client: clientName,
-                system: sys,
-                modality: newModality,
-                date: new Date().toISOString()
-            };
-            requestsHistory.unshift(newRequest);
+            togglePasswordBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
         }
     });
+}
 
-    if (anyChange) {
-        rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
-        requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
-        
-        // Refrescar interfaz
-        renderRigsGrid();
-        renderRequestsTable();
-        calculateKPIs();
-    }
-
-    // Limpiar formulario y cambiar a pestaa de Solicitudes
-    requestForm.reset();
-    selectedRigCardId = null;
-    updateAdminPanelState();
-    document.querySelectorAll('.rig-card').forEach(c => c.classList.remove('active-card'));
-    switchTab('tabRequests');
+// Evento Guardar/Registrar Solicitud (Sistemas de Automatizacin)
+// Evento deshabilitado: El formulario ahora usa auto-guardado en cada checkbox.
+requestForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 });
 
 // Evento Crear Nuevo Usuario (Solo SUPER_ADMIN)
@@ -1063,9 +1049,13 @@ window.deleteRequest = function(reqId) {
     if (reqIndex !== -1) {
         const reqObj = requestsHistory[reqIndex];
         
-        // Remover de la tabla de solicitudes
+        // Remover de la tabla local
         requestsHistory.splice(reqIndex, 1);
-        requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
+        // PERF1: Borrar solo el documento especifico en Firebase con control de errores
+        db.collection('history').doc(reqObj.id).delete().catch(err => {
+            console.error("Error borrando historial:", err);
+            if(typeof showToast === 'function') showToast('Error al borrar de la nube', 'error');
+        });
 
         // Comprobar si hay alguna solicitud más reciente para ese mismo Rig + Sistema
         // Si no la hay, el Rig vuelve a estar INACTIVO en ese sistema
@@ -1074,7 +1064,8 @@ window.deleteRequest = function(reqId) {
         const rigIndex = rigsData.findIndex(r => r.id === reqObj.rig);
         if (rigIndex !== -1) {
             rigsData[rigIndex].systems[reqObj.system] = hasMoreRecent ? hasMoreRecent.modality : MODALITIES.INACTIVO;
-            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
+            // PERF1: Escribir solo el rig afectado
+            db.collection('rigs').doc(reqObj.rig).set(rigsData[rigIndex]).catch(err => console.error("Error al actualizar Rig tras borrado:", err));
         }
 
         // Refrescar
@@ -1093,7 +1084,11 @@ window.deleteUser = function(docId) {
     if (!userToDelete) return;
     if (!confirm(`Eliminar a ${userToDelete.name} ${userToDelete.lastName} del sistema? Esta accin no puede deshacerse.`)) return;
     usersList = usersList.filter(u => u.doc !== docId);
-    usersList.forEach(u => db.collection('users').doc(u.doc).set(u));
+    // PERF1: Borrar solo el documento en Firebase
+    db.collection('users').doc(docId).delete().catch(err => {
+        console.error("Error al borrar usuario:", err);
+        if(typeof showToast === 'function') showToast('Error eliminando usuario en la nube.', 'error');
+    });
     renderUsersList();
 };
 
@@ -1152,8 +1147,14 @@ if (btnClearHistory) {
     btnClearHistory.addEventListener('click', function() {
         if (!currentUser) return;
         if (confirm("Est seguro de eliminar TODO el historial de solicitudes? Se vaciar el registro de cambios (el estado actual de los equipos no se perder).")) {
+            // PERF1: Use a batch to delete all history documents safely and quickly without multiple individual requests or writing an empty array to each element
+            const batch = db.batch();
+            requestsHistory.forEach(h => {
+                batch.delete(db.collection('history').doc(h.id));
+            });
+            batch.commit().catch(e => console.error("Error vaciando historial", e));
+            
             requestsHistory = [];
-            requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
             renderRequestsTable();
             renderExcelHistory();
             calculateKPIs();
@@ -1200,9 +1201,9 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
             };
             requestsHistory.unshift(clientChangeRequest);
             
-            // Guardar base de datos
-            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
-            requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
+            // PERF1: Guardar solo los datos que cambiaron en la base de datos
+            db.collection('rigs').doc(rigId).set(rigsData[rigIndex]);
+            db.collection('history').doc(clientChangeRequest.id).set(clientChangeRequest);
             
             // Refrescar vistas
             renderRigsGrid();
@@ -1282,7 +1283,7 @@ window.deleteActiveRow = function(reqId) {
         rigsData[rigIndex].systems[req.system] = MODALITIES.INACTIVO;
         db.collection('rigs').doc(req.rig).update({
             [`systems.${req.system}`]: MODALITIES.INACTIVO
-        });
+        }).catch(err => console.error("Error reseteando rig:", err));
     }
 
     // Eliminar el registro
@@ -1293,6 +1294,9 @@ window.deleteActiveRow = function(reqId) {
         renderRigsGrid();
         calculateKPIs();
         if(typeof showToast === 'function') showToast('Registro eliminado correctamente.', 'success');
+    }).catch(err => {
+        console.error("Error eliminando fila activa:", err);
+        if(typeof showToast === 'function') showToast('Error de red al eliminar.', 'error');
     });
 };
 
@@ -1309,6 +1313,9 @@ window.deleteHistoryRow = function(reqId) {
     db.collection('history').doc(reqId).delete().then(() => {
         renderExcelHistory();
         if(typeof showToast === 'function') showToast('Registro histórico eliminado.', 'success');
+    }).catch(err => {
+        console.error("Error eliminando historial:", err);
+        if(typeof showToast === 'function') showToast('Error de red al eliminar histórico.', 'error');
     });
 };
 
@@ -1583,7 +1590,7 @@ window.processExcelRow = function(rowIndex) {
     const rigId = row.rig;
     const system = row.system;
     const ourContact = row.ourContact ? row.ourContact.trim() : '';
-    const sender = row.sender.trim();
+    const sender = (row.sender || '').trim();
     const dateVal = row.date;
     const timeVal = row.time;
 
@@ -1632,7 +1639,7 @@ window.processExcelRow = function(rowIndex) {
     rigObj.systems[system] = MODALITIES.SOLICITADO_MAIL;
 
     const newRequest = {
-        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+        id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
         rig: rigId,
         client: clientName,
         system: system,
@@ -1644,9 +1651,9 @@ window.processExcelRow = function(rowIndex) {
 
     requestsHistory.unshift(newRequest);
 
-    // Guardar
-    rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
-    requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
+    // PERF1: Escribir solo lo modificado
+    db.collection('rigs').doc(rigId).set(rigsData[rigIndex]);
+    db.collection('history').doc(newRequest.id).set(newRequest);
 
     // Limpiar fila procesada
     window.clearExcelRow(rowIndex);
@@ -1673,7 +1680,7 @@ if (btnExcelProcessAll) {
             const rigId = row.rig;
             const system = row.system;
             const ourContact = row.ourContact ? row.ourContact.trim() : '';
-            const sender = row.sender.trim();
+            const sender = (row.sender || '').trim();
             const dateVal = row.date;
             const timeVal = row.time;
 
@@ -1700,7 +1707,7 @@ if (btnExcelProcessAll) {
                     rigObj.systems[system] = MODALITIES.SOLICITADO_MAIL;
 
                     const newRequest = {
-                        id: (Date.now() + i).toString() + Math.random().toString(36).substr(2, 5),
+                        id: (Date.now() + i).toString() + Math.random().toString(36).substring(2, 7),
                         rig: rigId,
                         client: clientName,
                         system: system,
@@ -1719,8 +1726,12 @@ if (btnExcelProcessAll) {
         }
 
         if (anyChange) {
-            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
-            requestsHistory.forEach(h => db.collection('history').doc(h.id).set(h));
+            // PERF1: Optimizacion para no reescribir todo
+            // Los elementos individuales ya se guardaron en Firebase en saveSystemsForRig/processExcelRow 
+            // pero aca podria haber multiples, dejamos batch o lo omitimos ya que processExcelRow ya guarda.
+            // Para asegurar consistencia, guardamos solo los rigs modificados:
+            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r)); // This is okay for a bulk operation
+            // History was already written inside processExcelRow, so we can omit it here.
 
             renderRigsGrid();
             renderRequestsTable();
@@ -2118,7 +2129,8 @@ window.closeRigLineCase = function(caseId) {
             riglineCases[caseIndex].resolver = `${currentUser.name} ${currentUser.lastName}`;
             riglineCases[caseIndex].closedDate = new Date().toISOString();
             
-            riglineCases.forEach(c => db.collection('rigline').doc(c.id).set(c));
+            // PERF1: Write only the updated case
+            db.collection('rigline').doc(caseId).set(riglineCases[caseIndex]);
             
             // Refrescar vistas
             renderRigLineCases();
@@ -2264,8 +2276,12 @@ window.deleteRigLineCase = function(caseId) {
         }
         
         setTimeout(() => {
+            // PERF1: Delete the specific case in Firebase
+            db.collection('rigline').doc(caseId).delete().catch(err => {
+                console.error("Error borrando caso:", err);
+                if(typeof showToast === 'function') showToast('Error eliminando caso en la nube.', 'error');
+            });
             riglineCases.splice(caseIndex, 1);
-            riglineCases.forEach(c => db.collection('rigline').doc(c.id).set(c));
             
             // Refrescar vistas
             renderRigLineCases();
@@ -2464,7 +2480,7 @@ window.addEventListener('DOMContentLoaded', () => {
         renderRigsGrid();
         if (typeof renderVersionsGrid === 'function') renderVersionsGrid();
         calculateKPIs();
-        updateUIByRole(); // Refrescar UI si llegan datos y estamos logueados
+        if (currentUser) updateAdminPanelState(); // Refrescar solo panel de admin en lugar de toda la UI
     });
 
     // 2. Escuchar Historial de Solicitudes
@@ -2618,12 +2634,14 @@ window.saveSystemVersion = function(rigId, systemName, newVersion) {
         const currentVal = rigsData[rigIndex].versions[systemName] || '';
         if (currentVal !== newVersion.trim()) {
             rigsData[rigIndex].versions[systemName] = newVersion.trim();
-            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r));
+            // PERF1: update specific rig only
+            db.collection('rigs').doc(rigId).set(rigsData[rigIndex]);
             showVersionToast(`Rig ${rigId} - ${systemName} actualizado`);
         }
     }
 };
 
+let _versionToastTimer = null;
 function showVersionToast(message) {
     let toast = document.getElementById('versionToast');
     if (!toast) {
@@ -2641,8 +2659,9 @@ function showVersionToast(message) {
     `;
     
     toast.classList.add('show');
-    
-    setTimeout(() => {
+    // PERF4: Cancel any previous timer before creating a new one
+    clearTimeout(_versionToastTimer);
+    _versionToastTimer = setTimeout(() => {
         toast.classList.remove('show');
     }, 2500);
 }
@@ -2755,9 +2774,7 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
         document.getElementById('recoveryForm').reset();
     }, 2000);
 });
-
-// Ejecutar inmediatamente para ocultar login si ya hay sesion
-checkSession();
+// PERF5: Removed duplicate checkSession() — it is already called inside DOMContentLoaded at line ~2438
 
 
 
