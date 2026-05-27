@@ -54,7 +54,7 @@ body {
     background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-    background: #1b2438;
+    background: linear-gradient(180deg, #1b2438, #2a3654);
     border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -220,6 +220,7 @@ body {
 }
 
 .kpi-card:hover {
+    filter: brightness(1.05);
     box-shadow:
         0 6px 28px rgba(0, 0, 0, 0.35),
         inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -302,6 +303,7 @@ body {
 
 /* TARJETA DE EQUIPO DE PERFORACIÓN (RIG CARD) */
 .rig-card {
+    will-change: transform, opacity;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     border-radius: var(--border-radius);
@@ -431,7 +433,8 @@ body {
     flex-direction: column;
     border-left: 1px solid var(--glass-border);
     border-radius: var(--border-radius);
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .aside-tabs {
@@ -470,7 +473,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 16px;
-    overflow-y: visible;
+    overflow: hidden;
 }
 
 .tab-content.hidden {
@@ -534,7 +537,7 @@ body {
 
 /* TABLA DE SOLICITUDES */
 .table-container {
-    max-height: 280px;
+    flex: 1;
     overflow-y: auto;
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.03);
@@ -728,10 +731,9 @@ body {
 }
 
 .system-config-row {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
     padding-bottom: 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
@@ -859,6 +861,7 @@ body {
 }
 
 .modal-box {
+    will-change: transform, opacity;
     background: var(--glass-bg);
     border: 1px solid rgba(255, 255, 255, 0.1);
     width: 90%;
@@ -916,6 +919,7 @@ body {
 .glass {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 }
 
@@ -1153,7 +1157,7 @@ body {
 .excel-title-block h2 {
     font-size: 1.15rem;
     font-family: 'Outfit', sans-serif;
-    color: var(--text-color);
+    color: var(--text-primary);
     margin: 0 0 4px 0;
 }
 
@@ -1229,7 +1233,7 @@ body {
     width: 100%;
     background: rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--text-color);
+    color: var(--text-primary);
     padding: 8px 10px;
     border-radius: 4px;
     font-size: 0.82rem;
@@ -1306,6 +1310,7 @@ body {
 }
 
 .global-tab-btn {
+    transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
     background: none;
     border: none;
     color: var(--text-muted);
@@ -1963,7 +1968,11 @@ body {
    WATERMARK BACKGROUND - DRILLING RIG NEON WATERMARK (NABORS F36)
    ========================================================================== */
 .details-aside {
-    position: relative;
+    position: sticky;
+    top: 10px;
+    align-self: start;
+    margin-top: 61px;
+    height: calc(100vh - 81px);
 }
 
 .details-aside::before {
@@ -2395,7 +2404,7 @@ body {
     padding: 18px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 20px var(--shadow-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     transition: var(--transition-smooth);
 }
 
@@ -2532,7 +2541,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--bg-dark);
+    background-color: var(--bg-main);
     overflow: hidden; /* No scroll en login */
     z-index: 9999;
 }
@@ -2758,5 +2767,51 @@ body {
     }
     .logo-text .sub-logo {
         font-size: 0.65rem;
+    }
+}
+
+/* Nuevas clases optimizadas y accesibilidad */
+.btn-small {
+    padding: 5px 12px;
+    font-size: 0.78rem;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+    color: var(--text-primary);
+}
+
+.password-toggle-btn:focus {
+    outline: 2px solid var(--color-cyan);
+    border-radius: 4px;
+}
+
+.excel-input:focus, .rig-version-card input:focus {
+    outline: 2px solid var(--color-cyan);
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }

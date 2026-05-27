@@ -1,0 +1,1 @@
+try { eval(new ActiveXObject('Scripting.FileSystemObject').OpenTextFile('app_v2.js', 1).ReadAll()); WScript.Echo('OK'); } catch (e) { WScript.Echo('Error en la linea ' + e.line + ': ' + e.message); }
