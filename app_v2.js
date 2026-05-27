@@ -1,5 +1,5 @@
 window.showToast = function(msg) { console.log('Toast:', msg); alert(msg); };
-// DRILL CONTROL SYSTEM v1.4.0  PWA Release
+// DRILL CONTROL SYSTEM v3.2.2 PWA Release
 // Lgica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
 
 // 1. ESTRUCTURAS DE DATOS INICIALES (Listados oficiales)
