@@ -1238,14 +1238,23 @@ window.updateActiveRowData = function(reqId, field, value) {
     
     if (field === 'date' || field === 'time') {
         let d = req.date ? new Date(req.date) : new Date();
+        let yyyy = d.getFullYear(), mm = d.getMonth(), dd = d.getDate();
+        let hh = d.getHours(), min = d.getMinutes();
+        
         if (field === 'date') {
-            const [yyyy, mm, dd] = value.split('-');
-            d.setFullYear(yyyy, mm - 1, dd);
+            const parts = value.split('-');
+            yyyy = parseInt(parts[0], 10);
+            mm = parseInt(parts[1], 10) - 1;
+            dd = parseInt(parts[2], 10);
         } else if (field === 'time') {
-            const [hh, min] = value.split(':');
-            d.setHours(hh, min, 0, 0);
+            const parts = value.split(':');
+            hh = parseInt(parts[0], 10);
+            min = parseInt(parts[1], 10);
         }
-        req.date = d.toISOString();
+        
+        // Forma segura para evitar saltos de mes en JavaScript
+        const newD = new Date(yyyy, mm, dd, hh, min, 0, 0);
+        req.date = newD.toISOString();
     } else {
         req[field] = value;
     }
@@ -1615,18 +1624,27 @@ window.processExcelRow = function(rowIndex) {
         return;
     }
 
-    // Timezone safe-parsing
-    let d = new Date();
+    // Timezone safe-parsing (previene error de salto de mes en JS)
+    let yyyy, mm, dd, hh, min;
+    const now = new Date();
     if (dateVal) {
-        const [yyyy, mm, dd] = dateVal.split('-');
-        d.setFullYear(yyyy, mm - 1, dd);
-    }
-    if (timeVal) {
-        const [hh, min] = timeVal.split(':');
-        d.setHours(hh, min, 0, 0);
+        const parts = dateVal.split('-');
+        yyyy = parseInt(parts[0], 10);
+        mm = parseInt(parts[1], 10) - 1;
+        dd = parseInt(parts[2], 10);
     } else {
-        d.setHours(12, 0, 0, 0);
+        yyyy = now.getFullYear(); mm = now.getMonth(); dd = now.getDate();
     }
+    
+    if (timeVal) {
+        const parts = timeVal.split(':');
+        hh = parseInt(parts[0], 10);
+        min = parseInt(parts[1], 10);
+    } else {
+        hh = 12; min = 0;
+    }
+    
+    const d = new Date(yyyy, mm, dd, hh, min, 0, 0);
     let isoDate = d.toISOString();
 
     const rigIndex = rigsData.findIndex(r => r.id === rigId);
@@ -1651,17 +1669,24 @@ window.processExcelRow = function(rowIndex) {
 
     requestsHistory.unshift(newRequest);
 
-    // PERF1: Escribir solo lo modificado
-    db.collection('rigs').doc(rigId).set(rigsData[rigIndex]);
-    db.collection('history').doc(newRequest.id).set(newRequest);
+    // Guardado Atómico (Batch) con control de errores
+    const batch = db.batch();
+    batch.set(db.collection('rigs').doc(rigId), rigObj);
+    batch.set(db.collection('history').doc(newRequest.id), newRequest);
+    
+    batch.commit().catch(err => {
+        console.error("Error al procesar fila Excel:", err);
+        if(typeof showToast === 'function') showToast("Error de red al procesar fila", "error");
+    });
 
     // Limpiar fila procesada
     window.clearExcelRow(rowIndex);
 
-    // Refrescar vistas
+    // Refrescar vistas - INCLUYENDO EXCEL SPREADSHEET PARA QUE NO DESAPAREZCA
     renderRigsGrid();
     renderRequestsTable();
     renderExcelHistory();
+    renderExcelSpreadsheet();
     calculateKPIs();
     updateAdminPanelState();
 };
@@ -1674,6 +1699,7 @@ if (btnExcelProcessAll) {
 
         let processedCount = 0;
         let anyChange = false;
+        const bulkBatch = db.batch();
 
         for (let i = 0; i < excelTempData.length; i++) {
             const row = excelTempData[i];
@@ -1686,17 +1712,26 @@ if (btnExcelProcessAll) {
 
             // Fila completa si tiene todos los datos obligatorios
             if (rigId && system && sender && dateVal && timeVal) {
-                let d = new Date();
+                let yyyy, mm, dd, hh, min;
+                const now = new Date();
                 if (dateVal) {
-                    const [yyyy, mm, dd] = dateVal.split('-');
-                    d.setFullYear(yyyy, mm - 1, dd);
-                }
-                if (timeVal) {
-                    const [hh, min] = timeVal.split(':');
-                    d.setHours(hh, min, 0, 0);
+                    const parts = dateVal.split('-');
+                    yyyy = parseInt(parts[0], 10);
+                    mm = parseInt(parts[1], 10) - 1;
+                    dd = parseInt(parts[2], 10);
                 } else {
-                    d.setHours(12, 0, 0, 0);
+                    yyyy = now.getFullYear(); mm = now.getMonth(); dd = now.getDate();
                 }
+                
+                if (timeVal) {
+                    const parts = timeVal.split(':');
+                    hh = parseInt(parts[0], 10);
+                    min = parseInt(parts[1], 10);
+                } else {
+                    hh = 12; min = 0;
+                }
+                
+                const d = new Date(yyyy, mm, dd, hh, min, 0, 0);
                 let isoDate = d.toISOString();
 
                 const rigIndex = rigsData.findIndex(r => r.id === rigId);
@@ -1718,6 +1753,11 @@ if (btnExcelProcessAll) {
                     };
 
                     requestsHistory.unshift(newRequest);
+                    
+                    // Aseguramos guardar en batch
+                    bulkBatch.set(db.collection('rigs').doc(rigId), rigObj);
+                    bulkBatch.set(db.collection('history').doc(newRequest.id), newRequest);
+                    
                     window.clearExcelRow(i);
                     processedCount++;
                     anyChange = true;
@@ -1726,16 +1766,15 @@ if (btnExcelProcessAll) {
         }
 
         if (anyChange) {
-            // PERF1: Optimizacion para no reescribir todo
-            // Los elementos individuales ya se guardaron en Firebase en saveSystemsForRig/processExcelRow 
-            // pero aca podria haber multiples, dejamos batch o lo omitimos ya que processExcelRow ya guarda.
-            // Para asegurar consistencia, guardamos solo los rigs modificados:
-            rigsData.forEach(r => db.collection('rigs').doc(r.id).set(r)); // This is okay for a bulk operation
-            // History was already written inside processExcelRow, so we can omit it here.
+            bulkBatch.commit().catch(err => {
+                console.error("Error en procesamiento masivo:", err);
+                if(typeof showToast === 'function') showToast("Error al procesar lote", "error");
+            });
 
             renderRigsGrid();
             renderRequestsTable();
             renderExcelHistory();
+            renderExcelSpreadsheet();
             calculateKPIs();
             updateAdminPanelState();
 
