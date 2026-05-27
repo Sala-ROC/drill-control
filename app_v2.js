@@ -143,7 +143,8 @@ const rlFilterRig = document.getElementById('rlFilterRig');
 const rlRigSelect = document.getElementById('rlRigSelect');
 const rlsystemselect = document.getElementById('rlsystemselect');
 const rlPrioritySelect = document.getElementById('rlPrioritySelect');
-const rlReporterName = document.getElementById('rlReporterName');
+const rlDate = document.getElementById('rlDate');
+const rlTime = document.getElementById('rlTime');
 const rlDescription = document.getElementById('rlDescription');
 const rlReportForm = document.getElementById('rlReportForm');
 const riglineActiveCasesBadge = document.getElementById('riglineActiveCasesBadge');
@@ -593,12 +594,23 @@ function updateUIByRole() {
     }
 
     // Botones eliminar en solicitudes: ADMIN+
+    const btnExport = document.getElementById('rlExportBtn');
+    const rlBtnClearHistory = document.getElementById('rlBtnClearHistory');
     if (can('delete')) {
         document.querySelectorAll('.actions-header').forEach(el => el.classList.remove('hidden'));
+        if (currentUser && currentUser.role === 'SUPER_ADMIN') {
+            document.querySelectorAll('.actions-header-rl').forEach(el => el.classList.remove('hidden'));
+            if (rlBtnClearHistory) rlBtnClearHistory.classList.remove('hidden');
+        } else {
+            if (rlBtnClearHistory) rlBtnClearHistory.classList.add('hidden');
+        }
         if (btnClearHistory) btnClearHistory.classList.remove('hidden');
+        if (btnExport) btnExport.classList.remove('hidden');
     } else {
         document.querySelectorAll('.actions-header').forEach(el => el.classList.add('hidden'));
         if (btnClearHistory) btnClearHistory.classList.add('hidden');
+        if (btnExport) btnExport.classList.add('hidden');
+        if (rlBtnClearHistory) rlBtnClearHistory.classList.add('hidden');
     }
 
     // Panel Excel: REPORTER+
@@ -672,10 +684,11 @@ function updateRLFormByRole() {
         });
         rlReportForm.style.opacity = '';
         rlReportForm.style.pointerEvents = '';
-        // Pre-llenar el nombre del reportante con el usuario logueado (read-only)
-        if (rlReporterName && currentUser) {
-            rlReporterName.value = `${currentUser.name} ${currentUser.lastName}`;
-            rlReporterName.readOnly = true;
+        // Pre-llenar fecha y hora actuales por defecto
+        if (rlDate && rlTime) {
+            const now = new Date();
+            rlDate.value = now.toISOString().split('T')[0];
+            rlTime.value = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
         }
     }
 }
@@ -2002,16 +2015,21 @@ function calculateRigLineKPIs() {
 if (rlReportForm) {
     rlReportForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        if (rlReportForm.dataset.submitting === "true") return;
+        rlReportForm.dataset.submitting = "true";
         
         const caseId = rlCaseIdInput.value.trim();
         const rigId = rlRigSelect.value;
         const system = rlsystemselect.value;
         const priority = rlPrioritySelect.value;
-        const reporterName = rlReporterName.value.trim();
+        const reporterName = currentUser ? `${currentUser.name} ${currentUser.lastName}` : "Usuario Desconocido";
         const description = rlDescription.value.trim();
+        const eventDate = rlDate ? rlDate.value : '';
+        const eventTime = rlTime ? rlTime.value : '';
         
-        if (!caseId || !rigId || !system || !priority || !reporterName || !description) {
+        if (!caseId || !rigId || !system || !priority || !description || !eventDate || !eventTime) {
             alert("Por favor, complete todos los campos obligatorios.");
+            rlReportForm.dataset.submitting = "false";
             return;
         }
         
@@ -2030,11 +2048,11 @@ if (rlReportForm) {
             reporter: reporterName,
             description: description,
             status: "PENDIENTE",
-            date: new Date().toISOString()
+            date: new Date(`${eventDate}T${eventTime}:00`).toISOString()
         };
         
         riglineCases.unshift(newCase);
-        riglineCases.forEach(c => db.collection('rigline').doc(c.id).set(c));
+        db.collection('rigline').doc(newCase.id).set(newCase).finally(() => { rlReportForm.dataset.submitting = "false"; });
         
         // Resetear el formulario
         rlReportForm.reset();
@@ -2090,6 +2108,109 @@ window.closeRigLineCase = function(caseId) {
 };
 
 // Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseña)
+window.exportRigLineHistoryTXT = function() {
+    if (!can('delete')) {
+        alert("Acceso denegado. Necesitas permisos de Administrador o superior para exportar el historial.");
+        return;
+    }
+    
+    // Obtener los casos resueltos
+    const resolvedCases = riglineCases.filter(c => c.status === 'RESUELTO');
+    const sorted = [...resolvedCases].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    if (sorted.length === 0) {
+        alert("No hay casos en el historial para exportar.");
+        return;
+    }
+    
+    // Función helper para formatear fechas
+    function fmtDate(iso) {
+        if (!iso) return 'N/A';
+        const d = new Date(iso);
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yy = String(d.getFullYear());
+        const hh = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+        return `${dd}/${mm}/${yy} ${hh}:${min}`;
+    }
+    
+    let txtContent = "==================================================\r\n";
+    txtContent += "REPORTE HISTÓRICO RIGLINE\r\n";
+    txtContent += `Fecha de Exportación: ${fmtDate(new Date().toISOString())}\r\n`;
+    txtContent += `Total de Casos Resueltos: ${sorted.length}\r\n`;
+    txtContent += "==================================================\r\n\r\n";
+    
+    sorted.forEach(c => {
+        txtContent += `[CASO: ${c.id}]\r\n`;
+        txtContent += `Estado: ${c.status}\r\n`;
+        txtContent += `Prioridad: ${c.priority}\r\n`;
+        txtContent += `Equipo: ${c.rig}\r\n`;
+        txtContent += `Sistema/Falla: ${c.system}\r\n`;
+        txtContent += `Reportado Por: ${c.reporter}\r\n`;
+        txtContent += `Resuelto Por: ${c.resolver || 'N/A'}\r\n`;
+        txtContent += `Fecha Apertura: ${fmtDate(c.date)}\r\n`;
+        txtContent += `Fecha Cierre: ${fmtDate(c.closedDate)}\r\n`;
+        txtContent += `Descripción:\r\n${c.description}\r\n`;
+        txtContent += "--------------------------------------------------\r\n\r\n";
+    });
+    
+    // Generar Blob y descargar
+    const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    const dateStr = new Date().toISOString().split('T')[0];
+    link.setAttribute("download", `historial_rigline_${dateStr}.txt`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+window.clearRigLineHistory = function() {
+    if (!currentUser || currentUser.role !== 'SUPER_ADMIN') {
+        alert("Acceso denegado.");
+        return;
+    }
+    
+    const resolvedCases = riglineCases.filter(c => c.status === 'RESUELTO');
+    if (resolvedCases.length === 0) {
+        alert("No hay casos cerrados en el historial para eliminar.");
+        return;
+    }
+    
+    if (confirm("¿Deseas descargar una copia de seguridad en TXT antes de proceder a vaciar el historial?")) {
+        exportRigLineHistoryTXT();
+    }
+    
+    const typedPassword = prompt(`ADVERTENCIA PELIGRO: Estás a punto de eliminar permanentemente TODOS los ${resolvedCases.length} casos cerrados del historial.\n\nEsta acción no se puede deshacer.\nIngrese su contraseña de Super Admin (Número de documento) para confirmar:`);
+    
+    if (typedPassword === null) return;
+    
+    if (typedPassword.trim() !== currentUser.doc) {
+        alert("Contraseña incorrecta. Operación cancelada.");
+        return;
+    }
+    
+    // Ejecutar borrado
+    const deletePromises = resolvedCases.map(c => db.collection('rigline').doc(c.id).delete());
+    
+    Promise.all(deletePromises).then(() => {
+        // Remover de la memoria local
+        const resolvedIds = resolvedCases.map(c => c.id);
+        riglineCases = riglineCases.filter(c => !resolvedIds.includes(c.id));
+        
+        renderRigLineCases();
+        renderRigLineHistory();
+        calculateRigLineKPIs();
+        showToast("Historial vaciado con éxito.");
+    }).catch(err => {
+        console.error(err);
+        alert("Ocurrió un error al intentar vaciar el historial.");
+    });
+};
+
 window.deleteRigLineCase = function(caseId) {
     if (!can('delete')) {
         alert("Acceso denegado. Necesits permisos de Administrador o superior para eliminar casos permanentemente.");
@@ -2207,7 +2328,8 @@ function renderRigLineHistory() {
     const query = searchEl ? searchEl.value.toLowerCase().trim() : '';
 
     // Ordenar todos los casos de más reciente a más antiguo (por fecha de apertura)
-    const sorted = [...riglineCases].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const resolvedCases = riglineCases.filter(c => c.status === 'RESUELTO');
+    const sorted = [...resolvedCases].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     // Aplicar búsqueda rpida sobre todos los campos visibles
     const filtered = query
@@ -2267,6 +2389,9 @@ function renderRigLineHistory() {
                 <td class="rl-history-date">${fmtDate(c.date)}</td>
                 <td>${closedDateHtml}</td>
                 <td>${statusBadge}</td>
+                <td class="actions-header-rl ${ currentUser && currentUser.role === 'SUPER_ADMIN' ? '' : 'hidden' }" style="text-align: center;">
+                    ${ currentUser && currentUser.role === 'SUPER_ADMIN' ? `<button class="btn btn-danger-icon" onclick="deleteRigLineCase('${c.id}')" title="Eliminar Registro"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>` : '' }
+                </td>
             </tr>`;
     }).join('');
 }
