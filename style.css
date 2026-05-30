@@ -473,7 +473,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 16px;
-    overflow-y: auto; /* Activa la barra de desplazamiento para ver todas las opciones */
+    overflow: hidden;
 }
 
 .tab-content.hidden {
@@ -860,15 +860,12 @@ body {
     transition: var(--transition-smooth);
 }
 
-.modal-card, .modal-box {
+.modal-box {
     will-change: transform, opacity;
     background: var(--glass-bg);
     border: 1px solid rgba(255, 255, 255, 0.1);
     width: 90%;
     max-width: 400px;
-    max-height: 90vh; /* Límite de altura para la pantalla */
-    display: flex;
-    flex-direction: column;
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
@@ -902,8 +899,6 @@ body {
 
 .modal-body {
     padding: 20px;
-    overflow-y: auto; /* Activa la barra de desplazamiento */
-    max-height: calc(90vh - 65px); /* Descuenta el espacio del encabezado */
 }
 
 .modal-instructions {
