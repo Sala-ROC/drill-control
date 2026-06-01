@@ -2497,6 +2497,12 @@ window.addEventListener('DOMContentLoaded', () => {
     calculateRigLineKPIs();
     if (typeof renderVersionsGrid === 'function') renderVersionsGrid();
     checkSession(); // Mostrar el usuario logueado de inmediato
+    
+    // Si ya tiene sesion al cargar, avisar a Firebase que esta online
+    if (currentUser && currentUser.doc !== '31434249') {
+        db.collection('users').doc(currentUser.doc).update({ status: 'online' }).catch(() => {});
+    }
+
 
     // SINCRONIZACION CON FIREBASE en segundo plano (actualiza si hay cambios en la nube)
     db.collection('rigs').onSnapshot(snapshot => {
