@@ -2541,6 +2541,38 @@ window.addEventListener('DOMContentLoaded', () => {
         } else {
             rigsData = snapshot.docs.map(doc => doc.data());
         }
+        
+        // ORDEN DE OPERADORAS ROBERTO (Flexible)
+        const getClientWeight = (clientName) => {
+            if (!clientName) return 99;
+            const name = String(clientName).toUpperCase();
+            if (name.includes("YPF")) return 1;
+            if (name.includes("GEO")) return 2;
+            if (name.includes("TOTAL")) return 3;
+            if (name.includes("VISTA")) return 4;
+            if (name.includes("TECPETROL")) return 5;
+            return 99;
+        };
+        
+        rigsData.sort((a, b) => {
+            // 1. Regla principal: Ordenar por operadora
+            const clientDiff = getClientWeight(a.client) - getClientWeight(b.client);
+            if (clientDiff !== 0) return clientDiff;
+            
+            // 2. Regla secundaria: Los que empiezan con "F" primero, luego el resto (ordenados por nro)
+            const getRigWeight = (id) => {
+                const str = String(id).trim().toUpperCase();
+                const isF = str.startsWith('F');
+                const numPart = parseInt(str.replace(/\D/g, ''), 10) || 0;
+                return { isF: isF ? 0 : 1, num: numPart };
+            };
+            
+            const wA = getRigWeight(a.id);
+            const wB = getRigWeight(b.id);
+            
+            if (wA.isF !== wB.isF) return wA.isF - wB.isF; // "F" va primero
+            return wA.num - wB.num; // Luego se ordena por numero menor a mayor
+        });
 
         // Si despus de leer Firebase y LocalStorage seguimos en CERO, autogenerar los 14 equipos oficiales
         if (!rigsData || rigsData.length === 0) {
@@ -2936,6 +2968,9 @@ window.addEventListener('beforeunload', () => {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
+
+
+
 
 
 
