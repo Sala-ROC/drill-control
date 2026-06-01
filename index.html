@@ -80,7 +80,7 @@
                 </div>
                 <div class="logo-text">
                     <h1>DRILL CONTROL</h1>
-                    <span class="sub-logo">Sistemas de Automatización | Centro de Operaciones | v3.4.5</span>
+                    <span class="sub-logo">Sistemas de Automatización | Centro de Operaciones | v3.4.7</span>
                 </div>
             </div>
 
@@ -135,7 +135,7 @@
                         <span class="pulse-indicator"></span>
                         CENTRO DE OPERACIONES ACTIVO
                     </div>
-                    <h1>Centro de Control de Operaciones <span class="version-badge">v3.4.5</span></h1>
+                    <h1>Centro de Control de Operaciones <span class="version-badge">v3.4.7</span></h1>
                     <p>Gestión y Monitoreo de Equipos. Automatización inteligente y despacho automatizado de Sistemas direccionales y de optimización de Perforación. Análisis de KPIs y seguimiento de incidentes RigLine en tiempo real.</p>
                     <div class="hero-stats-row">
                         <div class="hero-stat-item">
@@ -510,7 +510,8 @@
                     <thead>
                         <tr>
                             <th style="width: 50px; text-align: center;">Fila</th>
-                            <th style="width: 130px;">Equipo (Rig)</th>
+                            <th style="width: 100px;">Equipo</th>
+                            <th style="width: 100px;">Well</th>
                             <th style="width: 180px;">Servicio Solicitado</th>
                             <th style="width: 200px;">Contacto Previo (Equipo)</th>
                             <th>Remitente (Cliente)</th>
@@ -538,12 +539,14 @@
                     <thead>
                         <tr>
                             <th style="width: 50px; text-align: center;">Fila</th>
-                            <th style="width: 130px;">Equipo (Rig)</th>
+                            <th style="width: 100px;">Equipo</th>
+                            <th style="width: 100px;">Well</th>
                             <th style="width: 180px;">Servicio Solicitado</th>
                             <th style="width: 200px;">Contacto Previo (Equipo)</th>
                             <th>Remitente (Cliente)</th>
                             <th style="width: 160px;">Fecha Recibido</th>
-                            <th style="width: 150px; text-align: center;">Estado</th>
+                            <th style="width: 120px;">Hora</th>
+                              <th style="width: 150px; text-align: center;">Estado</th>
                         </tr>
                     </thead>
                     <tbody id="excelHistoryTableBody">
@@ -662,7 +665,7 @@
                             </div>
 
                             <div class="form-group" style="margin-bottom: 0;">
-                                <label for="rlRigSelect">Equipo (Rig) Afectado *</label>
+                                <label for="rlRigSelect">Equipo Afectado *</label>
                                 <select id="rlRigSelect" required>
                                     <option value="">-- Seleccionar Rig --</option>
                                     <!-- Inyectado dinámicamente -->
@@ -888,6 +891,16 @@
     <script src="app_v2.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
 
 
 

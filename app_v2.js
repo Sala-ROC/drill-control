@@ -28,7 +28,7 @@ const MODALITY_LABELS = {
     CONTRATO: "Activo por Contrato",
     SOLICITADO_CON_OP: "Solicitado (Con Op.)",
     SOLICITADO_SIN_OP: "Solicitado (Sin Op.)",
-    SOLICITADO_MAIL: "Solicitado va Mail (Eventual)"
+    SOLICITADO_MAIL: "Solicitado Via Mail (Eventual)"
 };
 
 //  SISTEMA DE ROLES Y PERMISOS 
@@ -72,7 +72,7 @@ let requestsHistory = JSON.parse(localStorage.getItem('drill_requests_history'))
 let usersList = JSON.parse(localStorage.getItem('drill_users_list')) || [];
 let riglineCases = JSON.parse(localStorage.getItem('drill_rigline_cases')) || [];
 
-// // Mantenemos la sesión del usuario actual en localStorage para no perderla al refrescar
+// // Mantenemos la sesiÃƒÆ’Ã‚Â³n del usuario actual en localStorage para no perderla al refrescar
 let currentUser = JSON.parse(localStorage.getItem('drill_current_user_v2')) || null;
 
 // AUTOGENERAR EQUIPOS SI LA MEMORIA ESTA VACIA (IGUAL QUE EN v1.4.0)
@@ -198,7 +198,7 @@ function renderRigsGrid() {
         if (isCritical) {
             criticalClass = hasHighPriority ? 'critical-rig' : 'warning-rig';
             const iconColor = hasHighPriority ? 'var(--color-orange)' : 'var(--color-amber)';
-            const titleTooltip = hasHighPriority ? 'Estado Crítico! Caso técnico de prioridad alta activo en RigLine.' : 'Advertencia: Falla técnica activa en RigLine.';
+            const titleTooltip = hasHighPriority ? 'Estado CrÃƒÆ’Ã‚Â­tico! Caso tÃƒÆ’Ã‚Â©cnico de prioridad alta activo en RigLine.' : 'Advertencia: Falla tÃƒÆ’Ã‚Â©cnica activa en RigLine.';
             warningBadge = `
                 <span class="rig-warning-badge" style="color: ${iconColor}; font-size: 0.72rem; display: inline-flex; align-items: center;" title="${titleTooltip}">
                     <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -221,7 +221,7 @@ function renderRigsGrid() {
             const statusLabel = rig.systems[sys] === MODALITIES.INACTIVO ? 'Inactivo' :
                           rig.systems[sys] === MODALITIES.CONTRATO ? 'Activo' :
                           rig.systems[sys] === MODALITIES.SOLICITADO_CON_OP ? 'Con Op.' :
-                          rig.systems[sys] === MODALITIES.SOLICITADO_SIN_OP ? 'Sin Op.' : 'Va Mail';
+                          rig.systems[sys] === MODALITIES.SOLICITADO_SIN_OP ? 'Sin Op.' : 'Via Mail';
             
             let finBtnHtml = '';
             if (isAdmin && rig.systems[sys] === MODALITIES.SOLICITADO_MAIL) {
@@ -258,7 +258,7 @@ function renderRigsGrid() {
             </div>
         `;
 
-        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de edición
+        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de ediciÃƒÆ’Ã‚Â³n
         card.addEventListener('click', () => {
             selectRigCard(rig.id);
         });
@@ -271,7 +271,7 @@ function renderRigsGrid() {
 
 // Finaliza un servicio solicitado por mail
 window.finalizeService = function(rigId, sys) {
-    if (!confirm(`¿Estás seguro de que deseas finalizar el servicio eventual de ${sys} en el Rig ${rigId}?`)) return;
+    if (!confirm('Estas seguro de que deseas finalizar el servicio eventual de ' + sys + ' en el Rig ' + rigId + '?')) return;
 
     const rigIndex = rigsData.findIndex(r => r.id === rigId);
     if (rigIndex === -1) return;
@@ -282,7 +282,7 @@ window.finalizeService = function(rigId, sys) {
     const newRequest = {
         id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
         rig: rigId,
-        well: wellVal,
+        well: '-',
         client: rigsData[rigIndex].client || "Sin Contrato",
         system: sys,
         modality: MODALITIES.INACTIVO,
@@ -290,14 +290,14 @@ window.finalizeService = function(rigId, sys) {
     };
     requestsHistory.unshift(newRequest);
 
-    // Actualización local
+    // ActualizaciÃƒÆ’Ã‚Â³n local
     renderRigsGrid();
     renderRequestsTable();
     calculateKPIs();
     renderExcelSpreadsheet();
     renderExcelHistory();
 
-    // Guardar en Firebase de forma atómica
+    // Guardar en Firebase de forma atÃƒÆ’Ã‚Â³mica
     const batch = db.batch();
     batch.set(db.collection('history').doc(newRequest.id), newRequest);
     batch.update(db.collection('rigs').doc(rigId), {
@@ -308,7 +308,7 @@ window.finalizeService = function(rigId, sys) {
         if(typeof showToast === 'function') showToast(`Servicio finalizado exitosamente.`, 'success');
     }).catch(err => {
         console.error("Error finalizando servicio en nube:", err);
-        if(typeof showToast === 'function') showToast(`Error de conexión al finalizar.`, 'error');
+        if(typeof showToast === 'function') showToast(`Error de conexiÃƒÆ’Ã‚Â³n al finalizar.`, 'error');
     });
 };
 
@@ -337,7 +337,7 @@ function rendersystemsConfigForm(rigId) {
             if (!can('report')) { 
                 e.preventDefault();
                 checkbox.checked = !checkbox.checked; // Revertir check visual
-                alert('Necesitás permisos de Cargador o superior para guardar cambios.'); 
+                alert('NecesitÃƒÆ’Ã‚Â¡s permisos de Cargador o superior para guardar cambios.'); 
                 return; 
             }
             
@@ -359,20 +359,20 @@ function rendersystemsConfigForm(rigId) {
                 const newRequest = {
                     id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
                     rig: rigId,
-        well: wellVal,
+                    well: '-',
                     client: rigObj.client,
                     system: sys,
                     modality: newModality,
                     date: new Date().toISOString()
                 };
                 
-                // Actualización optimista
+                // ActualizaciÃƒÆ’Ã‚Â³n optimista
                 requestsHistory.unshift(newRequest);
                 renderRigsGrid();
                 renderRequestsTable();
                 calculateKPIs();
                 
-                // Guardar atómicamente en Firebase
+                // Guardar atÃƒÆ’Ã‚Â³micamente en Firebase
                 const batch = db.batch();
                 batch.set(db.collection('history').doc(newRequest.id), newRequest);
                 batch.set(db.collection('rigs').doc(rigId), rigObj);
@@ -506,7 +506,7 @@ function renderRequestsTable() {
         const infoTr = document.createElement('tr');
         infoTr.innerHTML = `
             <td colspan="4" style="text-align: center; color: var(--color-cyan); padding: 10px; font-size: 0.72rem; font-style: italic; background: rgba(0, 210, 255, 0.02); border-top: 1px dashed rgba(0, 210, 255, 0.15);">
-                Mostrando los 50 registros más recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
+                Mostrando los 50 registros mÃƒÆ’Ã‚Â¡s recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
             </td>
         `;
         requestsTableBody.appendChild(infoTr);
@@ -572,7 +572,7 @@ function calculateKPIs() {
     kpiOperatorRate.textContent = `${rate}%`;
 }
 
-// 6. GESTIN DE sesión, PERMISOS Y LOGIN
+// 6. GESTIN DE sesiÃƒÆ’Ã‚Â³n, PERMISOS Y LOGIN
 
 // Verifica si el usuario actual tiene permiso para una accin especfica
 // PERF: perms object defined once outside can() to avoid recreating on every call
@@ -588,7 +588,7 @@ function can(action) {
     return (ROLE_PERMS[action] || []).includes(currentUser.role || 'VIEWER');
 }
 
-// Comprobar la sesión al cargar y actualizar la UI segn el rol
+// Comprobar la sesiÃƒÆ’Ã‚Â³n al cargar y actualizar la UI segn el rol
 function checkSession() {
     if (currentUser) {
         updateUIByRole();
@@ -646,7 +646,7 @@ function updateUIByRole() {
         renderUsersList();
     } else {
         tabUsers.classList.add('hidden');
-        usersPanelNoAccess.classList.remove('hidden');
+        usersPanelNoAccess.classList.add('hidden');
         createUserFormWrapper.classList.add('hidden');
         if (masterConfigBox) masterConfigBox.classList.add('hidden');
         usersListWrapper.classList.add('hidden');
@@ -704,7 +704,7 @@ function updateUIByRole() {
 // Actualiza el estado del formulario de reporte RigLine segn permisos del usuario
 function updateRLFormByRole() {
     if (!rlReportForm) return;
-    // Eliminar lock másg anterior
+    // Eliminar lock msg anterior
     const existingLock = document.getElementById('rlFormLockMsg');
     if (existingLock) existingLock.remove();
 
@@ -732,7 +732,7 @@ function updateRLFormByRole() {
                 <span style="font-size:0.75rem;">
                     ${currentUser
                         ? `Tu rol actual es <strong style="color:var(--color-amber);">${roleLabel}</strong>. Necesits permisos de <strong>Cargador</strong> o superior.`
-                        : 'Inici sesión con permisos de <strong>Cargador</strong> o superior para reportar casos.'
+                        : 'Inici sesiÃƒÆ’Ã‚Â³n con permisos de <strong>Cargador</strong> o superior para reportar casos.'
                     }
                 </span>
             </div>
@@ -893,7 +893,7 @@ window.changeUserRole = function(docId, newRole) {
     }
 };
 
-// Función auxiliar que valida credenciales contra una lista de usuarios
+// FunciÃƒÆ’Ã‚Â³n auxiliar que valida credenciales contra una lista de usuarios
 function tryMatchUser(list, typedName, typedPass) {
     return list.find(u => {
         if (!u || !u.name || !u.lastName) return false;
@@ -924,7 +924,7 @@ loginForm.addEventListener('submit', (e) => {
     const typedName = loginName.value.trim().toLowerCase().replace(/\s+/g, '');
     const typedPass = loginPassword.value.trim();
 
-    // 1. Buscar en la lista local (rápido)
+    // 1. Buscar en la lista local (rÃƒÆ’Ã‚Â¡pido)
     let matchedUser = tryMatchUser(usersList, typedName, typedPass);
 
     // 2. Fallback: usuario hardcodeado Fernando
@@ -935,7 +935,7 @@ loginForm.addEventListener('submit', (e) => {
     if (matchedUser) {
         doLogin(matchedUser);
     } else {
-        // 3. No encontrado localmente → consultar Firebase directamente
+        // 3. No encontrado localmente ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ consultar Firebase directamente
         loginError.classList.add('hidden'); // hide while searching Firebase
         loginName.disabled = true;
         loginPassword.disabled = true;
@@ -1027,7 +1027,7 @@ if (btnAddRig) {
             OFFICIAl_RIGS.push(rigName.trim());
             localStorage.setItem('drill_official_rigs', JSON.stringify(OFFICIAl_RIGS));
             renderRigsGrid();
-            alert(`Equipo ${rigName.trim()} agregado con éxito.`);
+            alert(`Equipo ${rigName.trim()} agregado con ÃƒÆ’Ã‚Â©xito.`);
         }
     });
 }
@@ -1042,7 +1042,7 @@ if (btnAddClient) {
             localStorage.setItem('drill_official_clients', JSON.stringify(OFFICIAL_CLIENTS));
             // Actualizar selects de clientes si es necesario en otras vistas, pero renderRigsGrid no muestra clientes, 
             // solo cuando se edita un rig.
-            alert(`Operadora ${clientName.trim()} agregada con éxito.`);
+            alert(`Operadora ${clientName.trim()} agregada con ÃƒÆ’Ã‚Â©xito.`);
         }
     });
 }
@@ -1065,7 +1065,7 @@ window.deleteRequest = function(reqId) {
             if(typeof showToast === 'function') showToast('Error al borrar de la nube', 'error');
         });
 
-        // Comprobar si hay alguna solicitud más reciente para ese mismo Rig + Sistema
+        // Comprobar si hay alguna solicitud mÃƒÆ’Ã‚Â¡s reciente para ese mismo Rig + Sistema
         // Si no la hay, el Rig vuelve a estar INACTIVO en ese sistema
         const hasMoreRecent = requestsHistory.find(r => r.rig === reqObj.rig && r.system === reqObj.system);
         
@@ -1090,7 +1090,7 @@ window.deleteUser = function(docId) {
     if (docId === SUPER_ADMIN_DOC) { alert('No es posible eliminar al Super Administrador principal (Fernando Volpi).'); return; }
     const userToDelete = usersList.find(u => u.doc === docId);
     if (!userToDelete) return;
-    if (!confirm(`Eliminar a ${userToDelete.name} ${userToDelete.lastName} del sistema? Esta accin no puede deshacerse.`)) return;
+    if (!confirm(`Eliminar a ${userToDelete.name} ${userToDelete.lastName} del sistema? Esta accin no puede deshacer.`)) return;
     usersList = usersList.filter(u => u.doc !== docId);
     // PERF1: Borrar solo el documento en Firebase
     db.collection('users').doc(docId).delete().catch(err => {
@@ -1137,7 +1137,7 @@ tabRequests.addEventListener('click', () => switchTab('tabRequests'));
 tabUsers.addEventListener('click', () => switchTab('tabUsers'));
 tabAdminActions.addEventListener('click', () => switchTab('tabAdminActions'));
 
-// Eventos de búsqueda y Filtros
+// Eventos de bÃƒÆ’Ã‚Âºsqueda y Filtros
 searchInput.addEventListener('input', renderRequestsTable);
 filterClient.addEventListener('change', renderRequestsTable);
 filterSystem.addEventListener('change', renderRequestsTable);
@@ -1191,11 +1191,11 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
         }
         
         // Confirmar reasignacin directa o liberacin de contrato
-        const confirmmásg = selectedClient === "" 
+        const confirmMsg = selectedClient === "" 
             ? `Confirmar dejar al Rig ${selectedRigCardId} Sin Contrato?` 
             : `Confirmar vinculacin rpida del Rig ${selectedRigCardId} a ${selectedClient}?`;
             
-        if (confirm(confirmmásg)) {
+        if (confirm(confirmMsg)) {
             rigsData[rigIndex].client = selectedClient;
             
             // Inyectar el registro de auditora en el historial
@@ -1287,7 +1287,7 @@ window.enableEditRow = function(reqId) {
 };
 
 window.deleteActiveRow = function(reqId) {
-    if (!confirm('¿Estás segura de que deseas eliminar este registro por completo? Esta acción lo borrará de la tabla y desactivará el estado "Va Mail" del equipo. Esta acción no se puede deshacer.')) return;
+    if (!confirm('Estas segura de que deseas eliminar este registro por completo? Esta accion lo borrara de la tabla y desactivara el estado "Via Mail" del equipo. Esta accion no se puede deshacer.')) return;
 
     const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
     if (reqIndex === -1) return;
@@ -1318,7 +1318,7 @@ window.deleteActiveRow = function(reqId) {
 };
 
 window.deleteHistoryRow = function(reqId) {
-    if (!confirm('¿Estás segura de que deseas eliminar este registro del historial? Esta acción no se puede deshacer.')) return;
+    if (!confirm('Estas segura de que deseas eliminar este registro del historial? Esta accion no se puede deshacer.')) return;
 
     const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
     if (reqIndex === -1) return;
@@ -1329,10 +1329,10 @@ window.deleteHistoryRow = function(reqId) {
     // Eliminar de Firebase
     db.collection('history').doc(reqId).delete().then(() => {
         renderExcelHistory();
-        if(typeof showToast === 'function') showToast('Registro histórico eliminado.', 'success');
+        if(typeof showToast === 'function') showToast('Registro histÃƒÆ’Ã‚Â³rico eliminado.', 'success');
     }).catch(err => {
         console.error("Error eliminando historial:", err);
-        if(typeof showToast === 'function') showToast('Error de red al eliminar histórico.', 'error');
+        if(typeof showToast === 'function') showToast('Error de red al eliminar histÃƒÆ’Ã‚Â³rico.', 'error');
     });
 };
 
@@ -1386,7 +1386,7 @@ function renderExcelSpreadsheet() {
                 </select>
             </td>
             <td>
-                <input type="text" class="excel-input excel-well-input" placeholder="WELL #..." value="${req.well || ''}" ${isEditable} onchange="window.updateActiveRowData('${req.id}', 'well', this.value)">
+                <input type="text" class="excel-input excel-well-input" placeholder="Ej: LLL-123..." value="${req.well || ''}" ${isEditable} onchange="window.updateActiveRowData('${req.id}', 'well', this.value)">
             </td>
             <td>
                 <select class="excel-select excel-system-select" disabled style="opacity: 0.8; color: #d946ef;">
@@ -1524,28 +1524,34 @@ function renderExcelHistory() {
 
         if (req) {
             let formattedDateStr = '';
+            let formattedTimeStr = '';
             if (req.date) {
                 const d = new Date(req.date);
                 const day = String(d.getDate()).padStart(2, '0');
                 const month = String(d.getMonth() + 1).padStart(2, '0');
                 const year = d.getFullYear();
                 formattedDateStr = `${day}/${month}/${year}`;
+                const hh = String(d.getHours()).padStart(2, '0');
+                const mm = String(d.getMinutes()).padStart(2, '0');
+                formattedTimeStr = `${hh}:${mm}`;
             }
 
             tr.innerHTML = `
                 <td class="excel-row-num" style="text-align: center;">${i + 1}</td>
                 <td style="font-weight: 600; color: var(--color-cyan);">Rig ${req.rig}</td>
+                <td style="font-weight: 600; color: #a855f7;">${req.well || '-'}</td>
                 <td>${req.system}</td>
                 <td style="color: #c084fc;">${req.ourContact || '-'}</td>
                 <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-secondary);">${req.sender}</td>
                 <td>${formattedDateStr}</td>
+                <td>${formattedTimeStr}</td>
                 <td style="text-align: center;">
                     ${can('manage_users') ? `
                     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px;">
                         <span style="font-size: 0.85rem; color: #3b82f6; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600;">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Cerrado
                         </span>
-                        <button type="button" class="btn btn-operator btn-excel-action" onclick="window.deleteHistoryRow('${req.id}')" style="background: transparent; color: #ef4444; border: none; padding: 4px; margin: 0; cursor: pointer;" title="Eliminar Registro Histórico">
+                        <button type="button" class="btn btn-operator btn-excel-action" onclick="window.deleteHistoryRow('${req.id}')" style="background: transparent; color: #ef4444; border: none; padding: 4px; margin: 0; cursor: pointer;" title="Eliminar Registro HistÃƒÆ’Ã‚Â³rico">
                             <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                         </button>
                     </div>
@@ -1621,7 +1627,11 @@ window.processExcelRow = function(rowIndex) {
     const timeVal = row.time;
 
     if (!rigId) {
-        alert(`Fila ${rowIndex + 1}: Seleccione un Equipo (Rig).`);
+        alert(`Fila ${rowIndex + 1}: Seleccione un Equipo.`);
+        return;
+    }
+    if (!wellVal) {
+        alert(`Fila ${rowIndex + 1}: Ingrese el nombre del Pozo (Well).`);
         return;
     }
     if (!system) {
@@ -1633,11 +1643,11 @@ window.processExcelRow = function(rowIndex) {
         return;
     }
     if (!dateVal) {
-        alert(`Fila ${rowIndex + 1}: Seleccione la Fecha de recepción.`);
+        alert(`Fila ${rowIndex + 1}: Seleccione la Fecha de recepciÃƒÆ’Ã‚Â³n.`);
         return;
     }
     if (!timeVal) {
-        alert(`Fila ${rowIndex + 1}: Ingrese la Hora de recepción.`);
+        alert(`Fila ${rowIndex + 1}: Ingrese la Hora de recepciÃƒÆ’Ã‚Â³n.`);
         return;
     }
 
@@ -1687,7 +1697,7 @@ window.processExcelRow = function(rowIndex) {
 
     requestsHistory.unshift(newRequest);
 
-    // Guardado Atómico (Batch) con control de errores
+    // Guardado AtÃƒÆ’Ã‚Â³mico (Batch) con control de errores
     const batch = db.batch();
     batch.set(db.collection('rigs').doc(rigId), rigObj);
     batch.set(db.collection('history').doc(newRequest.id), newRequest);
@@ -1798,7 +1808,7 @@ if (btnExcelProcessAll) {
             calculateKPIs();
             updateAdminPanelState();
 
-            alert(`Se procesaron ${processedCount} solicitudes de correo con éxito.`);
+            alert(`Se procesaron ${processedCount} solicitudes de correo con ÃƒÆ’Ã‚Â©xito.`);
         } else {
             alert("No hay filas completas para procesar. Seleccione al menos un Rig y Servicio.");
         }
@@ -1818,7 +1828,7 @@ if (btnExcelClearAll) {
 }
 
 // ==============================================================
-// 8.8 LGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS técnicoS)
+// 8.8 LGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS tÃƒÆ’Ã‚Â©cnicoS)
 // ==============================================================
 
 // Alternar Pestaa Global (Automatizacin / RigLine / Versiones)
@@ -2002,7 +2012,7 @@ function renderRigLineCases() {
             if (c.status === "PENDIENTE") {
                 actionHtml = `
                     <div class="action-lock-box">
-                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia sesión como Editor para resolver este caso" disabled>
+                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia sesiÃƒÆ’Ã‚Â³n como Editor para resolver este caso" disabled>
                             Resolver y Cerrar
                         </button>
                         <span class="action-lock-label">
@@ -2070,7 +2080,7 @@ function calculateRigLineKPIs() {
     // 3. Casos Resueltos Totales en Historial
     if (kpiRlClosedCount) kpiRlClosedCount.textContent = closedCases.length;
     
-    // 4. Equipo (Rig) más afectado por fallas tcnicas pendientes
+    // 4. Equipo mÃƒÆ’Ã‚Â¡s afectado por fallas tcnicas pendientes
     let rigCounts = {};
     pendingCases.forEach(c => {
         rigCounts[c.rig] = (rigCounts[c.rig] || 0) + 1;
@@ -2104,7 +2114,7 @@ function calculateRigLineKPIs() {
     }
 }
 
-// Generar e insertar un nuevo caso técnico reportado
+// Generar e insertar un nuevo caso tÃƒÆ’Ã‚Â©cnico reportado
 if (rlReportForm) {
     rlReportForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -2136,7 +2146,7 @@ if (rlReportForm) {
         const newCase = {
             id: caseId,
             rig: rigId,
-        well: wellVal,
+            well: '-',
             system: system,
             priority: priority,
             reporter: reporterName,
@@ -2158,7 +2168,7 @@ if (rlReportForm) {
         calculateKPIs();
         renderRigLineHistory();
         
-        alert(`Caso creado con éxito bajo el registro ${caseId}. Se dar seguimiento inmediato.`);
+        alert(`Caso creado con ÃƒÆ’Ã‚Â©xito bajo el registro ${caseId}. Se dar seguimiento inmediato.`);
     });
 }
 
@@ -2202,7 +2212,7 @@ window.closeRigLineCase = function(caseId) {
     }
 };
 
-// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseña)
+// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseÃƒÆ’Ã‚Â±a)
 window.exportRigLineHistoryTXT = function() {
     if (!can('delete')) {
         alert("Acceso denegado. Necesitas permisos de Administrador o superior para exportar el historial.");
@@ -2218,7 +2228,7 @@ window.exportRigLineHistoryTXT = function() {
         return;
     }
     
-    // Función helper para formatear fechas
+    // FunciÃƒÆ’Ã‚Â³n helper para formatear fechas
     function fmtDate(iso) {
         if (!iso) return 'N/A';
         const d = new Date(iso);
@@ -2231,8 +2241,8 @@ window.exportRigLineHistoryTXT = function() {
     }
     
     let txtContent = "==================================================\r\n";
-    txtContent += "REPORTE HISTÓRICO RIGLINE\r\n";
-    txtContent += `Fecha de Exportación: ${fmtDate(new Date().toISOString())}\r\n`;
+    txtContent += "REPORTE HISTÃƒÆ’Ã¢â‚¬Å“RICO RIGLINE\r\n";
+    txtContent += `Fecha de ExportaciÃƒÆ’Ã‚Â³n: ${fmtDate(new Date().toISOString())}\r\n`;
     txtContent += `Total de Casos Resueltos: ${sorted.length}\r\n`;
     txtContent += "==================================================\r\n\r\n";
     
@@ -2246,7 +2256,7 @@ window.exportRigLineHistoryTXT = function() {
         txtContent += `Resuelto Por: ${c.resolver || 'N/A'}\r\n`;
         txtContent += `Fecha Apertura: ${fmtDate(c.date)}\r\n`;
         txtContent += `Fecha Cierre: ${fmtDate(c.closedDate)}\r\n`;
-        txtContent += `Descripción:\r\n${c.description}\r\n`;
+        txtContent += `DescripciÃƒÆ’Ã‚Â³n:\r\n${c.description}\r\n`;
         txtContent += "--------------------------------------------------\r\n\r\n";
     });
     
@@ -2275,16 +2285,16 @@ window.clearRigLineHistory = function() {
         return;
     }
     
-    if (confirm("¿Deseas descargar una copia de seguridad en TXT antes de proceder a vaciar el historial?")) {
+    if (confirm('Deseas descargar una copia de seguridad en TXT antes de proceder a vaciar el historial?')) {
         exportRigLineHistoryTXT();
     }
     
-    const typedPassword = prompt(`ADVERTENCIA PELIGRO: Estás a punto de eliminar permanentemente TODOS los ${resolvedCases.length} casos cerrados del historial.\n\nEsta acción no se puede deshacer.\nIngrese su contraseña de Super Admin (Número de documento) para confirmar:`);
+    const typedPassword = prompt(`ADVERTENCIA PELIGRO: EstÃƒÆ’Ã‚Â¡s a punto de eliminar permanentemente TODOS los ${resolvedCases.length} casos cerrados del historial.\n\nEsta acciÃƒÆ’Ã‚Â³n no se puede deshacer.\nIngrese su contraseÃƒÆ’Ã‚Â±a de Super Admin (NÃƒÆ’Ã‚Âºmero de documento) para confirmar:`);
     
     if (typedPassword === null) return;
     
     if (typedPassword.trim() !== currentUser.doc) {
-        alert("Contraseña incorrecta. Operación cancelada.");
+        alert("ContraseÃƒÆ’Ã‚Â±a incorrecta. OperaciÃƒÆ’Ã‚Â³n cancelada.");
         return;
     }
     
@@ -2299,10 +2309,10 @@ window.clearRigLineHistory = function() {
         renderRigLineCases();
         renderRigLineHistory();
         calculateRigLineKPIs();
-        showToast("Historial vaciado con éxito.");
+        showToast("Historial vaciado con ÃƒÆ’Ã‚Â©xito.");
     }).catch(err => {
         console.error(err);
-        alert("Ocurrió un error al intentar vaciar el historial.");
+        alert("OcurriÃƒÆ’Ã‚Â³ un error al intentar vaciar el historial.");
     });
 };
 
@@ -2312,8 +2322,8 @@ window.deleteRigLineCase = function(caseId) {
         return;
     }
     
-    // Solicitar contraseña de Confirmación
-    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminacin permanente del caso ${caseId}?\n\nEsta accin no se puede deshacer. Ingrese su contraseña de Editor (Nmero de documento) para confirmar:`);
+    // Solicitar contraseÃƒÆ’Ã‚Â±a de ConfirmaciÃƒÆ’Ã‚Â³n
+    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminacin permanente del caso ${caseId}?\n\nEsta accin no se puede deshacer. Ingrese su contraseÃƒÆ’Ã‚Â±a de Editor (Nmero de documento) para confirmar:`);
     
     if (typedPassword === null) {
         // El usuario cancel el prompt
@@ -2321,7 +2331,7 @@ window.deleteRigLineCase = function(caseId) {
     }
     
     if (typedPassword.trim() !== currentUser.doc) {
-        alert("contraseña incorrecta. La eliminacin del caso ha sido cancelada.");
+        alert("contraseÃƒÆ’Ã‚Â±a incorrecta. La eliminacin del caso ha sido cancelada.");
         return;
     }
     
@@ -2426,11 +2436,11 @@ function renderRigLineHistory() {
 
     const query = searchEl ? searchEl.value.toLowerCase().trim() : '';
 
-    // Ordenar todos los casos de más reciente a más antiguo (por fecha de apertura)
+    // Ordenar todos los casos de mÃƒÆ’Ã‚Â¡s reciente a mÃƒÆ’Ã‚Â¡s antiguo (por fecha de apertura)
     const resolvedCases = riglineCases.filter(c => c.status === 'RESUELTO');
     const sorted = [...resolvedCases].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Aplicar búsqueda rpida sobre todos los campos visibles
+    // Aplicar bÃƒÆ’Ã‚Âºsqueda rpida sobre todos los campos visibles
     const filtered = query
         ? sorted.filter(c =>
             c.id.toLowerCase().includes(query) ||
@@ -2495,7 +2505,7 @@ function renderRigLineHistory() {
     }).join('');
 }
 
-// Conectar la búsqueda del historial en tiempo real
+// Conectar la bÃƒÆ’Ã‚Âºsqueda del historial en tiempo real
 const rlHistorySearch = document.getElementById('rlHistorySearch');
 if (rlHistorySearch) rlHistorySearch.addEventListener('input', renderRigLineHistory);
 
@@ -2775,22 +2785,22 @@ document.getElementById('btnForgotPassword').addEventListener('click', () => {
     document.getElementById('recoveryModal').classList.remove('hidden');
 });
 
-// Guardar Configuración Inicial (Primer Login)
+// Guardar ConfiguraciÃƒÆ’Ã‚Â³n Inicial (Primer Login)
 // Guardar Configuracion Inicial (Primer Login)
 document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
     e.preventDefault();
     
     const pass1 = document.getElementById('flPassword').value.trim();
     const pass2 = document.getElementById('flPasswordConfirm').value.trim();
-    const errormásg = document.getElementById('flError');
+    const errorMsg = document.getElementById('flError');
     
     if (pass1 !== pass2) {
-        errormásg.textContent = 'Las contrasenas no coinciden.';
-        errormásg.classList.remove('hidden');
+        errorMsg.textContent = 'Las contrasenas no coinciden.';
+        errorMsg.classList.remove('hidden');
         return;
     }
     
-    errormásg.classList.add('hidden');
+    errorMsg.classList.add('hidden');
     
     // Guardar en Firebase
     db.collection('users').doc(currentUser.doc).update({
@@ -2799,10 +2809,10 @@ document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
         currentUser.password = pass1;
         localStorage.setItem('drill_current_user_v2', JSON.stringify(currentUser));
         document.getElementById('firstLoginModal').classList.add('hidden');
-        showToast('Configuracion guardada eéxitosamente.');
+        showToast('Configuracion guardada eÃƒÆ’Ã‚Â©xitosamente.');
     }).catch(err => {
-        errormásg.textContent = 'Error al guardar en la nube.';
-        errormásg.classList.remove('hidden');
+        errorMsg.textContent = 'Error al guardar en la nube.';
+        errorMsg.classList.remove('hidden');
         console.error(err);
     });
 });
@@ -2811,7 +2821,7 @@ document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
 document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const userStr = document.getElementById('recoveryUser').value.trim().toLowerCase();
-    const másg = document.getElementById('recoveryMessage');
+    const msg = document.getElementById('recoveryMessage');
     
     const matchedUser = usersList.find(u => {
         const uname = (u.name + '.' + u.lastName).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -2819,15 +2829,15 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     });
     
     if (!matchedUser) {
-        másg.textContent = 'Usuario no encontrado.';
-        másg.style.color = 'var(--color-danger)';
-        másg.classList.remove('hidden');
+        msg.textContent = 'Usuario no encontrado.';
+        msg.style.color = 'var(--color-danger)';
+        msg.classList.remove('hidden');
         return;
     }
     
-    másg.textContent = 'Abriendo cliente de correo...';
-    másg.style.color = 'var(--color-success)';
-    másg.classList.remove('hidden');
+    msg.textContent = 'Abriendo cliente de correo...';
+    msg.style.color = 'var(--color-success)';
+    msg.classList.remove('hidden');
     
     const adminEmail = 'volpi.fc@gmail.com';
     const subject = encodeURIComponent('Solicitud de Recuperacion - ' + matchedUser.name + ' ' + matchedUser.lastName);
@@ -2837,11 +2847,11 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     
     setTimeout(() => {
         document.getElementById('recoveryModal').classList.add('hidden');
-        másg.classList.add('hidden');
+        msg.classList.add('hidden');
         document.getElementById('recoveryForm').reset();
     }, 2000);
 });
-// PERF5: Removed duplicate checkSession() — it is already called inside DOMContentLoaded at line ~2438
+// PERF5: Removed duplicate checkSession() ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â it is already called inside DOMContentLoaded at line ~2438
 
 
 
@@ -2861,7 +2871,7 @@ if (btnAddExcelRow) {
 }
 
 // ---------------------------------------------------------------------------------
-// ACTUALIZACIÓN DINÁMICA DEL ESTADO DE CONEXIÓN (ONLINE/OFFLINE)
+// ACTUALIZACIÃƒÆ’Ã¢â‚¬Å“N DINÃƒÆ’Ã‚ÂMICA DEL ESTADO DE CONEXIÃƒÆ’Ã¢â‚¬Å“N (ONLINE/OFFLINE)
 // ---------------------------------------------------------------------------------
 function updateNetworkStatus() {
     const statusBadge = document.getElementById('dbStatus');
@@ -2908,7 +2918,7 @@ function renderOnlineUsers() {
 window.addEventListener('online', updateNetworkStatus);
 window.addEventListener('offline', updateNetworkStatus);
 document.addEventListener('DOMContentLoaded', updateNetworkStatus);
-// Forzar la revisión al cargar este script
+// Forzar la revisiÃƒÆ’Ã‚Â³n al cargar este script
 updateNetworkStatus();
 
 
@@ -2921,6 +2931,17 @@ window.addEventListener('beforeunload', () => {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
+
+
+
+
+
+
+
+
+
+
+
 
 
 
