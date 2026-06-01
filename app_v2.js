@@ -906,7 +906,7 @@ function tryMatchUser(list, typedName, typedPass) {
 function doLogin(matchedUser) {
     currentUser = matchedUser;
     localStorage.setItem('drill_current_user_v2', JSON.stringify(currentUser));
-    db.collection('users').doc(currentUser.doc).update({ status: 'online' }).catch(console.error);
+    db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'online' }), { merge: true }).catch(console.error);
     updateUIByRole();
     loginForm.reset();
     loginError.classList.add('hidden');
@@ -1117,7 +1117,7 @@ if (mainLogoutBtn && logoutModal) {
     if (btnConfirmLogout) {
         btnConfirmLogout.addEventListener('click', () => {
             if (currentUser) {
-                db.collection('users').doc(currentUser.doc).update({ status: 'offline' }).catch(() => {});
+                db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
                 currentUser = null;
                 localStorage.removeItem('drill_current_user_v2');
                 window.location.reload();
@@ -2499,8 +2499,8 @@ window.addEventListener('DOMContentLoaded', () => {
     checkSession(); // Mostrar el usuario logueado de inmediato
     
     // Si ya tiene sesion al cargar, avisar a Firebase que esta online
-    if (currentUser && currentUser.doc !== '31434249') {
-        db.collection('users').doc(currentUser.doc).update({ status: 'online' }).catch(() => {});
+    if (currentUser) {
+        db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'online' }), { merge: true }).catch(() => {});
     }
 
 
@@ -2902,7 +2902,8 @@ updateNetworkStatus();
 
 // Asegurar que al cerrar la ventana se marque como offline
 window.addEventListener('beforeunload', () => {
-    if (currentUser && currentUser.doc !== '31434249') {
-        db.collection('users').doc(currentUser.doc).update({ status: 'offline' }).catch(() => {});
+    if (currentUser) {
+        db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
+
