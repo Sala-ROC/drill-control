@@ -1,6 +1,6 @@
 ﻿window.showToast = function(msg) { console.log('Toast:', msg); alert(msg); };
 // DRILL CONTROL SYSTEM v3.2.2 PWA Release
-// Lógica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
+// Lgica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
 
 // 1. ESTRUCTURAS DE DATOS INICIALES (Listados oficiales)
 let OFFICIAl_RIGS = JSON.parse(localStorage.getItem('drill_official_rigs')) || ["F03", "F07", "F35", "M1211", "990", "F10", "F19", "F24", "F34", "F37", "991", "F15", "F26", "F36"];
@@ -22,7 +22,7 @@ const MODALITIES = {
     SOLICITADO_MAIL: "SOLICITADO_MAIL"
 };
 
-// Nombres legibles para más más
+// Nombres legibles para mostrar en pantalla de las modalidades
 const MODALITY_LABELS = {
     INACTIVO: "Inactivo / Sin Solicitar",
     CONTRATO: "Activo por Contrato",
@@ -72,7 +72,7 @@ let requestsHistory = JSON.parse(localStorage.getItem('drill_requests_history'))
 let usersList = JSON.parse(localStorage.getItem('drill_users_list')) || [];
 let riglineCases = JSON.parse(localStorage.getItem('drill_rigline_cases')) || [];
 
-// // Mantenemos la sesión del usuario actual en localStorage para no perderla al refrescar
+// // Mantenemos la sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n del usuario actual en localStorage para no perderla al refrescar
 let currentUser = JSON.parse(localStorage.getItem('drill_current_user_v2')) || null;
 
 // AUTOGENERAR EQUIPOS SI LA MEMORIA ESTA VACIA (IGUAL QUE EN v1.4.0)
@@ -99,7 +99,7 @@ if (!localStorage.getItem('drill_excel_migration_v322c')) {
     rigsData.forEach(r => {
         if (excelData[r.id]) {
             r.versions = excelData[r.id];
-            // CRITICAL FIX: Only más object to avoid wiping existing Operations data
+            // CRITICAL FIX: Only merge the versions object to avoid wiping existing Operations data
             db.collection('rigs').doc(r.id).set({ versions: excelData[r.id] }, { merge: true });
         }
     });
@@ -198,7 +198,7 @@ function renderRigsGrid() {
         if (isCritical) {
             criticalClass = hasHighPriority ? 'critical-rig' : 'warning-rig';
             const iconColor = hasHighPriority ? 'var(--color-orange)' : 'var(--color-amber)';
-            const técnica activa en RigLine.';
+            const titleTooltip = hasHighPriority ? 'Estado CrÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­tico! Caso tÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©cunico de prioridad alta activo en RigLine.' : 'Advertencia: Falla tÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©cnica activa en RigLine.';
             warningBadge = `
                 <span class="rig-warning-badge" style="color: ${iconColor}; font-size: 0.72rem; display: inline-flex; align-items: center;" title="${titleTooltip}">
                     <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -258,7 +258,7 @@ function renderRigsGrid() {
             </div>
         `;
 
-        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de edición
+        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de ediciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n
         card.addEventListener('click', () => {
             selectRigCard(rig.id);
         });
@@ -271,7 +271,7 @@ function renderRigsGrid() {
 
 // Finaliza un servicio solicitado por mail
 window.finalizeService = function(rigId, sys) {
-    if (!confirm('Estás seguro de que deseas finalizar el servicio eventual de ' + sys + ' en el Rig ' + rigId + '?')) return;
+    if (!confirm('Estas seguro de que deseas finalizar el servicio eventual de ' + sys + ' en el Rig ' + rigId + '?')) return;
 
     const rigIndex = rigsData.findIndex(r => r.id === rigId);
     if (rigIndex === -1) return;
@@ -290,14 +290,14 @@ window.finalizeService = function(rigId, sys) {
     };
     requestsHistory.unshift(newRequest);
 
-    // Actualización local
+    // ActualizaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n local
     renderRigsGrid();
     renderRequestsTable();
     calculateKPIs();
     renderExcelSpreadsheet();
     renderExcelHistory();
 
-    // Guardar en Firebase de forma atómica
+    // Guardar en Firebase de forma atÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³mica
     const batch = db.batch();
     batch.set(db.collection('history').doc(newRequest.id), newRequest);
     batch.update(db.collection('rigs').doc(rigId), {
@@ -305,7 +305,7 @@ window.finalizeService = function(rigId, sys) {
     });
     
     batch.commit().then(() => {
-        if(typeof showToast === 'function') showToast(`Servicio finalizado éxitosamente.`, 'success');
+        if(typeof showToast === 'function') showToast(`Servicio finalizado exitosamente.`, 'success');
     }).catch(err => {
         console.error("Error finalizando servicio en nube:", err);
         if(typeof showToast === 'function') showToast(`Error de conexion al finalizar.`, 'error');
@@ -366,13 +366,13 @@ function rendersystemsConfigForm(rigId) {
                     date: new Date().toISOString()
                 };
                 
-                // Actualización optimista
+                // ActualizaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n optimista
                 requestsHistory.unshift(newRequest);
                 renderRigsGrid();
                 renderRequestsTable();
                 calculateKPIs();
                 
-                // Guardar atómicamente en Firebase
+                // Guardar atÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³micamente en Firebase
                 const batch = db.batch();
                 batch.set(db.collection('history').doc(newRequest.id), newRequest);
                 batch.set(db.collection('rigs').doc(rigId), rigObj);
@@ -402,7 +402,7 @@ function selectRigCard(rigId) {
         }
     });
 
-    // Si somos editores, actualizamos el estado de administración y cargamos sistemas
+    // Si somos editores, actualizamos el estado de administracin y cargamos sistemas
     if (currentUser) {
         updateAdminPanelState();
         rendersystemsConfigForm(rigId);
@@ -424,7 +424,7 @@ function renderRequestsTable() {
 
     // Filtrar solicitudes
     let filteredRequests = requestsHistory.filter(req => {
-        const más(query) || 
+        const matchesSearch = req.rig.toLowerCase().includes(query) || 
                               req.client.toLowerCase().includes(query) || 
                               req.system.toLowerCase().includes(query);
         const matchesClient = clientVal === "" || req.client === clientVal;
@@ -506,7 +506,7 @@ function renderRequestsTable() {
         const infoTr = document.createElement('tr');
         infoTr.innerHTML = `
             <td colspan="4" style="text-align: center; color: var(--color-cyan); padding: 10px; font-size: 0.72rem; font-style: italic; background: rgba(0, 210, 255, 0.02); border-top: 1px dashed rgba(0, 210, 255, 0.15);">
-                Mostrando los 50 registros más recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
+                Mostrando los 50 registros mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
             </td>
         `;
         requestsTableBody.appendChild(infoTr);
@@ -530,7 +530,7 @@ function calculateKPIs() {
         let hasOperator = false;
 
         OFFICIAL_systems.forEach(sys => {
-            const más[sys];
+            const mod = rig.systems[sys];
             if (mod !== MODALITIES.INACTIVO) {
                 hasActive = true;
                 
@@ -551,7 +551,7 @@ function calculateKPIs() {
             }
         });
 
-        if (hasActive) activeRigsWithsystems++;
+        if (rig.client && rig.client.trim() !== "" && rig.client.trim() !== "Sin Contrato") activeRigsWithsystems++;
         if (hasActiveAutomation) {
             activeRigsCount++;
             if (hasOperator) {
@@ -572,23 +572,23 @@ function calculateKPIs() {
     kpiOperatorRate.textContent = `${rate}%`;
 }
 
-// 6. GESTIÓN DE sesión, PERMISOS Y LOGIN
+// 6. GESTIN DE sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n, PERMISOS Y LOGIN
 
-// Verifica si el usuario actual tiene permiso para una acción especfica
+// Verifica si el usuario actual tiene permiso para una accion especfica
 // PERF: perms object defined once outside can() to avoid recreating on every call
 const ROLE_PERMS = {
     view:         ['VIEWER', 'REPORTER', 'RESOLVER', 'ADMIN', 'SUPER_ADMIN'],
     report:       ['REPORTER', 'RESOLVER', 'ADMIN', 'SUPER_ADMIN'],
     resolve:      ['RESOLVER', 'ADMIN', 'SUPER_ADMIN'],
     delete:       ['ADMIN', 'SUPER_ADMIN'],
-    más: ['SUPER_ADMIN'],
+    manage_users: ['SUPER_ADMIN'],
 };
 function can(action) {
     if (!currentUser) return false;
     return (ROLE_PERMS[action] || []).includes(currentUser.role || 'VIEWER');
 }
 
-// Comprobar la sesión al cargar y actualizar la UI segn el rol
+// Comprobar la sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n al cargar y actualizar la UI segn el rol
 function checkSession() {
     if (currentUser) {
         updateUIByRole();
@@ -637,7 +637,7 @@ function updateUIByRole() {
 
     // Panel Usuarios: SOLO SUPER_ADMIN puede ver y gestionar
     const masterConfigBox = document.getElementById('masterConfigBox');
-    if (can('más')) {
+    if (can('manage_users')) {
         tabUsers.classList.remove('hidden');
         usersPanelNoAccess.classList.add('hidden');
         createUserFormWrapper.classList.remove('hidden');
@@ -732,7 +732,7 @@ function updateRLFormByRole() {
                 <span style="font-size:0.75rem;">
                     ${currentUser
                         ? `Tu rol actual es <strong style="color:var(--color-amber);">${roleLabel}</strong>. Necesitas permisos de <strong>Cargador</strong> o superior.`
-                        : 'Inicia con permisos de <strong>Cargador</strong> o superior para reportar casos.'
+                        : 'Inici sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n con permisos de <strong>Cargador</strong> o superior para reportar casos.'
                     }
                 </span>
             </div>
@@ -788,7 +788,7 @@ function updateAdminPanelState() {
     }
     buttons.forEach(btn => btn.classList.remove('active'));
     if (systemsConfigList) {
-        systemsConfigList.innerHTML = '<div style="text-align: center; color: var(--text-más sistemas.</div>';
+        systemsConfigList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.85rem;">Selecciona un equipo de perforacin de la izquierda para configurar sus sistemas.</div>';
     }
 }
 
@@ -863,7 +863,7 @@ function renderUsersList() {
                 </div>
                 <div class="user-item-info">
                     <span class="user-item-name">${u.name} ${u.lastName}${isMainSA ? ' ' : ''}</span>
-                    <span class="user-item-pass" style="font-size:0.7rem;">${u.email || 'Sin correo'}</span>
+                    <span class="user-item-pass" style="font-size:0.7rem;">${u.email || ''}</span>
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
@@ -877,7 +877,7 @@ function renderUsersList() {
 
 // Cambiar el rol de un usuario (Solo SUPER_ADMIN)
 window.changeUserRole = function(docId, newRole) {
-    if (!can('más')) return;
+    if (!can('manage_users')) return;
     if (docId === SUPER_ADMIN_DOC) {
         alert('No es posible cambiar el rol de Fernando Volpi (Super Admin principal).');
         renderUsersList();
@@ -893,7 +893,7 @@ window.changeUserRole = function(docId, newRole) {
     }
 };
 
-// Función auxiliar que valida credenciales contra una lista de usuarios
+// FunciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n auxiliar que valida credenciales contra una lista de usuarios
 function tryMatchUser(list, typedName, typedPass) {
     return list.find(u => {
         if (!u || !u.name || !u.lastName) return false;
@@ -924,18 +924,18 @@ loginForm.addEventListener('submit', (e) => {
     const typedName = loginName.value.trim().toLowerCase().replace(/\s+/g, '');
     const typedPass = loginPassword.value.trim();
 
-    // 1. Buscar en la lista local (rápido)
-    let más);
+    // 1. Buscar en la lista local (rÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡pido)
+    let matchedUser = tryMatchUser(usersList, typedName, typedPass);
 
     // 2. Fallback: usuario hardcodeado Fernando
-    if (!más === '31434249') {
+    if (!matchedUser && typedName === 'fernando.volpi' && typedPass === '31434249') {
         matchedUser = { name: "Fernando", lastName: "Volpi", doc: "31434249", role: "SUPER_ADMIN" };
     }
 
     if (matchedUser) {
         doLogin(matchedUser);
     } else {
-        // 3. No encontrado localmente ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ consultar Firebase directamente
+        // 3. No encontrado localmente ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ consultar Firebase directamente
         loginError.classList.add('hidden'); // hide while searching Firebase
         loginName.disabled = true;
         loginPassword.disabled = true;
@@ -988,7 +988,7 @@ requestForm.addEventListener('submit', (e) => {
 // Evento Crear Nuevo Usuario (Solo SUPER_ADMIN)
 createUserForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    if (!can('más')) { alert('Solo el Super Administrador puede crear usuarios.'); return; }
+    if (!can('manage_users')) { alert('Solo el Super Administrador puede crear usuarios.'); return; }
     const newUName    = document.getElementById('uName').value.trim();
     const newULastName = document.getElementById('uLastName').value.trim();
     const newUDoc     = document.getElementById('uDoc').value.trim();
@@ -1021,13 +1021,13 @@ createUserForm.addEventListener('submit', (e) => {
 const btnAddRig = document.getElementById('btnAddRig');
 if (btnAddRig) {
     btnAddRig.addEventListener('click', () => {
-        if (!can('más')) return;
+        if (!can('manage_users')) return;
         const rigName = prompt("Ingrese el nombre del nuevo Equipo (Ej: F99):");
         if (rigName && rigName.trim() !== "") {
             OFFICIAl_RIGS.push(rigName.trim());
             localStorage.setItem('drill_official_rigs', JSON.stringify(OFFICIAl_RIGS));
             renderRigsGrid();
-            alert(`Equipo ${rigName.trim()} agregado con éxito.`);
+            alert(`Equipo ${rigName.trim()} agregado con exito.`);
         }
     });
 }
@@ -1035,14 +1035,14 @@ if (btnAddRig) {
 const btnAddClient = document.getElementById('btnAddClient');
 if (btnAddClient) {
     btnAddClient.addEventListener('click', () => {
-        if (!can('más')) return;
+        if (!can('manage_users')) return;
         const clientName = prompt("Ingrese el nombre de la nueva Operadora:");
         if (clientName && clientName.trim() !== "") {
             OFFICIAL_CLIENTS.push(clientName.trim());
             localStorage.setItem('drill_official_clients', JSON.stringify(OFFICIAL_CLIENTS));
-            // Actualizar selects de clientes si es necesario en otras vistas, pero renderRigsGrid no más, 
+            // Actualizar selects de clientes si es necesario en otras vistas, pero renderRigsGrid no muestra clientes, 
             // solo cuando se edita un rig.
-            alert(`Operadora ${clientName.trim()} agregada con éxito.`);
+            alert(`Operadora ${clientName.trim()} agregada con exito.`);
         }
     });
 }
@@ -1050,7 +1050,7 @@ if (btnAddClient) {
 // Eliminar Registro de Solicitud (Solo ADMIN+)
 window.deleteRequest = function(reqId) {
     if (!can('delete')) return;
-    if (!confirm("Estás seguro de eliminar esta solicitud de la base de datos?")) return;
+    if (!confirm("Estas seguro de eliminar esta solicitud de la base de datos?")) return;
 
     // Buscar la solicitud para saber qu Rig y Sistema debemos resetear a INACTIVO
     const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
@@ -1065,7 +1065,7 @@ window.deleteRequest = function(reqId) {
             if(typeof showToast === 'function') showToast('Error al borrar de la nube', 'error');
         });
 
-        // Comprobar si hay alguna solicitud más reciente para ese mismo Rig + Sistema
+        // Comprobar si hay alguna solicitud mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s reciente para ese mismo Rig + Sistema
         // Si no la hay, el Rig vuelve a estar INACTIVO en ese sistema
         const hasMoreRecent = requestsHistory.find(r => r.rig === reqObj.rig && r.system === reqObj.system);
         
@@ -1086,11 +1086,11 @@ window.deleteRequest = function(reqId) {
 
 // Eliminar Usuario (Solo SUPER_ADMIN)
 window.deleteUser = function(docId) {
-    if (!can('más')) { alert('Solo el Super Administrador puede eliminar usuarios.'); return; }
+    if (!can('manage_users')) { alert('Solo el Super Administrador puede eliminar usuarios.'); return; }
     if (docId === SUPER_ADMIN_DOC) { alert('No es posible eliminar al Super Administrador principal (Fernando Volpi).'); return; }
     const userToDelete = usersList.find(u => u.doc === docId);
     if (!userToDelete) return;
-    if (!confirm(`Eliminar a ${userToDelete.name} ${userToDelete.lastName} del sistema? Esta acción no puede deshacer.`)) return;
+    if (!confirm(`Eliminar a ${userToDelete.name} ${userToDelete.lastName} del sistema? Esta accion no puede deshacer.`)) return;
     usersList = usersList.filter(u => u.doc !== docId);
     // PERF1: Borrar solo el documento en Firebase
     db.collection('users').doc(docId).delete().catch(err => {
@@ -1137,12 +1137,12 @@ tabRequests.addEventListener('click', () => switchTab('tabRequests'));
 tabUsers.addEventListener('click', () => switchTab('tabUsers'));
 tabAdminActions.addEventListener('click', () => switchTab('tabAdminActions'));
 
-// Eventos de búsqueda y Filtros
+// Eventos de bÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºsqueda y Filtros
 searchInput.addEventListener('input', renderRequestsTable);
 filterClient.addEventListener('change', renderRequestsTable);
 filterSystem.addEventListener('change', renderRequestsTable);
 
-// Toggle para más recientes (15)
+// Toggle para mostrar todo el historial o solo los recientes (15)
 if (toggleShowAllHistory) {
     toggleShowAllHistory.addEventListener('change', function() {
         showAllHistory = this.checked;
@@ -1154,8 +1154,8 @@ if (toggleShowAllHistory) {
 if (btnClearHistory) {
     btnClearHistory.addEventListener('click', function() {
         if (!currentUser) return;
-        if (confirm("Estás seguro de eliminar TODO el historial de solicitudes? Se vaciara el registro de cambios (el estado actual de los equipos no se perder).")) {
-            // PERF1: Use a batch to delete all history documents safely and quickly without más or writing an empty array to each element
+        if (confirm("Estas seguro de eliminar TODO el historial de solicitudes? Se vaciara el registro de cambios (el estado actual de los equipos no se perder).")) {
+            // PERF1: Use a batch to delete all history documents safely and quickly without multiple individual requests or writing an empty array to each element
             const batch = db.batch();
             requestsHistory.forEach(h => {
                 batch.delete(db.collection('history').doc(h.id));
@@ -1170,7 +1170,7 @@ if (btnClearHistory) {
     });
 }
 
-// Asociar eventos de clic de vinculación rápida a los botones de operadora
+// Asociar eventos de clic de vinculacin rpida a los botones de operadora
 document.querySelectorAll('.btn-operator').forEach(btn => {
     btn.addEventListener('click', function() {
         if (!currentUser) return;
@@ -1190,10 +1190,10 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
             return;
         }
         
-        // Confirmar reasignación directa o liberacin de contrato
+        // Confirmar reasignacin directa o liberacin de contrato
         const confirmMsg = selectedClient === "" 
             ? `Confirmar dejar al Rig ${selectedRigCardId} Sin Contrato?` 
-            : `Confirmar vinculación rápida del Rig ${selectedRigCardId} a ${selectedClient}?`;
+            : `Confirmar vinculacin rpida del Rig ${selectedRigCardId} a ${selectedClient}?`;
             
         if (confirm(confirmMsg)) {
             rigsData[rigIndex].client = selectedClient;
@@ -1210,7 +1210,7 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
             requestsHistory.unshift(clientChangeRequest);
             
             // PERF1: Guardar solo los datos que cambiaron en la base de datos
-            db.collection('rigs').doc(rigId).set(rigsData[rigIndex]);
+            db.collection('rigs').doc(selectedRigCardId).set(rigsData[rigIndex]);
             db.collection('history').doc(clientChangeRequest.id).set(clientChangeRequest);
             
             // Refrescar vistas
@@ -1229,7 +1229,7 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
 // 8.5 PLANILLA DE CARGA RPIDA TIPO EXCEL (V1.0.9)
 // ==============================================================
 
-// Estás datos temporales del Excel (1 fila por defecto)
+// Estructura en memoria para conservar los datos temporales del Excel (1 fila por defecto)
 let excelTempData = Array.from({ length: 1 }, () => ({
     rig: '',
     system: '',
@@ -1247,20 +1247,20 @@ window.updateActiveRowData = function(reqId, field, value) {
     if (field === 'date' || field === 'time') {
         let d = req.date ? new Date(req.date) : new Date();
         let yyyy = d.getFullYear(), mm = d.getMonth(), dd = d.getDate();
-        let hh = d.getHours(), más();
+        let hh = d.getHours(), min = d.getMinutes();
         
         if (field === 'date') {
             const parts = value.split('-');
             yyyy = parseInt(parts[0], 10);
-            más[1], 10) - 1;
+            mm = parseInt(parts[1], 10) - 1;
             dd = parseInt(parts[2], 10);
         } else if (field === 'time') {
             const parts = value.split(':');
             hh = parseInt(parts[0], 10);
-            más[1], 10);
+            min = parseInt(parts[1], 10);
         }
         
-        // Forma segura para evitar saltos de más en JavaScript
+        // Forma segura para evitar saltos de mes en JavaScript
         const newD = new Date(yyyy, mm, dd, hh, min, 0, 0);
         req.date = newD.toISOString();
     } else {
@@ -1287,7 +1287,7 @@ window.enableEditRow = function(reqId) {
 };
 
 window.deleteActiveRow = function(reqId) {
-    if (!confirm('Estás segura de que deseas eliminar este registro por completo? Esta acción lo borrara de la tabla y desactivara el estado "Via Mail" del equipo. Esta acción no se puede deshacer.')) return;
+    if (!confirm('Estas segura de que deseas eliminar este registro por completo? Esta accion lo borrara de la tabla y desactivara el estado "Via Mail" del equipo. Esta accion no se puede deshacer.')) return;
 
     const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
     if (reqIndex === -1) return;
@@ -1318,7 +1318,7 @@ window.deleteActiveRow = function(reqId) {
 };
 
 window.deleteHistoryRow = function(reqId) {
-    if (!confirm('Estás segura de que deseas eliminar este registro del historial? Esta acción no se puede deshacer.')) return;
+    if (!confirm('Estas segura de que deseas eliminar este registro del historial? Esta accion no se puede deshacer.')) return;
 
     const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
     if (reqIndex === -1) return;
@@ -1362,7 +1362,7 @@ function renderExcelSpreadsheet() {
         const tr = document.createElement('tr');
         tr.id = `active-row-${req.id}`;
         
-        const isSuperAdmin = can('más');
+        const isSuperAdmin = can('manage_users');
         const isEditable = 'disabled';
         
         let dateVal = '';
@@ -1373,7 +1373,7 @@ function renderExcelSpreadsheet() {
             const mm = String(d.getMonth() + 1).padStart(2, '0');
             const dd = String(d.getDate()).padStart(2, '0');
             const hh = String(d.getHours()).padStart(2, '0');
-            const más()).padStart(2, '0');
+            const min = String(d.getMinutes()).padStart(2, '0');
             dateVal = `${yyyy}-${mm}-${dd}`;
             timeVal = `${hh}:${min}`;
         }
@@ -1444,7 +1444,7 @@ function renderExcelSpreadsheet() {
             rigOptions += `<option value="${rig}" ${rowData.rig === rig ? 'selected' : ''}>${rig}</option>`;
         });
 
-        // Dropdown de Servicios (Sistemas de automatización)
+        // Dropdown de Servicios (Sistemas de automatizacin)
         let systemOptions = '<option value="">-- Servicio --</option>';
         OFFICIAL_systems.forEach(sys => {
             systemOptions += `<option value="${sys}" ${rowData.system === sys ? 'selected' : ''}>${sys}</option>`;
@@ -1517,7 +1517,7 @@ function renderExcelHistory() {
         return rigObj.systems[req.system] !== MODALITIES.SOLICITADO_MAIL;
     });
 
-    // Tomar las 60 más recientes
+    // Tomar las 60 ms recientes
     for (let i = 0; i < 60; i++) {
         const req = finalizedMailReqs[i];
         const tr = document.createElement('tr');
@@ -1532,7 +1532,7 @@ function renderExcelHistory() {
                 const year = d.getFullYear();
                 formattedDateStr = `${day}/${month}/${year}`;
                 const hh = String(d.getHours()).padStart(2, '0');
-                const más()).padStart(2, '0');
+                const mm = String(d.getMinutes()).padStart(2, '0');
                 formattedTimeStr = `${hh}:${mm}`;
             }
 
@@ -1546,7 +1546,7 @@ function renderExcelHistory() {
                 <td>${formattedDateStr}</td>
                 <td>${formattedTimeStr}</td>
                 <td style="text-align: center;">
-                    ${can('más') ? `
+                    ${can('manage_users') ? `
                     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px;">
                         <span style="font-size: 0.85rem; color: #3b82f6; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600;">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Cerrado
@@ -1572,7 +1572,7 @@ function renderExcelHistory() {
                 <td style="color: var(--text-muted); font-style: italic; opacity: 0.5;">-</td>
                 <td style="color: var(--text-muted); font-style: italic; opacity: 0.5;">-</td>
                 <td style="color: var(--text-muted); font-style: italic; opacity: 0.5;">-</td>
-                <td style="color: var(--text-más</td>
+                <td style="color: var(--text-muted); font-style: italic; opacity: 0.5; text-align: center;">Sin datos</td>
             `;
         }
         tbody.appendChild(tr);
@@ -1651,13 +1651,13 @@ window.processExcelRow = function(rowIndex) {
         return;
     }
 
-    // Timezone safe-parsing (previene error de salto de más en JS)
+    // Timezone safe-parsing (previene error de salto de mes en JS)
     let yyyy, mm, dd, hh, min;
     const now = new Date();
     if (dateVal) {
         const parts = dateVal.split('-');
         yyyy = parseInt(parts[0], 10);
-        más[1], 10) - 1;
+        mm = parseInt(parts[1], 10) - 1;
         dd = parseInt(parts[2], 10);
     } else {
         yyyy = now.getFullYear(); mm = now.getMonth(); dd = now.getDate();
@@ -1666,7 +1666,7 @@ window.processExcelRow = function(rowIndex) {
     if (timeVal) {
         const parts = timeVal.split(':');
         hh = parseInt(parts[0], 10);
-        más[1], 10);
+        min = parseInt(parts[1], 10);
     } else {
         hh = 12; min = 0;
     }
@@ -1697,7 +1697,7 @@ window.processExcelRow = function(rowIndex) {
 
     requestsHistory.unshift(newRequest);
 
-    // Guardado AtÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³más
+    // Guardado AtÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³mico (Batch) con control de errores
     const batch = db.batch();
     batch.set(db.collection('rigs').doc(rigId), rigObj);
     batch.set(db.collection('history').doc(newRequest.id), newRequest);
@@ -1746,7 +1746,7 @@ if (btnExcelProcessAll) {
                 if (dateVal) {
                     const parts = dateVal.split('-');
                     yyyy = parseInt(parts[0], 10);
-                    más[1], 10) - 1;
+                    mm = parseInt(parts[1], 10) - 1;
                     dd = parseInt(parts[2], 10);
                 } else {
                     yyyy = now.getFullYear(); mm = now.getMonth(); dd = now.getDate();
@@ -1755,7 +1755,7 @@ if (btnExcelProcessAll) {
                 if (timeVal) {
                     const parts = timeVal.split(':');
                     hh = parseInt(parts[0], 10);
-                    más[1], 10);
+                    min = parseInt(parts[1], 10);
                 } else {
                     hh = 12; min = 0;
                 }
@@ -1808,9 +1808,9 @@ if (btnExcelProcessAll) {
             calculateKPIs();
             updateAdminPanelState();
 
-            alert(`Se procesaron ${processedCount} solicitudes de correo con éxito.`);
+            alert(`Se procesaron ${processedCount} solicitudes de correo con exito.`);
         } else {
-            alert("No hay filas completas para procesar. Seleccione al más un Rig y Servicio.");
+            alert("No hay filas completas para procesar. Seleccione al menos un Rig y Servicio.");
         }
     });
 }
@@ -1828,7 +1828,7 @@ if (btnExcelClearAll) {
 }
 
 // ==============================================================
-// 8.8 LGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS técnicos)
+// 8.8 LGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS tÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©cunicoS)
 // ==============================================================
 
 // Alternar Pestaa Global (Automatizacin / RigLine / Versiones)
@@ -1920,7 +1920,7 @@ function renderRigLineCases() {
         if (statusVal === 'PENDIENTE' && c.status !== 'PENDIENTE') return false;
         if (statusVal === 'RESUELTO' && c.status !== 'RESUELTO') return false;
         
-        const más(query) ||
+        const matchesSearch = c.id.toLowerCase().includes(query) ||
                               c.rig.toLowerCase().includes(query) ||
                               c.system.toLowerCase().includes(query) ||
                               c.description.toLowerCase().includes(query) ||
@@ -1934,7 +1934,7 @@ function renderRigLineCases() {
     
     if (filteredCases.length === 0) {
         rlCasesGrid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; color: var(--text-más-border); border-radius: 8px;">
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px; background: rgba(0, 0, 0, 0.15); border: 1px dashed var(--glass-border); border-radius: 8px;">
                 <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px; color: var(--text-muted); opacity: 0.7;"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
                 <p style="font-size: 0.9rem;">No hay casos que coincidan con los filtros y el estado seleccionado.</p>
             </div>
@@ -1982,7 +1982,7 @@ function renderRigLineCases() {
             closedTimeLabel = `<span class="case-time" style="color: var(--color-green); opacity: 0.9; margin-top: 2px;">Cerrado: ${dateStr} - ${timeStr}</span>`;
         }
         
-        // Visibilidad y control de acción de cierre segn permisos (Editor)
+        // Visibilidad y control de accion de cierre segn permisos (Editor)
         let actionHtml = '';
         if (currentUser) {
             const deleteBtnHtml = `
@@ -2012,7 +2012,7 @@ function renderRigLineCases() {
             if (c.status === "PENDIENTE") {
                 actionHtml = `
                     <div class="action-lock-box">
-                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia como Editor para resolver este caso" disabled>
+                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n como Editor para resolver este caso" disabled>
                             Resolver y Cerrar
                         </button>
                         <span class="action-lock-label">
@@ -2063,7 +2063,7 @@ function renderRigLineCases() {
     });
 }
 
-// Calcular más de RigLine y refrescar en pantalla
+// Calcular mtricas de RigLine y refrescar en pantalla
 function calculateRigLineKPIs() {
     if (!riglineCases) return;
     
@@ -2080,7 +2080,7 @@ function calculateRigLineKPIs() {
     // 3. Casos Resueltos Totales en Historial
     if (kpiRlClosedCount) kpiRlClosedCount.textContent = closedCases.length;
     
-    // 4. Equipo más afectado por fallas tcnicas pendientes
+    // 4. Equipo mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s afectado por fallas tcnicas pendientes
     let rigCounts = {};
     pendingCases.forEach(c => {
         rigCounts[c.rig] = (rigCounts[c.rig] || 0) + 1;
@@ -2090,7 +2090,7 @@ function calculateRigLineKPIs() {
     let maxCount = 0;
     for (const rig in rigCounts) {
         if (rigCounts[rig] > maxCount) {
-            más[rig];
+            maxCount = rigCounts[rig];
             mostAffectedRig = `Rig ${rig} (${maxCount})`;
         }
     }
@@ -2114,7 +2114,7 @@ function calculateRigLineKPIs() {
     }
 }
 
-// Generar e insertar un nuevo caso técnico reportado
+// Generar e insertar un nuevo caso tÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©cunico reportado
 if (rlReportForm) {
     rlReportForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -2161,14 +2161,14 @@ if (rlReportForm) {
         // Resetear el formulario
         rlReportForm.reset();
         
-        // Refrescar vistas y más de RigLine y del Centro de Control
+        // Refrescar vistas y mtricas de RigLine y del Centro de Control
         renderRigLineCases();
         calculateRigLineKPIs();
         renderRigsGrid();
         calculateKPIs();
         renderRigLineHistory();
         
-        alert(`Caso creado con éxito bajo el registro ${caseId}. Se dara seguimiento inmediato.`);
+        alert(`Caso creado con exito bajo el registro ${caseId}. Se dara seguimiento inmediato.`);
     });
 }
 
@@ -2186,7 +2186,7 @@ window.closeRigLineCase = function(caseId) {
     
     const caseIndex = riglineCases.findIndex(c => c.id === caseId);
     if (caseIndex !== -1) {
-        // Encontrar tarjeta para animación de salida sutil
+        // Encontrar tarjeta para animacin de salida sutil
         const card = document.querySelector(`[data-case-id="${caseId}"]`);
         if (card) {
             card.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease';
@@ -2208,11 +2208,11 @@ window.closeRigLineCase = function(caseId) {
             renderRigsGrid();
             calculateKPIs();
             renderRigLineHistory();
-        }, 350); // Sincronizado con la duracin de la animación
+        }, 350); // Sincronizado con la duracin de la animacin
     }
 };
 
-// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseña)
+// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a)
 window.exportRigLineHistoryTXT = function() {
     if (!can('delete')) {
         alert("Acceso denegado. Necesitas permisos de Administrador o superior para exportar el historial.");
@@ -2228,7 +2228,7 @@ window.exportRigLineHistoryTXT = function() {
         return;
     }
     
-    // Función helper para formatear fechas
+    // FunciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n helper para formatear fechas
     function fmtDate(iso) {
         if (!iso) return 'N/A';
         const d = new Date(iso);
@@ -2236,19 +2236,19 @@ window.exportRigLineHistoryTXT = function() {
         const mm = String(d.getMonth() + 1).padStart(2, '0');
         const yy = String(d.getFullYear());
         const hh = String(d.getHours()).padStart(2, '0');
-        const más()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
         return `${dd}/${mm}/${yy} ${hh}:${min}`;
     }
     
     let txtContent = "==================================================\r\n";
     txtContent += "REPORTE historico RIGLINE\r\n";
-    txtContent += `Fecha de Exportación: ${fmtDate(new Date().toISOString())}\r\n`;
+    txtContent += `Fecha de ExportaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n: ${fmtDate(new Date().toISOString())}\r\n`;
     txtContent += `Total de Casos Resueltos: ${sorted.length}\r\n`;
     txtContent += "==================================================\r\n\r\n";
     
     sorted.forEach(c => {
         txtContent += `[CASO: ${c.id}]\r\n`;
-        txtContent += `Estás}\r\n`;
+        txtContent += `Estado: ${c.status}\r\n`;
         txtContent += `Prioridad: ${c.priority}\r\n`;
         txtContent += `Equipo: ${c.rig}\r\n`;
         txtContent += `Sistema/Falla: ${c.system}\r\n`;
@@ -2256,7 +2256,7 @@ window.exportRigLineHistoryTXT = function() {
         txtContent += `Resuelto Por: ${c.resolver || 'N/A'}\r\n`;
         txtContent += `Fecha Apertura: ${fmtDate(c.date)}\r\n`;
         txtContent += `Fecha Cierre: ${fmtDate(c.closedDate)}\r\n`;
-        txtContent += `Descripción:\r\n${c.description}\r\n`;
+        txtContent += `DescripciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n:\r\n${c.description}\r\n`;
         txtContent += "--------------------------------------------------\r\n\r\n";
     });
     
@@ -2289,12 +2289,12 @@ window.clearRigLineHistory = function() {
         exportRigLineHistoryTXT();
     }
     
-    const typedPassword = prompt(`ADVERTENCIA PELIGRO: Estás a punto de eliminar permanentemente TODOS los ${resolvedCases.length} casos cerrados del historial.\n\nEsta acción no se puede deshacer.\nIngrese su contraseña de Super Admin (Número de documento) para confirmar:`);
+    const typedPassword = prompt(`ADVERTENCIA PELIGRO: EstÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s a punto de eliminar permanentemente TODOS los ${resolvedCases.length} casos cerrados del historial.\n\nEsta acciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n no se puede deshacer.\nIngrese su contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a de Super Admin (NÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºmero de documento) para confirmar:`);
     
     if (typedPassword === null) return;
     
     if (typedPassword.trim() !== currentUser.doc) {
-        alert("contraseña incorrecta. Operacion cancelada.");
+        alert("contrasena incorrecta. Operacion cancelada.");
         return;
     }
     
@@ -2309,7 +2309,7 @@ window.clearRigLineHistory = function() {
         renderRigLineCases();
         renderRigLineHistory();
         calculateRigLineKPIs();
-        showToast("Historial vaciado con éxito.");
+        showToast("Historial vaciado con exito.");
     }).catch(err => {
         console.error(err);
         alert("Ocurrio un error al intentar vaciar el historial.");
@@ -2322,8 +2322,8 @@ window.deleteRigLineCase = function(caseId) {
         return;
     }
     
-    // Solicitar contraseña de Confirmación
-    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminacion permanente del caso ${caseId}?\n\nEsta acción no se puede deshacer. Ingrese su contraseña de Editor (numero de documento) para confirmar:`);
+    // Solicitar contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a de ConfirmaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n
+    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminacion permanente del caso ${caseId}?\n\nEsta accion no se puede deshacer. Ingrese su contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a de Editor (numero de documento) para confirmar:`);
     
     if (typedPassword === null) {
         // El usuario cancel el prompt
@@ -2331,13 +2331,13 @@ window.deleteRigLineCase = function(caseId) {
     }
     
     if (typedPassword.trim() !== currentUser.doc) {
-        alert("contraseña incorrecta. La eliminacion del caso ha sido cancelada.");
+        alert("contrasena incorrecta. La eliminacion del caso ha sido cancelada.");
         return;
     }
     
     const caseIndex = riglineCases.findIndex(c => c.id === caseId);
     if (caseIndex !== -1) {
-        // Encontrar tarjeta para animación de salida sutil de rotacin y escala
+        // Encontrar tarjeta para animacin de salida sutil de rotacin y escala
         const card = document.querySelector(`[data-case-id="${caseId}"]`);
         if (card) {
             card.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease';
@@ -2359,7 +2359,7 @@ window.deleteRigLineCase = function(caseId) {
             renderRigsGrid();
             calculateKPIs();
             renderRigLineHistory();
-        }, 350); // Sincronizado con la duracin de la animación
+        }, 350); // Sincronizado con la duracin de la animacin
     }
 };
 
@@ -2436,11 +2436,11 @@ function renderRigLineHistory() {
 
     const query = searchEl ? searchEl.value.toLowerCase().trim() : '';
 
-    // Ordenar todos los casos de más reciente a más antiguo (por fecha de apertura)
+    // Ordenar todos los casos de mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s reciente a mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s antiguo (por fecha de apertura)
     const resolvedCases = riglineCases.filter(c => c.status === 'RESUELTO');
     const sorted = [...resolvedCases].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Aplicar búsqueda rápida sobre todos los campos visibles
+    // Aplicar bÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºsqueda rpida sobre todos los campos visibles
     const filtered = query
         ? sorted.filter(c =>
             c.id.toLowerCase().includes(query) ||
@@ -2473,7 +2473,7 @@ function renderRigLineHistory() {
         const mm = String(d.getMonth() + 1).padStart(2, '0');
         const yy = String(d.getFullYear()).slice(2);
         const hh = String(d.getHours()).padStart(2, '0');
-        const más()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
         return `${dd}/${mm}/${yy} ${hh}:${min}`;
     }
 
@@ -2491,7 +2491,7 @@ function renderRigLineHistory() {
             <tr class="${rowClass}">
                 <td class="rl-history-case-id">${c.id}</td>
                 <td class="rl-history-rig">${c.rig}</td>
-                <td style="color: var(--text-primary); más;">${c.system}</td>
+                <td style="color: var(--text-primary); max-width: 140px; overflow: hidden; text-overflow: ellipsis;">${c.system}</td>
                 <td><span class="rl-priority-dot ${prioClass}">${c.priority}</span></td>
                 <td style="color: var(--text-muted);">${c.reporter}</td>
                 <td style="color: var(--text-muted);">${c.resolver || '<span style="opacity:0.4;"></span>'}</td>
@@ -2505,7 +2505,7 @@ function renderRigLineHistory() {
     }).join('');
 }
 
-// Conectar la búsqueda del historial en tiempo real
+// Conectar la bÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºsqueda del historial en tiempo real
 const rlHistorySearch = document.getElementById('rlHistorySearch');
 if (rlHistorySearch) rlHistorySearch.addEventListener('input', renderRigLineHistory);
 
@@ -2523,7 +2523,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (typeof renderVersionsGrid === 'function') renderVersionsGrid();
     checkSession(); // Mostrar el usuario logueado de inmediato
     
-    // Si ya tiene sesión al cargar, avisar a Firebase que esta online
+    // Si ya tiene sesion al cargar, avisar a Firebase que esta online
     if (currentUser) {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'online' }), { merge: true }).catch(() => {});
     }
@@ -2602,7 +2602,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Función de Migracin (Solo corre 1 vez por el Admin para subir datos a la nube)
+// Funcin de Migracin (Solo corre 1 vez por el Admin para subir datos a la nube)
 async function runFirebaseMigration() {
     if (!currentUser || currentUser.doc !== '31434249') return; // Solo Fer
     
@@ -2610,7 +2610,7 @@ async function runFirebaseMigration() {
     const rigsSnap = await db.collection('rigs').get();
     if (!rigsSnap.empty) return; // Ya est migrado
     
-    showToast('Inicia a la Nube (Firebase)...');
+    showToast('Iniciando migracin a la Nube (Firebase)...');
     
     const localRigs = JSON.parse(localStorage.getItem('drill_rigs_data')) || [];
     const localUsers = JSON.parse(localStorage.getItem('drill_users_list')) || [];
@@ -2625,12 +2625,12 @@ async function runFirebaseMigration() {
     localRigline.forEach(caseItem => { if(caseItem && caseItem.id) batch.set(db.collection('rigline').doc(String(caseItem.id).trim()), caseItem); });
     
     await batch.commit();
-    showToast('Migracion a Firebase Completada con éxito!');
+    showToast('Migracion a Firebase Completada con exito!');
 }
 
 window.forceFirebaseSync = async function() {
     if (!currentUser || currentUser.role !== 'SUPER_ADMIN') { alert('No autorizado'); return; }
-    showToast('Inicia forzada a la Nube...');
+    showToast('Iniciando sincronizacion forzada a la Nube...');
     const localRigs = JSON.parse(localStorage.getItem('drill_rigs_data')) || [];
     const localUsers = JSON.parse(localStorage.getItem('drill_users_list')) || [];
     const localHistory = JSON.parse(localStorage.getItem('drill_requests_history')) || [];
@@ -2641,7 +2641,7 @@ window.forceFirebaseSync = async function() {
     localHistory.forEach(hist => { if(hist && hist.id) batch.set(db.collection('history').doc(String(hist.id).trim()), hist); });
     localRigline.forEach(caseItem => { if(caseItem && caseItem.id) batch.set(db.collection('rigline').doc(String(caseItem.id).trim()), caseItem); });
     await batch.commit();
-    showToast('Sincronizacion forzada completada con éxito.');
+    showToast('Sincronizacion forzada completada con exito.');
 }
 
 // ==============================================================
@@ -2649,16 +2649,16 @@ window.forceFirebaseSync = async function() {
 // ==============================================================
 window.renderVersionsGrid = function() {
     const versionsGrid = document.getElementById('versionsGrid');
-    if (!versión;
+    if (!versionsGrid) return;
     
     versionsGrid.innerHTML = '';
     
     // Solo ADMIN o SUPER_ADMIN pueden editar.
-    const canEdit = can('delete') || can('más');
+    const canEdit = can('delete') || can('manage_users');
 
     rigsData.forEach(rig => {
         const card = document.createElement('div');
-        card.className = 'rig-versión-card';
+        card.className = 'rig-version-card';
         
         let systemsHtml = '';
         VERSIONS_SYSTEMS.forEach(sys => {
@@ -2666,31 +2666,31 @@ window.renderVersionsGrid = function() {
             
             let valueElement = '';
             if (canEdit) {
-                valueElement = `<input type="text" class="versión-input" value="${versionValue}" 
+                valueElement = `<input type="text" class="version-input" value="${versionValue}" 
                                 placeholder="v1.0..."
                                 onblur="window.saveSystemVersion('${rig.id}', '${sys}', this.value)">`;
             } else {
                 if (versionValue) {
-                    valueElement = `<span class="versión-value-text">${versión>`;
+                    valueElement = `<span class="version-value-text">${versionValue}</span>`;
                 } else {
-                    valueElement = `<span class="versión-value-text empty">N/A</span>`;
+                    valueElement = `<span class="version-value-text empty">N/A</span>`;
                 }
             }
             
             systemsHtml += `
-                <div class="versión-item">
-                    <span class="versión-system-name">${sys}</span>
+                <div class="version-item">
+                    <span class="version-system-name">${sys}</span>
                     ${valueElement}
                 </div>
             `;
         });
         
         card.innerHTML = `
-            <div class="rig-versión-card-header">
+            <div class="rig-version-card-header">
                 <h3>Rig ${rig.id}</h3>
-                <span class="rig-versión-client">${rig.client || 'General'}</span>
+                <span class="rig-version-client">${rig.client || 'General'}</span>
             </div>
-            <div class="rig-versión-card-body">
+            <div class="rig-version-card-body">
                 ${systemsHtml}
             </div>
         `;
@@ -2699,7 +2699,7 @@ window.renderVersionsGrid = function() {
 };
 
 window.saveSystemVersion = function(rigId, systemName, newVersion) {
-    if (!can('delete') && !can('más')) {
+    if (!can('delete') && !can('manage_users')) {
         alert("No tienes permisos para editar versiones.");
         return;
     }
@@ -2710,9 +2710,9 @@ window.saveSystemVersion = function(rigId, systemName, newVersion) {
         
         const currentVal = rigsData[rigIndex].versions[systemName] || '';
         if (currentVal !== newVersion.trim()) {
-            rigsData[rigIndex].versión.trim();
+            rigsData[rigIndex].versions[systemName] = newVersion.trim();
             // PERF1: update specific rig only
-            db.collection('rigs').doc(rigId).set(rigsData[rigIndex]);
+            db.collection('rigs').doc(selectedRigCardId).set(rigsData[rigIndex]);
             showVersionToast(`Rig ${rigId} - ${systemName} actualizado`);
         }
     }
@@ -2775,7 +2775,7 @@ document.getElementById('activeUserBadge').addEventListener('click', () => {
     
     document.getElementById('profileNameDisplay').textContent = currentUser.name + ' ' + currentUser.lastName;
     document.getElementById('profileRoleDisplay').textContent = ROLE_LABELS[currentUser.role] || currentUser.role;
-    document.getElementById('profileEmailDisplay').textContent = currentUser.email || 'Sin correo registrado';
+    document.getElementById('profileEmailDisplay').textContent = currentUser.email || '';
     
     document.getElementById('userProfileModal').classList.remove('hidden');
 });
@@ -2785,8 +2785,8 @@ document.getElementById('btnForgotPassword').addEventListener('click', () => {
     document.getElementById('recoveryModal').classList.remove('hidden');
 });
 
-// Guardar Configuración Inicia)
-// Guardar Configuración Inicia)
+// Guardar ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n Inicial (Primer Login)
+// Guardar Configuracion Inicial (Primer Login)
 document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
     e.preventDefault();
     
@@ -2809,7 +2809,7 @@ document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
         currentUser.password = pass1;
         localStorage.setItem('drill_current_user_v2', JSON.stringify(currentUser));
         document.getElementById('firstLoginModal').classList.add('hidden');
-        showToast('Configuración guardada éxitosamente.');
+        showToast('Configuracion guardada exitosamente.');
     }).catch(err => {
         errorMsg.textContent = 'Error al guardar en la nube.';
         errorMsg.classList.remove('hidden');
@@ -2836,12 +2836,12 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     }
     
     msg.textContent = 'Abriendo cliente de correo...';
-    más)';
+    msg.style.color = 'var(--color-success)';
     msg.classList.remove('hidden');
     
     const adminEmail = 'volpi.fc@gmail.com';
     const subject = encodeURIComponent('Solicitud de Recuperacion - ' + matchedUser.name + ' ' + matchedUser.lastName);
-    const body = encodeURIComponent('Hola Fernando,\n\nOlvide más.');
+    const body = encodeURIComponent('Hola Fernando,\n\nOlvide mi contrasena.\nUsuario: ' + userStr + '\nDocumento: ' + matchedUser.doc + '\n\nPor favor enviame una clave nueva.\n\nGracias.');
     
     window.location.href = 'mailto:' + adminEmail + '?subject=' + subject + '&body=' + body;
     
@@ -2851,7 +2851,7 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
         document.getElementById('recoveryForm').reset();
     }, 2000);
 });
-// PERF5: Removed duplicate checkSession() ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â it is already called inside DOMContentLoaded at line ~2438
+// PERF5: Removed duplicate checkSession() ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â it is already called inside DOMContentLoaded at line ~2438
 
 
 
@@ -2871,7 +2871,7 @@ if (btnAddExcelRow) {
 }
 
 // ---------------------------------------------------------------------------------
-// ACTUALIZACIÓN DINÁMICA DEL ESTADO DE CONEXIÓN (ONLINE/OFFLINE)
+// ACTUALIZACIÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“N DINÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂMICA DEL ESTADO DE CONEXIÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“N (ONLINE/OFFLINE)
 // ---------------------------------------------------------------------------------
 function updateNetworkStatus() {
     const statusBadge = document.getElementById('dbStatus');
@@ -2918,7 +2918,7 @@ function renderOnlineUsers() {
 window.addEventListener('online', updateNetworkStatus);
 window.addEventListener('offline', updateNetworkStatus);
 document.addEventListener('DOMContentLoaded', updateNetworkStatus);
-// Forzar la revisión al cargar este script
+// Forzar la revisiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n al cargar este script
 updateNetworkStatus();
 
 
@@ -2931,8 +2931,6 @@ window.addEventListener('beforeunload', () => {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
-
-
 
 
 
