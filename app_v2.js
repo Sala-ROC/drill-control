@@ -1,4 +1,4 @@
-﻿window.showToast = function(msg) { console.log('Toast:', msg); alert(msg); };
+window.showToast = function(msg) { console.log('Toast:', msg); alert(msg); };
 // DRILL CONTROL SYSTEM v3.2.2 PWA Release
 // Lgica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
 
@@ -2542,7 +2542,7 @@ window.addEventListener('DOMContentLoaded', () => {
             rigsData = snapshot.docs.map(doc => doc.data());
         }
         
-        // ORDEN DE OPERADORAS ROBERTO (Flexible)
+                // ORDEN DE OPERADORAS ROBERTO (Flexible)
         const getClientWeight = (clientName) => {
             if (!clientName) return 99;
             const name = String(clientName).toUpperCase();
@@ -2553,6 +2553,31 @@ window.addEventListener('DOMContentLoaded', () => {
             if (name.includes("TECPETROL")) return 5;
             return 99;
         };
+
+        // --- CORRECCION AUTOMATICA DE CLIENTES EN FIREBASE ---
+        // Debido a un error antiguo de autogeneracion, los clientes estaban mezclados.
+        const realClients = {
+            "F03": "YPF", "F07": "YPF", "F35": "YPF", "M1211": "YPF", "1211": "YPF", "990": "YPF",
+            "F10": "Geopark",
+            "F37": "TOTAL Energy",
+            "F19": "Vista Energy", "F24": "Vista Energy", "F34": "Vista Energy", "991": "Vista Energy",
+            "F15": "Tecpetrol", "F26": "Tecpetrol", "F36": "Tecpetrol"
+        };
+        
+        rigsData.forEach(r => {
+            let currentId = String(r.id).trim();
+            if (currentId === "1211") currentId = "M1211"; // Normalizar
+            
+            if (realClients[currentId] && (!r.client || !r.client.toUpperCase().includes(realClients[currentId].split(' ')[0].toUpperCase()))) {
+                r.client = realClients[currentId];
+                console.log("Corrigiendo operadora en la nube para:", r.id);
+                // Actualizar silenciosamente en la nube
+                if (typeof db !== 'undefined') {
+                    db.collection('rigs').doc(r.id).update({ client: r.client }).catch(()=>{});
+                }
+            }
+        });
+        // --- FIN CORRECCION ---
         
         rigsData.sort((a, b) => {
             // 1. Regla principal: Ordenar por operadora
@@ -2968,6 +2993,7 @@ window.addEventListener('beforeunload', () => {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
+
 
 
 
