@@ -282,6 +282,7 @@ window.finalizeService = function(rigId, sys) {
     const newRequest = {
         id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
         rig: rigId,
+        well: wellVal,
         client: rigsData[rigIndex].client || "Sin Contrato",
         system: sys,
         modality: MODALITIES.INACTIVO,
@@ -358,6 +359,7 @@ function rendersystemsConfigForm(rigId) {
                 const newRequest = {
                     id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
                     rig: rigId,
+        well: wellVal,
                     client: rigObj.client,
                     system: sys,
                     modality: newModality,
@@ -1384,6 +1386,9 @@ function renderExcelSpreadsheet() {
                 </select>
             </td>
             <td>
+                <input type="text" class="excel-input excel-well-input" placeholder="WELL #..." value="${req.well || ''}" ${isEditable} onchange="window.updateActiveRowData('${req.id}', 'well', this.value)">
+            </td>
+            <td>
                 <select class="excel-select excel-system-select" disabled style="opacity: 0.8; color: #d946ef;">
                     <option value="${req.system}">${req.system}</option>
                 </select>
@@ -1454,6 +1459,9 @@ function renderExcelSpreadsheet() {
                 <select class="excel-select excel-rig-select" data-row="${i}" ${isEditable} onchange="window.updateExcelTempData(${i}, 'rig', this.value)">
                     ${rigOptions}
                 </select>
+            </td>
+            <td>
+                <input type="text" class="excel-input excel-well-input" data-row="${i}" placeholder="Ej: LLL-123..." value="${rowData.well || ''}" ${isEditable} oninput="window.updateExcelTempData(${i}, 'well', this.value)">
             </td>
             <td>
                 <select class="excel-select excel-system-select" data-row="${i}" ${isEditable} onchange="window.updateExcelTempData(${i}, 'system', this.value)">
@@ -1556,6 +1564,8 @@ function renderExcelHistory() {
                 <td style="color: var(--text-muted); font-style: italic; opacity: 0.5;">-</td>
                 <td style="color: var(--text-muted); font-style: italic; opacity: 0.5;">-</td>
                 <td style="color: var(--text-muted); font-style: italic; opacity: 0.5;">-</td>
+                <td style="color: var(--text-muted); font-style: italic; opacity: 0.5;">-</td>
+                <td style="color: var(--text-muted); font-style: italic; opacity: 0.5;">-</td>
                 <td style="color: var(--text-muted); font-style: italic; opacity: 0.5; text-align: center;">Sin datos</td>
             `;
         }
@@ -1603,6 +1613,7 @@ window.processExcelRow = function(rowIndex) {
 
     const row = excelTempData[rowIndex];
     const rigId = row.rig;
+    const wellVal = (row.well || '').trim();
     const system = row.system;
     const ourContact = row.ourContact ? row.ourContact.trim() : '';
     const sender = (row.sender || '').trim();
@@ -1665,6 +1676,7 @@ window.processExcelRow = function(rowIndex) {
     const newRequest = {
         id: Date.now().toString() + Math.random().toString(36).substring(2, 7),
         rig: rigId,
+        well: wellVal,
         client: clientName,
         system: system,
         modality: MODALITIES.SOLICITADO_MAIL,
@@ -1710,6 +1722,7 @@ if (btnExcelProcessAll) {
         for (let i = 0; i < excelTempData.length; i++) {
             const row = excelTempData[i];
             const rigId = row.rig;
+    const wellVal = (row.well || '').trim();
             const system = row.system;
             const ourContact = row.ourContact ? row.ourContact.trim() : '';
             const sender = (row.sender || '').trim();
@@ -1750,6 +1763,7 @@ if (btnExcelProcessAll) {
                     const newRequest = {
                         id: (Date.now() + i).toString() + Math.random().toString(36).substring(2, 7),
                         rig: rigId,
+        well: wellVal,
                         client: clientName,
                         system: system,
                         modality: MODALITIES.SOLICITADO_MAIL,
@@ -2122,6 +2136,7 @@ if (rlReportForm) {
         const newCase = {
             id: caseId,
             rig: rigId,
+        well: wellVal,
             system: system,
             priority: priority,
             reporter: reporterName,
@@ -2906,4 +2921,8 @@ window.addEventListener('beforeunload', () => {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
+
+
+
+
 
