@@ -64,6 +64,7 @@ const firebaseConfig = {
 // Inicializar la app solo si no est inicializada
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
+    firebase.auth().signInAnonymously().catch(err => console.error('Error de Auth Anónima:', err));
 }
 const db = firebase.firestore();
 
@@ -2931,6 +2932,7 @@ window.addEventListener('beforeunload', () => {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
+
 
 
 
