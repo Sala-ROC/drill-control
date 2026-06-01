@@ -44,8 +44,8 @@ const ROLE_LABELS = {
     VIEWER:      'Solo Lectura',
     REPORTER:    'Cargador',
     RESOLVER:    'Operador',
-    ADMIN:       'Administrador',
-    SUPER_ADMIN: 'Super Admin '
+    ADMIN:       'Admin',
+    SUPER_ADMIN: 'Super Admin'
 };
 
 const ROLE_ORDER = ['VIEWER', 'REPORTER', 'RESOLVER', 'ADMIN', 'SUPER_ADMIN'];
@@ -1119,10 +1119,15 @@ if (mainLogoutBtn && logoutModal) {
     if (btnConfirmLogout) {
         btnConfirmLogout.addEventListener('click', () => {
             if (currentUser) {
-                db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
-                currentUser = null;
-                localStorage.removeItem('drill_current_user_v2');
-                window.location.reload();
+                db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).then(() => {
+                    currentUser = null;
+                    localStorage.removeItem('drill_current_user_v2');
+                    window.location.reload();
+                }).catch(() => {
+                    currentUser = null;
+                    localStorage.removeItem('drill_current_user_v2');
+                    window.location.reload();
+                });
             } else {
                 window.location.reload();
             }
@@ -2931,6 +2936,11 @@ window.addEventListener('beforeunload', () => {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
+
+
+
+
+
 
 
 
