@@ -1,5 +1,5 @@
-// Service Worker - Drill Control v3.5.6
-const CACHE_NAME = 'drillcontrol-cache-v3.5.6';
+// Service Worker - Drill Control v3.5.8
+const CACHE_NAME = 'drillcontrol-cache-v3.5.8';
 const ASSETS = [
     './',
     './index.html',
@@ -19,7 +19,7 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('[SW] Drill Control v3.5.6 - archivos almacenados en caché');
+                console.log('[SW] Drill Control v3.5.8 - archivos almacenados en caché');
                 return cache.addAll(ASSETS);
             })
             .then(() => self.skipWaiting())
