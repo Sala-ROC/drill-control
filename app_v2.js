@@ -72,7 +72,7 @@ let requestsHistory = JSON.parse(localStorage.getItem('drill_requests_history'))
 let usersList = JSON.parse(localStorage.getItem('drill_users_list')) || [];
 let riglineCases = JSON.parse(localStorage.getItem('drill_rigline_cases')) || [];
 
-// // Mantenemos la sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del usuario actual en localStorage para no perderla al refrescar
+// // Mantenemos la sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n del usuario actual en localStorage para no perderla al refrescar
 let currentUser = JSON.parse(localStorage.getItem('drill_current_user_v2')) || null;
 
 // AUTOGENERAR EQUIPOS SI LA MEMORIA ESTA VACIA (IGUAL QUE EN v1.4.0)
@@ -198,7 +198,7 @@ function renderRigsGrid() {
         if (isCritical) {
             criticalClass = hasHighPriority ? 'critical-rig' : 'warning-rig';
             const iconColor = hasHighPriority ? 'var(--color-orange)' : 'var(--color-amber)';
-            const titleTooltip = hasHighPriority ? 'Estado CrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­tico! Caso tÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cunico de prioridad alta activo en RigLine.' : 'Advertencia: Falla tÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cnica activa en RigLine.';
+            const titleTooltip = hasHighPriority ? 'Estado CrÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­tico! Caso tÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©cunico de prioridad alta activo en RigLine.' : 'Advertencia: Falla tÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©cnica activa en RigLine.';
             warningBadge = `
                 <span class="rig-warning-badge" style="color: ${iconColor}; font-size: 0.72rem; display: inline-flex; align-items: center;" title="${titleTooltip}">
                     <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -258,7 +258,7 @@ function renderRigsGrid() {
             </div>
         `;
 
-        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de ediciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
+        // Al hacer clic, seleccionamos la tarjeta y la cargamos en el panel de ediciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n
         card.addEventListener('click', () => {
             selectRigCard(rig.id);
         });
@@ -290,14 +290,14 @@ window.finalizeService = function(rigId, sys) {
     };
     requestsHistory.unshift(newRequest);
 
-    // ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n local
+    // ActualizaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n local
     renderRigsGrid();
     renderRequestsTable();
     calculateKPIs();
     renderExcelSpreadsheet();
     renderExcelHistory();
 
-    // Guardar en Firebase de forma atÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³mica
+    // Guardar en Firebase de forma atÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³mica
     const batch = db.batch();
     batch.set(db.collection('history').doc(newRequest.id), newRequest);
     batch.update(db.collection('rigs').doc(rigId), {
@@ -366,13 +366,13 @@ function rendersystemsConfigForm(rigId) {
                     date: new Date().toISOString()
                 };
                 
-                // ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n optimista
+                // ActualizaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n optimista
                 requestsHistory.unshift(newRequest);
                 renderRigsGrid();
                 renderRequestsTable();
                 calculateKPIs();
                 
-                // Guardar atÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³micamente en Firebase
+                // Guardar atÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³micamente en Firebase
                 const batch = db.batch();
                 batch.set(db.collection('history').doc(newRequest.id), newRequest);
                 batch.set(db.collection('rigs').doc(rigId), rigObj);
@@ -506,7 +506,7 @@ function renderRequestsTable() {
         const infoTr = document.createElement('tr');
         infoTr.innerHTML = `
             <td colspan="4" style="text-align: center; color: var(--color-cyan); padding: 10px; font-size: 0.72rem; font-style: italic; background: rgba(0, 210, 255, 0.02); border-top: 1px dashed rgba(0, 210, 255, 0.15);">
-                Mostrando los 50 registros mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
+                Mostrando los 50 registros mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s recientes de ${totalCount}. Tilda "Mostrar todo el historial" arriba para ver todo.
             </td>
         `;
         requestsTableBody.appendChild(infoTr);
@@ -551,7 +551,7 @@ function calculateKPIs() {
             }
         });
 
-        if (hasActive) activeRigsWithsystems++;
+        if (rig.client && rig.client.trim() !== "" && rig.client.trim() !== "Sin Contrato") activeRigsWithsystems++;
         if (hasActiveAutomation) {
             activeRigsCount++;
             if (hasOperator) {
@@ -572,7 +572,7 @@ function calculateKPIs() {
     kpiOperatorRate.textContent = `${rate}%`;
 }
 
-// 6. GESTIN DE sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n, PERMISOS Y LOGIN
+// 6. GESTIN DE sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n, PERMISOS Y LOGIN
 
 // Verifica si el usuario actual tiene permiso para una accion especfica
 // PERF: perms object defined once outside can() to avoid recreating on every call
@@ -588,7 +588,7 @@ function can(action) {
     return (ROLE_PERMS[action] || []).includes(currentUser.role || 'VIEWER');
 }
 
-// Comprobar la sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n al cargar y actualizar la UI segn el rol
+// Comprobar la sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n al cargar y actualizar la UI segn el rol
 function checkSession() {
     if (currentUser) {
         updateUIByRole();
@@ -732,7 +732,7 @@ function updateRLFormByRole() {
                 <span style="font-size:0.75rem;">
                     ${currentUser
                         ? `Tu rol actual es <strong style="color:var(--color-amber);">${roleLabel}</strong>. Necesitas permisos de <strong>Cargador</strong> o superior.`
-                        : 'Inici sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n con permisos de <strong>Cargador</strong> o superior para reportar casos.'
+                        : 'Inici sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n con permisos de <strong>Cargador</strong> o superior para reportar casos.'
                     }
                 </span>
             </div>
@@ -863,7 +863,7 @@ function renderUsersList() {
                 </div>
                 <div class="user-item-info">
                     <span class="user-item-name">${u.name} ${u.lastName}${isMainSA ? ' ' : ''}</span>
-                    <span class="user-item-pass" style="font-size:0.7rem;">${u.email || 'Sin correo'}</span>
+                    <span class="user-item-pass" style="font-size:0.7rem;">${u.email || ''}</span>
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
@@ -893,7 +893,7 @@ window.changeUserRole = function(docId, newRole) {
     }
 };
 
-// FunciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n auxiliar que valida credenciales contra una lista de usuarios
+// FunciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n auxiliar que valida credenciales contra una lista de usuarios
 function tryMatchUser(list, typedName, typedPass) {
     return list.find(u => {
         if (!u || !u.name || !u.lastName) return false;
@@ -924,7 +924,7 @@ loginForm.addEventListener('submit', (e) => {
     const typedName = loginName.value.trim().toLowerCase().replace(/\s+/g, '');
     const typedPass = loginPassword.value.trim();
 
-    // 1. Buscar en la lista local (rÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡pido)
+    // 1. Buscar en la lista local (rÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡pido)
     let matchedUser = tryMatchUser(usersList, typedName, typedPass);
 
     // 2. Fallback: usuario hardcodeado Fernando
@@ -935,7 +935,7 @@ loginForm.addEventListener('submit', (e) => {
     if (matchedUser) {
         doLogin(matchedUser);
     } else {
-        // 3. No encontrado localmente ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ consultar Firebase directamente
+        // 3. No encontrado localmente ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ consultar Firebase directamente
         loginError.classList.add('hidden'); // hide while searching Firebase
         loginName.disabled = true;
         loginPassword.disabled = true;
@@ -1065,7 +1065,7 @@ window.deleteRequest = function(reqId) {
             if(typeof showToast === 'function') showToast('Error al borrar de la nube', 'error');
         });
 
-        // Comprobar si hay alguna solicitud mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s reciente para ese mismo Rig + Sistema
+        // Comprobar si hay alguna solicitud mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s reciente para ese mismo Rig + Sistema
         // Si no la hay, el Rig vuelve a estar INACTIVO en ese sistema
         const hasMoreRecent = requestsHistory.find(r => r.rig === reqObj.rig && r.system === reqObj.system);
         
@@ -1137,7 +1137,7 @@ tabRequests.addEventListener('click', () => switchTab('tabRequests'));
 tabUsers.addEventListener('click', () => switchTab('tabUsers'));
 tabAdminActions.addEventListener('click', () => switchTab('tabAdminActions'));
 
-// Eventos de bÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºsqueda y Filtros
+// Eventos de bÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºsqueda y Filtros
 searchInput.addEventListener('input', renderRequestsTable);
 filterClient.addEventListener('change', renderRequestsTable);
 filterSystem.addEventListener('change', renderRequestsTable);
@@ -1210,7 +1210,7 @@ document.querySelectorAll('.btn-operator').forEach(btn => {
             requestsHistory.unshift(clientChangeRequest);
             
             // PERF1: Guardar solo los datos que cambiaron en la base de datos
-            db.collection('rigs').doc(rigId).set(rigsData[rigIndex]);
+            db.collection('rigs').doc(selectedRigCardId).set(rigsData[rigIndex]);
             db.collection('history').doc(clientChangeRequest.id).set(clientChangeRequest);
             
             // Refrescar vistas
@@ -1697,7 +1697,7 @@ window.processExcelRow = function(rowIndex) {
 
     requestsHistory.unshift(newRequest);
 
-    // Guardado AtÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³mico (Batch) con control de errores
+    // Guardado AtÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³mico (Batch) con control de errores
     const batch = db.batch();
     batch.set(db.collection('rigs').doc(rigId), rigObj);
     batch.set(db.collection('history').doc(newRequest.id), newRequest);
@@ -1828,7 +1828,7 @@ if (btnExcelClearAll) {
 }
 
 // ==============================================================
-// 8.8 LGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS tÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cunicoS)
+// 8.8 LGICA DE NEGOCIO Y CONTROLADOR DE RIGLINE (CASOS tÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©cunicoS)
 // ==============================================================
 
 // Alternar Pestaa Global (Automatizacin / RigLine / Versiones)
@@ -2012,7 +2012,7 @@ function renderRigLineCases() {
             if (c.status === "PENDIENTE") {
                 actionHtml = `
                     <div class="action-lock-box">
-                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n como Editor para resolver este caso" disabled>
+                        <button type="button" class="btn btn-disabled" style="padding: 6px 12px; font-size: 0.76rem;" title="Inicia sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n como Editor para resolver este caso" disabled>
                             Resolver y Cerrar
                         </button>
                         <span class="action-lock-label">
@@ -2080,7 +2080,7 @@ function calculateRigLineKPIs() {
     // 3. Casos Resueltos Totales en Historial
     if (kpiRlClosedCount) kpiRlClosedCount.textContent = closedCases.length;
     
-    // 4. Equipo mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s afectado por fallas tcnicas pendientes
+    // 4. Equipo mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s afectado por fallas tcnicas pendientes
     let rigCounts = {};
     pendingCases.forEach(c => {
         rigCounts[c.rig] = (rigCounts[c.rig] || 0) + 1;
@@ -2114,7 +2114,7 @@ function calculateRigLineKPIs() {
     }
 }
 
-// Generar e insertar un nuevo caso tÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©cunico reportado
+// Generar e insertar un nuevo caso tÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©cunico reportado
 if (rlReportForm) {
     rlReportForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -2212,7 +2212,7 @@ window.closeRigLineCase = function(caseId) {
     }
 };
 
-// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a)
+// Eliminar permanentemente un caso (Exclusivo de Editores autorizados con contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a)
 window.exportRigLineHistoryTXT = function() {
     if (!can('delete')) {
         alert("Acceso denegado. Necesitas permisos de Administrador o superior para exportar el historial.");
@@ -2228,7 +2228,7 @@ window.exportRigLineHistoryTXT = function() {
         return;
     }
     
-    // FunciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n helper para formatear fechas
+    // FunciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n helper para formatear fechas
     function fmtDate(iso) {
         if (!iso) return 'N/A';
         const d = new Date(iso);
@@ -2242,7 +2242,7 @@ window.exportRigLineHistoryTXT = function() {
     
     let txtContent = "==================================================\r\n";
     txtContent += "REPORTE historico RIGLINE\r\n";
-    txtContent += `Fecha de ExportaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n: ${fmtDate(new Date().toISOString())}\r\n`;
+    txtContent += `Fecha de ExportaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n: ${fmtDate(new Date().toISOString())}\r\n`;
     txtContent += `Total de Casos Resueltos: ${sorted.length}\r\n`;
     txtContent += "==================================================\r\n\r\n";
     
@@ -2256,7 +2256,7 @@ window.exportRigLineHistoryTXT = function() {
         txtContent += `Resuelto Por: ${c.resolver || 'N/A'}\r\n`;
         txtContent += `Fecha Apertura: ${fmtDate(c.date)}\r\n`;
         txtContent += `Fecha Cierre: ${fmtDate(c.closedDate)}\r\n`;
-        txtContent += `DescripciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n:\r\n${c.description}\r\n`;
+        txtContent += `DescripciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n:\r\n${c.description}\r\n`;
         txtContent += "--------------------------------------------------\r\n\r\n";
     });
     
@@ -2289,7 +2289,7 @@ window.clearRigLineHistory = function() {
         exportRigLineHistoryTXT();
     }
     
-    const typedPassword = prompt(`ADVERTENCIA PELIGRO: EstÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s a punto de eliminar permanentemente TODOS los ${resolvedCases.length} casos cerrados del historial.\n\nEsta acciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n no se puede deshacer.\nIngrese su contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a de Super Admin (NÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºmero de documento) para confirmar:`);
+    const typedPassword = prompt(`ADVERTENCIA PELIGRO: EstÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s a punto de eliminar permanentemente TODOS los ${resolvedCases.length} casos cerrados del historial.\n\nEsta acciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n no se puede deshacer.\nIngrese su contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a de Super Admin (NÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºmero de documento) para confirmar:`);
     
     if (typedPassword === null) return;
     
@@ -2322,8 +2322,8 @@ window.deleteRigLineCase = function(caseId) {
         return;
     }
     
-    // Solicitar contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a de ConfirmaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
-    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminacion permanente del caso ${caseId}?\n\nEsta accion no se puede deshacer. Ingrese su contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a de Editor (numero de documento) para confirmar:`);
+    // Solicitar contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a de ConfirmaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n
+    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminacion permanente del caso ${caseId}?\n\nEsta accion no se puede deshacer. Ingrese su contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a de Editor (numero de documento) para confirmar:`);
     
     if (typedPassword === null) {
         // El usuario cancel el prompt
@@ -2436,11 +2436,11 @@ function renderRigLineHistory() {
 
     const query = searchEl ? searchEl.value.toLowerCase().trim() : '';
 
-    // Ordenar todos los casos de mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s reciente a mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s antiguo (por fecha de apertura)
+    // Ordenar todos los casos de mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s reciente a mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s antiguo (por fecha de apertura)
     const resolvedCases = riglineCases.filter(c => c.status === 'RESUELTO');
     const sorted = [...resolvedCases].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // Aplicar bÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºsqueda rpida sobre todos los campos visibles
+    // Aplicar bÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºsqueda rpida sobre todos los campos visibles
     const filtered = query
         ? sorted.filter(c =>
             c.id.toLowerCase().includes(query) ||
@@ -2505,7 +2505,7 @@ function renderRigLineHistory() {
     }).join('');
 }
 
-// Conectar la bÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºsqueda del historial en tiempo real
+// Conectar la bÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºsqueda del historial en tiempo real
 const rlHistorySearch = document.getElementById('rlHistorySearch');
 if (rlHistorySearch) rlHistorySearch.addEventListener('input', renderRigLineHistory);
 
@@ -2712,7 +2712,7 @@ window.saveSystemVersion = function(rigId, systemName, newVersion) {
         if (currentVal !== newVersion.trim()) {
             rigsData[rigIndex].versions[systemName] = newVersion.trim();
             // PERF1: update specific rig only
-            db.collection('rigs').doc(rigId).set(rigsData[rigIndex]);
+            db.collection('rigs').doc(selectedRigCardId).set(rigsData[rigIndex]);
             showVersionToast(`Rig ${rigId} - ${systemName} actualizado`);
         }
     }
@@ -2775,7 +2775,7 @@ document.getElementById('activeUserBadge').addEventListener('click', () => {
     
     document.getElementById('profileNameDisplay').textContent = currentUser.name + ' ' + currentUser.lastName;
     document.getElementById('profileRoleDisplay').textContent = ROLE_LABELS[currentUser.role] || currentUser.role;
-    document.getElementById('profileEmailDisplay').textContent = currentUser.email || 'Sin correo registrado';
+    document.getElementById('profileEmailDisplay').textContent = currentUser.email || '';
     
     document.getElementById('userProfileModal').classList.remove('hidden');
 });
@@ -2785,7 +2785,7 @@ document.getElementById('btnForgotPassword').addEventListener('click', () => {
     document.getElementById('recoveryModal').classList.remove('hidden');
 });
 
-// Guardar ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n Inicial (Primer Login)
+// Guardar ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n Inicial (Primer Login)
 // Guardar Configuracion Inicial (Primer Login)
 document.getElementById('firstLoginForm').addEventListener('submit', (e) => {
     e.preventDefault();
@@ -2851,7 +2851,7 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
         document.getElementById('recoveryForm').reset();
     }, 2000);
 });
-// PERF5: Removed duplicate checkSession() ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â it is already called inside DOMContentLoaded at line ~2438
+// PERF5: Removed duplicate checkSession() ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â it is already called inside DOMContentLoaded at line ~2438
 
 
 
@@ -2871,7 +2871,7 @@ if (btnAddExcelRow) {
 }
 
 // ---------------------------------------------------------------------------------
-// ACTUALIZACIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN DINÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂMICA DEL ESTADO DE CONEXIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN (ONLINE/OFFLINE)
+// ACTUALIZACIÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“N DINÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂMICA DEL ESTADO DE CONEXIÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“N (ONLINE/OFFLINE)
 // ---------------------------------------------------------------------------------
 function updateNetworkStatus() {
     const statusBadge = document.getElementById('dbStatus');
@@ -2918,7 +2918,7 @@ function renderOnlineUsers() {
 window.addEventListener('online', updateNetworkStatus);
 window.addEventListener('offline', updateNetworkStatus);
 document.addEventListener('DOMContentLoaded', updateNetworkStatus);
-// Forzar la revisiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n al cargar este script
+// Forzar la revisiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n al cargar este script
 updateNetworkStatus();
 
 
@@ -2931,6 +2931,8 @@ window.addEventListener('beforeunload', () => {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
+
+
 
 
 
