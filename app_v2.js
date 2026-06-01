@@ -859,7 +859,7 @@ function renderUsersList() {
                     <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,210,255,0.1);color:var(--color-cyan);display:flex;align-items:center;justify-content:center;font-weight:bold;border:1px solid rgba(0,210,255,0.3);">
                         ${initials}
                     </div>
-                    <div style="width:10px;height:10px;border-radius:50%;background:${isOnline ? 'var(--color-success)' : '#555'};position:absolute;bottom:0;right:0;border:2px solid var(--color-bg);"></div>
+                    <div style="width:10px;height:10px;border-radius:50%;background:${isOnline ? 'var(--color-green)' : '#555'};position:absolute;bottom:0;right:0;border:2px solid var(--color-bg);"></div>
                 </div>
                 <div class="user-item-info">
                     <span class="user-item-name">${u.name} ${u.lastName}${isMainSA ? ' ' : ''}</span>
@@ -2841,7 +2841,7 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
     }
     
     msg.textContent = 'Abriendo cliente de correo...';
-    msg.style.color = 'var(--color-success)';
+    msg.style.color = 'var(--color-green)';
     msg.classList.remove('hidden');
     
     const adminEmail = 'volpi.fc@gmail.com';
@@ -2936,6 +2936,7 @@ window.addEventListener('beforeunload', () => {
         db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
     }
 });
+
 
 
 
