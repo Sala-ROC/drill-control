@@ -93,8 +93,8 @@ body {
 }
 
 .logo-icon {
-    color: var(--color-cyan);
-    background: rgba(0, 210, 255, 0.1);
+    color: var(--color-green);
+    background: rgba(16, 185, 129, 0.1);
     padding: 8px;
     border-radius: 8px;
     border: 1px solid rgba(0, 210, 255, 0.2);
@@ -194,7 +194,7 @@ body {
 
 .profile-role {
     font-size: 0.68rem;
-    color: var(--color-cyan);
+    color: var(--color-green);
 }
 
 /* SECCIÓN DE KPIS GERENCIALES */
@@ -237,7 +237,7 @@ body {
     justify-content: center;
 }
 
-.kpi-icon.cyan { background: rgba(0, 210, 255, 0.1); color: var(--color-cyan); }
+.kpi-icon.cyan { background: rgba(16, 185, 129, 0.1); color: var(--color-green); }
 .kpi-icon.green { background: rgba(0, 255, 136, 0.1); color: var(--color-green); }
 .kpi-icon.amber { background: rgba(255, 153, 0, 0.1); color: var(--color-amber); }
 .kpi-icon.blue { background: rgba(0, 110, 255, 0.1); color: #0088ff; }
@@ -347,7 +347,7 @@ body {
 }
 
 .rig-card.active-card {
-    border-color: var(--color-cyan);
+    border-color: var(--color-green);
     box-shadow: 0 0 20px rgba(0, 210, 255, 0.18), inset 0 0 10px rgba(0, 210, 255, 0.04);
 }
 
@@ -463,7 +463,7 @@ body {
 }
 
 .tab-btn.active {
-    color: var(--color-cyan);
+    color: var(--color-green);
     border-bottom: 2px solid var(--color-cyan);
     background: rgba(0, 210, 255, 0.03);
 }
@@ -508,7 +508,7 @@ body {
 }
 
 .search-input-wrapper input:focus {
-    border-color: var(--color-cyan);
+    border-color: var(--color-green);
     box-shadow: 0 0 10px rgba(0, 210, 255, 0.1);
 }
 
@@ -532,7 +532,7 @@ body {
 
 .filter-selectors select:focus {
     color: var(--text-primary);
-    border-color: var(--color-cyan);
+    border-color: var(--color-green);
 }
 
 /* TABLA DE SOLICITUDES */
@@ -583,7 +583,7 @@ body {
 .td-rig {
     font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
-    color: var(--color-cyan);
+    color: var(--color-green);
 }
 
 .td-client {
@@ -714,7 +714,7 @@ body {
 
 .form-group input:focus,
 .form-group select:focus {
-    border-color: var(--color-cyan);
+    border-color: var(--color-green);
 }
 
 /* SISTEMAS CONFIG LIST */
@@ -762,7 +762,7 @@ body {
 .checkbox-label input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: var(--color-cyan);
+    accent-color: var(--color-green);
     cursor: pointer;
 }
 
@@ -966,7 +966,7 @@ body {
 
 .selected-rig-display.active-glow {
     background: rgba(0, 210, 255, 0.08);
-    border: 1px solid var(--color-cyan);
+    border: 1px solid var(--color-green);
     color: var(--text-primary);
     box-shadow: 0 0 15px rgba(0, 210, 255, 0.12);
 }
@@ -1342,7 +1342,7 @@ body {
 }
 
 .global-tab-btn.active {
-    color: var(--color-cyan);
+    color: var(--color-green);
     background: var(--bg-main);
     border-color: rgba(0, 210, 255, 0.18);
     border-bottom: 2px solid var(--bg-main);
@@ -1493,7 +1493,7 @@ body {
 
 .case-rig-name {
     font-weight: bold;
-    color: var(--color-cyan);
+    color: var(--color-green);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.95rem;
 }
@@ -1806,7 +1806,7 @@ body {
     gap: 8px;
     background: rgba(0, 210, 255, 0.08);
     border: 1px solid rgba(0, 210, 255, 0.2);
-    color: var(--color-cyan);
+    color: var(--color-green);
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -1819,7 +1819,7 @@ body {
 .pulse-indicator {
     width: 6px;
     height: 6px;
-    background-color: var(--color-cyan);
+    background-color: var(--color-green);
     border-radius: 50%;
     animation: indicatorPulse 2s infinite ease-in-out;
 }
@@ -1977,7 +1977,7 @@ body {
     top: 10px;
     align-self: start;
     margin-top: 61px;
-    height: calc(100vh - 81px);
+    height: calc(100vh - 20px);
 }
 
 .details-aside::before {
@@ -2057,7 +2057,7 @@ body {
     border-radius: 8px;
     background: rgba(0, 210, 255, 0.08);
     border: 1px solid rgba(0, 210, 255, 0.15);
-    color: var(--color-cyan);
+    color: var(--color-green);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2095,7 +2095,7 @@ body {
 }
 
 .rl-history-counter span {
-    color: var(--color-cyan);
+    color: var(--color-green);
     font-weight: 700;
 }
 
@@ -2178,7 +2178,7 @@ body {
 .rl-history-rig {
     font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
-    color: var(--color-cyan);
+    color: var(--color-green);
     font-size: 0.8rem;
 }
 
@@ -2301,7 +2301,7 @@ body {
 /* SUPER_ADMIN — Cian brillante */
 .role-super_admin {
     background: rgba(0, 210, 255, 0.12);
-    color: var(--color-cyan);
+    color: var(--color-green);
     border-color: rgba(0, 210, 255, 0.3);
     box-shadow: 0 0 10px rgba(0, 210, 255, 0.1);
 }
@@ -2476,7 +2476,7 @@ body {
 .version-value-text {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.8rem;
-    color: var(--color-cyan);
+    color: var(--color-green);
     background: rgba(0, 210, 255, 0.08);
     padding: 2px 6px;
     border-radius: 4px;
@@ -2493,7 +2493,7 @@ body {
 .version-input {
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    color: var(--color-cyan);
+    color: var(--color-green);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.8rem;
     padding: 4px 6px;
@@ -2505,7 +2505,7 @@ body {
 }
 
 .version-input:hover, .version-input:focus {
-    border-color: var(--color-cyan);
+    border-color: var(--color-green);
     background: rgba(0, 210, 255, 0.05);
     box-shadow: 0 0 8px rgba(0, 210, 255, 0.15);
 }
@@ -2808,7 +2808,7 @@ body {
 
 .excel-input:focus, .rig-version-card input:focus {
     outline: 2px solid var(--color-cyan);
-    border-color: var(--color-cyan);
+    border-color: var(--color-green);
     box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
 }
 
@@ -2820,3 +2820,36 @@ body {
         scroll-behavior: auto !important;
     }
 }
+
+/* ==========================================================================
+   AVATARES DE USUARIOS EN L�NEA
+   ========================================================================== */
+.online-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid var(--color-green);
+    color: var(--color-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-left: 4px; /* Separados levemente */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    transition: transform 0.2s, z-index 0.2s, border-color 0.2s, color 0.2s;
+    cursor: default;
+    position: relative;
+    z-index: 1;
+}
+.online-avatar:first-child {
+    margin-left: 0;
+}
+.online-avatar:hover {
+    transform: translateY(-2px);
+    z-index: 10;
+    border-color: #fff;
+    color: #fff;
+}
+

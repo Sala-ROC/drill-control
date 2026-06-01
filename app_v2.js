@@ -636,16 +636,22 @@ function updateUIByRole() {
     // Panel Usuarios: SOLO SUPER_ADMIN puede ver y gestionar
     const masterConfigBox = document.getElementById('masterConfigBox');
     if (can('manage_users')) {
+        tabUsers.classList.remove('hidden');
         usersPanelNoAccess.classList.add('hidden');
         createUserFormWrapper.classList.remove('hidden');
         usersListWrapper.classList.remove('hidden');
         if (masterConfigBox) masterConfigBox.classList.remove('hidden');
         renderUsersList();
     } else {
+        tabUsers.classList.add('hidden');
         usersPanelNoAccess.classList.remove('hidden');
         createUserFormWrapper.classList.add('hidden');
         if (masterConfigBox) masterConfigBox.classList.add('hidden');
         usersListWrapper.classList.add('hidden');
+        // If they are currently viewing the hidden tab, switch them away
+        if (contentUsers && !contentUsers.classList.contains('hidden')) {
+            switchTab('tabRequests');
+        }
     }
 
     // Botones eliminar en solicitudes: ADMIN+
@@ -2546,6 +2552,7 @@ window.addEventListener('DOMContentLoaded', () => {
         checkSession();
         if (typeof renderUsersTable === 'function') renderUsersTable();
         if (typeof renderUsersList === 'function') renderUsersList();
+        if (typeof renderOnlineUsers === 'function') renderOnlineUsers();
     }, error => {
         console.error("Error cargando usuarios de Firebase:", error);
         checkSession(); // Asegurar que inicie incluso con error
@@ -2832,4 +2839,64 @@ if (btnAddExcelRow) {
     });
 }
 
+// ---------------------------------------------------------------------------------
+// ACTUALIZACIÓN DINÁMICA DEL ESTADO DE CONEXIÓN (ONLINE/OFFLINE)
+// ---------------------------------------------------------------------------------
+function updateNetworkStatus() {
+    const statusBadge = document.getElementById('dbStatus');
+    const statusText = document.getElementById('dbStatusText');
+    if (!statusBadge || !statusText) return;
 
+    if (navigator.onLine) {
+        statusBadge.classList.remove('offline');
+        statusBadge.classList.add('online');
+        statusText.textContent = 'Base de Datos Local (Online)';
+    } else {
+        statusBadge.classList.remove('online');
+        statusBadge.classList.add('offline');
+        statusText.textContent = 'Base de Datos Local (Offline)';
+    }
+}
+
+function renderOnlineUsers() {
+    const container = document.getElementById('onlineUsersContainer');
+    if (!container) return;
+    
+    // Filtrar usuarios en linea y ordenarlos
+    let onlineUsers = usersList.filter(u => u.status === 'online');
+    if (currentUser && !onlineUsers.some(u => u.doc === currentUser.doc)) {
+        onlineUsers.push(currentUser);
+    }
+    
+    container.innerHTML = '';
+    if (onlineUsers.length === 0) return;
+
+    onlineUsers.forEach(user => {
+        const initials = (user.name ? user.name.charAt(0) : '') + (user.lastName ? user.lastName.charAt(0) : '');
+        const fullName = `${user.name || ''} ${user.lastName || ''}`.trim();
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'online-avatar';
+        avatar.textContent = initials.toUpperCase();
+        avatar.title = `${fullName} (${user.role || 'Usuario'})`;
+        
+        container.appendChild(avatar);
+    });
+}
+
+window.addEventListener('online', updateNetworkStatus);
+window.addEventListener('offline', updateNetworkStatus);
+document.addEventListener('DOMContentLoaded', updateNetworkStatus);
+// Forzar la revisión al cargar este script
+updateNetworkStatus();
+
+
+
+
+
+// Asegurar que al cerrar la ventana se marque como offline
+window.addEventListener('beforeunload', () => {
+    if (currentUser && currentUser.doc !== '31434249') {
+        db.collection('users').doc(currentUser.doc).update({ status: 'offline' }).catch(() => {});
+    }
+});
