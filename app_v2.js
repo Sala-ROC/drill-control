@@ -1159,7 +1159,7 @@ if (toggleShowAllHistory) {
 if (btnClearHistory) {
     btnClearHistory.addEventListener('click', function() {
         if (!currentUser) return;
-        if (confirm("Estas seguro de eliminar TODO el historial de solicitudes? Se vaciara el registro de cambios (el estado actual de los equipos no se perder).")) {
+        if (confirm("¿Estás seguro de eliminar TODO el historial de solicitudes? Se vaciará el registro de cambios (el estado actual de los equipos no se perderá).")) {
             // PERF1: Use a batch to delete all history documents safely and quickly without multiple individual requests or writing an empty array to each element
             const batch = db.batch();
             requestsHistory.forEach(h => {
@@ -1292,7 +1292,7 @@ window.enableEditRow = function(reqId) {
 };
 
 window.deleteActiveRow = function(reqId) {
-    if (!confirm('Estas segura de que deseas eliminar este registro por completo? Esta accion lo borrara de la tabla y desactivara el estado "Via Mail" del equipo. Esta accion no se puede deshacer.')) return;
+    if (!confirm('¿Estás seguro de que deseas eliminar este registro por completo? Esta acción lo borrará de la tabla y desactivará el estado "Vía Mail" del equipo. Esta acción no se puede deshacer.')) return;
 
     const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
     if (reqIndex === -1) return;
@@ -1323,7 +1323,7 @@ window.deleteActiveRow = function(reqId) {
 };
 
 window.deleteHistoryRow = function(reqId) {
-    if (!confirm('Estas segura de que deseas eliminar este registro del historial? Esta accion no se puede deshacer.')) return;
+    if (!confirm('¿Estás seguro de que deseas eliminar este registro del historial? Esta acción no se puede deshacer.')) return;
 
     const reqIndex = requestsHistory.findIndex(r => r.id === reqId);
     if (reqIndex === -1) return;
@@ -2294,7 +2294,7 @@ window.clearRigLineHistory = function() {
         exportRigLineHistoryTXT();
     }
     
-    const typedPassword = prompt(`ADVERTENCIA PELIGRO: EstÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s a punto de eliminar permanentemente TODOS los ${resolvedCases.length} casos cerrados del historial.\n\nEsta acciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n no se puede deshacer.\nIngrese su contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a de Super Admin (NÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºmero de documento) para confirmar:`);
+    const typedPassword = prompt(`ADVERTENCIA PELIGRO: Estás a punto de eliminar permanentemente TODOS los ${resolvedCases.length} casos cerrados del historial.\n\nEsta acción no se puede deshacer.\nIngrese su contraseña de Super Admin (Número de documento) para confirmar:`);
     
     if (typedPassword === null) return;
     
