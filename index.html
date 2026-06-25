@@ -31,7 +31,8 @@
     <!-- FIREBASE SDK (Compat Mode for Vanilla JS) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -87,7 +88,13 @@
                 </div>
                 <div class="logo-text">
                     <h1>DRILL CONTROL</h1>
-                    <span class="sub-logo">Sistemas de Automatización | Centro de Operaciones | v3.6.2</span>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 2px;">
+                        <select id="mainSectionSelect" onchange="switchMainModule(this.value)" class="section-dropdown">
+                            <option value="operaciones">Centro de Operaciones</option>
+                            <option value="reportes">Reporte Diario (Auto Partes)</option>
+                        </select>
+                        <span class="sub-logo" style="margin-top:0;">v3.6.2</span>
+                    </div>
                 </div>
             </div>
 
@@ -115,6 +122,8 @@
             </div>
         </header>
 
+        <!-- MÓDULO DE OPERACIONES -->
+        <div id="operationsModule" class="module-container active">
         <!-- NAVEGACIÓN GLOBAL DE PESTAÑAS -->
         <nav class="global-nav-tabs">
             <button class="global-tab-btn active" id="globalTabAutomation" onclick="switchGlobalTab('automation')">
@@ -801,6 +810,23 @@
                 <!-- Rigs Cards inyectadas por JS -->
             </div>
         </div> <!-- FIN DE #tabContentVersions -->
+
+        </div> <!-- FIN DE #operationsModule -->
+
+        <!-- MÓDULO DE REPORTES -->
+        <div id="reportsModule" class="module-container hidden" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 20px;">
+            <div class="glass" style="padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                <h2 style="color: var(--text-primary); margin-bottom: 15px;">Generador de Auto Partes (Reporte Diario ROC)</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Carga la información del turno y genera el reporte diario. El diseño final del PDF será idéntico a la plantilla oficial de ROC.</p>
+                <button type="button" class="btn" onclick="generarReporteDiario()">Generar PDF e Imagen</button>
+            </div>
+            
+            <!-- CONTENEDOR OCULTO PARA RENDERIZAR LA TABLA IDÉNTICA AL EXCEL -->
+            <div id="reportRenderContainer" style="position: absolute; top: -9999px; left: -9999px; background: white; color: black; padding: 20px; width: 1400px;">
+                <!-- Aquí irá la tabla HTML que clona al Excel -->
+                <h1 style="color: black; font-size: 24px;">Reporte Diario ROC (Preview Oculta)</h1>
+            </div>
+        </div>
 
     </div> <!-- FIN DE .app-container -->
 

@@ -3015,3 +3015,64 @@ document.addEventListener('visibilitychange', () => {
 
 
 
+
+// ---------------------------------------------------------------------------------
+// MÓDULO DE REPORTES (AUTO PARTES)
+// ---------------------------------------------------------------------------------
+
+function switchMainModule(moduleValue) {
+    const operationsModule = document.getElementById('operationsModule');
+    const reportsModule = document.getElementById('reportsModule');
+    
+    if (moduleValue === 'operaciones') {
+        operationsModule.classList.remove('hidden');
+        reportsModule.classList.add('hidden');
+    } else if (moduleValue === 'reportes') {
+        operationsModule.classList.add('hidden');
+        reportsModule.classList.remove('hidden');
+        // Aquí podríamos cargar datos guardados si existen
+    }
+}
+
+async function generarReporteDiario() {
+    // 1. Mostrar un indicador de carga
+    window.showToast("Generando reporte... Por favor espere.");
+    
+    // 2. Aquí eventualmente capturaremos los datos de la interfaz de Reportes
+    // y los inyectaremos en el #reportRenderContainer.
+    
+    // 3. Obtener el contenedor a renderizar
+    const renderContainer = document.getElementById('reportRenderContainer');
+    
+    // NOTA: Cuando el contenedor real esté diseñado, usaremos html2canvas así:
+    /*
+    try {
+        const canvas = await html2canvas(renderContainer, {
+            scale: 2, // Alta resolución
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        });
+        
+        // --- Generar Imagen ---
+        const imgData = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imgData;
+        downloadLink.download = 'Reporte_Diario_ROC.png';
+        downloadLink.click();
+        
+        // --- Generar PDF ---
+        const { jsPDF } = window.jspdf;
+        // Calcular dimensiones para el PDF (A4 apaisado o custom)
+        const pdf = new jsPDF('landscape', 'pt', [canvas.width, canvas.height]);
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save('Reporte_Diario_ROC.pdf');
+        
+        window.showToast("¡Reporte generado y descargado exitosamente!");
+    } catch (err) {
+        console.error("Error al generar reporte:", err);
+        alert("Ocurrió un error al generar el reporte.");
+    }
+    */
+   
+   alert("Estructura base del módulo lista. El generador PDF/Imagen está conectado a la plantilla (aún vacía).");
+}
