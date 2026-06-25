@@ -1,9 +1,1 @@
-var htmlfile = new ActiveXObject('htmlfile');
-htmlfile.write('<meta http-equiv="x-ua-compatible" content="IE=11" />');
-try {
-    var js = new ActiveXObject('Scripting.FileSystemObject').OpenTextFile('app_v2.js', 1).ReadAll();
-    htmlfile.parentWindow.execScript(js);
-    WScript.Echo('Syntax OK');
-} catch(e) {
-    WScript.Echo('Error: ' + e.message);
-}
+﻿const typedPassword = prompt(ADVERTENCIA PELIGRO: Estás a punto de eliminar permanentemente TODOS los  casos cerrados del historial.\n\nEsta acción no se puede deshacer.\nIngrese su contraseña de Super Admin (Número de documento) para confirmar:);
