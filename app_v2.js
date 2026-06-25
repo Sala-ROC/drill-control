@@ -2327,16 +2327,16 @@ window.deleteRigLineCase = function(caseId) {
         return;
     }
     
-    // Solicitar contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a de ConfirmaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n
-    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminacion permanente del caso ${caseId}?\n\nEsta accion no se puede deshacer. Ingrese su contraseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a de Editor (numero de documento) para confirmar:`);
+    // Solicitar contraseña de Confirmación
+    const typedPassword = prompt(`ADVERTENCIA: Confirmar la eliminación permanente del caso ${caseId}?\n\nEsta acción no se puede deshacer. Ingrese su contraseña de Editor (número de documento) para confirmar:`);
     
     if (typedPassword === null) {
-        // El usuario cancel el prompt
+        // El usuario canceló el prompt
         return;
     }
     
     if (typedPassword.trim() !== currentUser.doc) {
-        alert("contrasena incorrecta. La eliminacion del caso ha sido cancelada.");
+        alert("Contraseña incorrecta. La eliminación del caso ha sido cancelada.");
         return;
     }
     
