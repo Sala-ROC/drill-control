@@ -2964,10 +2964,23 @@ updateNetworkStatus();
 
 
 
-// Asegurar que al cerrar la ventana se marque como offline
+// Asegurar que al cerrar la ventana o cambiar de pestaña se marque como offline
 window.addEventListener('beforeunload', () => {
     if (currentUser) {
-        db.collection('users').doc(currentUser.doc).set(Object.assign({}, currentUser, { status: 'offline' }), { merge: true }).catch(() => {});
+        db.collection('users').doc(currentUser.doc).update({ status: 'offline' }).catch(() => {});
+    }
+});
+
+window.addEventListener('pagehide', () => {
+    if (currentUser) {
+        db.collection('users').doc(currentUser.doc).update({ status: 'offline' }).catch(() => {});
+    }
+});
+
+document.addEventListener('visibilitychange', () => {
+    if (currentUser) {
+        const newStatus = document.visibilityState === 'visible' ? 'online' : 'offline';
+        db.collection('users').doc(currentUser.doc).update({ status: newStatus }).catch(() => {});
     }
 });
 
