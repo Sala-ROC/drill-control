@@ -2706,7 +2706,7 @@ window.renderVersionsGrid = function() {
             let valueElement = '';
             if (canEdit) {
                 valueElement = `<input type="text" class="version-input" value="${versionValue}" 
-                                placeholder="v1.0..."
+                                placeholder=""
                                 onblur="window.saveSystemVersion('${rig.id}', '${sys}', this.value)">`;
             } else {
                 if (versionValue) {
