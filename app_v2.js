@@ -3,7 +3,8 @@ window.showToast = function(msg) { console.log('Toast:', msg); alert(msg); };
 // Lgica de Negocio y Base de Datos (Offline por defecto con LocalStorage)
 
 // 1. ESTRUCTURAS DE DATOS INICIALES (Listados oficiales)
-let OFFICIAl_RIGS = JSON.parse(localStorage.getItem('drill_official_rigs')) || ["F03", "F07", "F35", "M1211", "990", "F10", "F19", "F24", "F34", "F37", "991", "F15", "F26", "F36"];
+let OFFICIAl_RIGS = ["F03", "F07", "F35", "M1211", "990", "F10", "F19", "F24", "F34", "F37", "991", "F15", "F26", "F36"];
+localStorage.setItem('drill_official_rigs', JSON.stringify(OFFICIAl_RIGS));
 let OFFICIAL_CLIENTS = JSON.parse(localStorage.getItem('drill_official_clients')) || ["YPF", "Tecpetrol", "Vista Energy", "TOTAL Energy", "Phoenix", "Geopark"];
 const OFFICIAL_systems = ["REVit", "SmartDrill", "SmartSlide", "SmartNav", "AutoDownlinks", "Predictive Drilling", "Operador"];
 
@@ -90,6 +91,25 @@ if (!rigsData || rigsData.length === 0) {
     localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
 } else {
     rigsData = rigsData || [];
+    // MIGRATION: Ensure all OFFICIAL_RIGS exist in user's localStorage
+    let updated = false;
+    OFFICIAl_RIGS.forEach((rigId, idx) => {
+        if (!rigsData.find(r => r.id === rigId)) {
+            const sysMap = {};
+            OFFICIAL_systems.forEach(s => sysMap[s] = 'INACTIVO');
+            rigsData.push({
+                id: rigId,
+                client: OFFICIAL_CLIENTS[idx % OFFICIAL_CLIENTS.length],
+                systems: sysMap
+            });
+            updated = true;
+        }
+    });
+    if (updated) {
+        // Re-ordenar según OFFICIAl_RIGS
+        rigsData.sort((a, b) => OFFICIAl_RIGS.indexOf(a.id) - OFFICIAl_RIGS.indexOf(b.id));
+        localStorage.setItem('drill_rigs_data', JSON.stringify(rigsData));
+    }
 }
 
 // --- DATA MIGRATION FROM EXCEL 5/22/26 (SAFE MERGE) ---
@@ -3079,34 +3099,281 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+// ==============================================================
+// 13. GENERADOR DE REPORTES DIARIOS A PDF (AutoReportes)
+// ==============================================================
 
+window.generateDailyReport = function() {
+    const container = document.getElementById('reportRigsContainer');
+    if (!container) return;
 
+    const displayDate = document.getElementById('reportDateDisplay');
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const mm = months[today.getMonth()];
+    const yy = String(today.getFullYear()).slice(2);
+    
+    // Guardamos la fecha generada en una variable global para usarla al exportar PDF
+    window.currentReportDateStr = `${dd}-${mm}-${yy}`;
+    displayDate.textContent = window.currentReportDateStr;
 
+    container.innerHTML = '';
 
+    // PARCHE ESTRICTO: Asegurar que F34 y F37 existan y tengan cliente para que no sean filtrados.
+    const requiredRigs = ['F34', 'F37'];
+    requiredRigs.forEach(reqId => {
+        let found = rigsData.find(r => r.id === reqId);
+        if (!found) {
+            found = { id: reqId, client: 'YPF', systems: {} };
+            rigsData.push(found);
+        }
+        if (found.client === 'Sin Contrato' || !found.client) {
+            found.client = 'YPF'; // Valor por defecto para forzar visualización
+        }
+    });
 
+    // Re-ordenar la data base en caso de desorden
+    const correctOrder = ["F03", "F07", "F35", "M1211", "990", "F10", "F19", "F24", "F34", "F37", "991", "F15", "F26", "F36"];
+    rigsData.sort((a, b) => correctOrder.indexOf(a.id) - correctOrder.indexOf(b.id));
 
+    const activeRigs = rigsData.filter(rig => {
+        if (rig.client === 'Sin Contrato' || !rig.client) return false;
+        return true;
+    });
 
+    activeRigs.forEach(rig => {
+        let hasRockit = rig.systems['Predictive Drilling'] !== MODALITIES.INACTIVO ? 'bg-green' : 'bg-gray';
+        let hasRevit = rig.systems['REVit'] !== MODALITIES.INACTIVO ? 'bg-green' : 'bg-gray';
+        let hasSD = rig.systems['SmartDrill'] !== MODALITIES.INACTIVO ? 'bg-green' : 'bg-gray';
+        let hasSS = rig.systems['SmartSlide'] !== MODALITIES.INACTIVO ? 'bg-green' : 'bg-gray';
+        
+        let clientText = rig.client;
+        if (clientText.length > 15) clientText = clientText.substring(0, 15) + '...';
 
+        const tableHTML = `
+            <table class="roc-table">
+                <tr class="roc-header-row">
+                    <th style="width: 6%;">Rig</th>
+                    <th style="width: 6%;">Cliente:</th>
+                    <th style="width: 7%;">Pozo</th>
+                    <th style="width: 5%;">Pad</th>
+                    <th style="width: 6%;">Actividad:</th>
+                    <th style="width: 5%;">Sección:</th>
+                    <th style="width: 5%;">Fase:</th>
+                    <th style="width: 5%;">TD<br>Sección</th>
+                    <th style="width: 6%;">Sección del Pad</th>
+                    <th style="width: 15%;" colspan="8">Servicios disponibles</th>
+                    <th style="width: 17%;" colspan="4">Check List por turno</th>
+                    <th style="width: 11%;">Comentarios</th>
+                    <th style="width: 6%;">Jefe de Equipo</th>
+                </tr>
+                <tr>
+                    <td rowspan="5" class="rig-id-cell">${rig.id}</td>
+                    <td rowspan="5" class="client-logo-cell">${clientText}</td>
+                    <td><input class="roc-input" value="..."></td>
+                    <td><input class="roc-input" value="..."></td>
+                    <td><select class="roc-select"><option>Tripping</option><option>Perfora</option><option>DTM</option><option>Circulando</option></select></td>
+                    <td><select class="roc-select"><option>Final</option><option>Intermedia</option><option>Guía</option></select></td>
+                    <td><select class="roc-select"><option>6-3/4"</option><option>8-3/4"</option><option>6-1/8"</option><option>12-1/4"</option></select></td>
+                    <td><input class="roc-input" value="0"></td>
+                    <td>
+                        <div style="display: flex; gap: 2px; align-items: center; justify-content: center;">
+                            <input class="roc-input" style="width: 20px; border:1px solid #ccc; font-size:9px;" value="0"> de <input class="roc-input" style="width: 20px; border:1px solid #ccc; font-size:9px;" value="0">
+                        </div>
+                    </td>
+                    <td class="sys-hdr">Rockit</td>
+                    <td class="sys-hdr">REVit</td>
+                    <td class="sys-hdr">SD</td>
+                    <td class="sys-hdr">SS</td>
+                    <td class="sys-hdr">PD</td>
+                    <td class="sys-hdr">AutoDLK</td>
+                    <td class="sys-hdr">Camaras</td>
+                    <td class="sys-hdr">RigCloud</td>
+                    <td class="chk-lbl">ReVit</td>
+                    <td class="chk-val ${hasRevit === 'bg-green' ? 'status-ok' : 'status-na'}"><select class="roc-select roc-status-select"><option value="OK" ${hasRevit === 'bg-green' ? 'selected' : ''}>OK</option><option value="N/A" ${hasRevit !== 'bg-green' ? 'selected' : ''}>N/A</option><option value="NO">NO</option></select></td>
+                    <td class="chk-lbl">Reporte Control</td>
+                    <td class="chk-val status-ok"><select class="roc-select roc-status-select"><option value="OK">OK</option><option value="NO">NO</option><option value="N/A">N/A</option></select></td>
+                    <td rowspan="5" style="vertical-align: top;"><textarea class="roc-textarea" placeholder="Comentarios..."></textarea></td>
+                    <td><input class="roc-input" value="${currentUser ? currentUser.name + ' ' + currentUser.lastName : ''}"></td>
+                </tr>
+                <tr>
+                    <td colspan="5" class="sub-hdr">Operaciones Actuales</td>
+                    <td colspan="2" class="sub-hdr">Proximas Actividades</td>
+                    <td colspan="8" class="sub-hdr">Activos</td>
+                    <td class="chk-lbl">Surveys Recepción</td>
+                    <td class="chk-val status-ok"><select class="roc-select roc-status-select"><option value="OK">OK</option><option value="NO">NO</option><option value="N/A">N/A</option></select></td>
+                    <td class="chk-lbl">Rig Line</td>
+                    <td class="chk-val status-no"><select class="roc-select roc-status-select"><option value="NO">NO</option><option value="OK">OK</option><option value="N/A">N/A</option></select></td>
+                    <td><input class="roc-input" value="Operador"></td>
+                </tr>
+                <tr>
+                    <td colspan="5" rowspan="3"><textarea class="roc-textarea" placeholder="Operaciones actuales..."></textarea></td>
+                    <td colspan="2" rowspan="3"><textarea class="roc-textarea" placeholder="Próximas actividades..."></textarea></td>
+                    <td rowspan="3" class="sys-box-cell"><div class="sys-box ${hasRockit}">${hasRockit === 'bg-green' ? 'I' : ''}</div></td>
+                    <td rowspan="3" class="sys-box-cell"><div class="sys-box ${hasRevit}">${hasRevit === 'bg-green' ? 'I' : ''}</div></td>
+                    <td rowspan="3" class="sys-box-cell"><div class="sys-box ${hasSD}">${hasSD === 'bg-green' ? 'I' : ''}</div></td>
+                    <td rowspan="3" class="sys-box-cell"><div class="sys-box ${hasSS}">${hasSS === 'bg-green' ? 'I' : ''}</div></td>
+                    <td rowspan="3" class="sys-box-cell"><div class="sys-box bg-gray"></div></td>
+                    <td rowspan="3" class="sys-box-cell"><div class="sys-box bg-gray"></div></td>
+                    <td rowspan="3" class="sys-box-cell"><div class="sys-box bg-gray"></div></td>
+                    <td rowspan="3" class="sys-box-cell"><div class="sys-box bg-gray"></div></td>
+                    
+                    <td class="chk-lbl">PLAN cargado</td>
+                    <td class="chk-val status-ok"><select class="roc-select roc-status-select"><option value="OK">OK</option><option value="NO">NO</option><option value="N/A">N/A</option></select></td>
+                    <td class="chk-lbl">Caso</td>
+                    <td class="chk-val status-no"><select class="roc-select roc-status-select"><option value="NO">NO</option><option value="OK">OK</option><option value="N/A">N/A</option></select></td>
+                    <td><input class="roc-input" value="Operador"></td>
+                </tr>
+                <tr>
+                    <td class="chk-lbl">SS FALLAS</td>
+                    <td class="chk-val status-no"><select class="roc-select roc-status-select"><option value="NO">NO</option><option value="OK">OK</option><option value="N/A">N/A</option></select></td>
+                    <td class="chk-lbl">Tiempos Conexión</td>
+                    <td class="chk-val status-ok"><select class="roc-select roc-status-select"><option value="OK">OK</option><option value="NO">NO</option><option value="N/A">N/A</option></select></td>
+                    <td><input class="roc-input" value="Operador"></td>
+                </tr>
+                <tr>
+                    <td class="chk-lbl">SD FALLAS</td>
+                    <td class="chk-val status-no"><select class="roc-select roc-status-select"><option value="NO">NO</option><option value="OK">OK</option><option value="N/A">N/A</option></select></td>
+                    <td class="chk-lbl">Archivos guardados</td>
+                    <td class="chk-val status-ok"><select class="roc-select roc-status-select"><option value="OK">OK</option><option value="NO">NO</option><option value="N/A">N/A</option></select></td>
+                    <td></td>
+                </tr>
+            </table>
+        `;
+        
+        container.innerHTML += tableHTML;
+    });
 
+    document.querySelectorAll('.roc-status-select').forEach(select => {
+        select.addEventListener('change', function() {
+            const parent = this.parentElement;
+            parent.className = 'chk-val';
+            if(this.value === 'OK' || this.value === 'NO') parent.classList.add('status-ok');
+            else if(this.value === 'N/A') parent.classList.add('status-na');
+            else parent.classList.add('status-fail');
+        });
+    });
 
+    // SISTEMA DE MEMORIA AUTOMÁTICA
+    window.autoreportMemory = JSON.parse(localStorage.getItem('drill_autoreport_memory')) || {};
+    document.querySelectorAll('#reportRigsContainer .roc-table').forEach((table, tableIdx) => {
+        const rigId = activeRigs[tableIdx].id;
+        const memory = window.autoreportMemory[rigId] || {};
+        
+        const elements = table.querySelectorAll('.roc-input, .roc-select, .roc-textarea');
+        elements.forEach((el, elIdx) => {
+            // Restaurar memoria si existe
+            if (memory[elIdx] !== undefined) {
+                el.value = memory[elIdx];
+                // Forzar actualización visual de colores si es un selector de estado
+                if (el.classList.contains('roc-status-select')) {
+                    el.dispatchEvent(new Event('change'));
+                }
+            }
+            // Guardar al modificar
+            el.addEventListener('change', () => {
+                if (!window.autoreportMemory[rigId]) window.autoreportMemory[rigId] = {};
+                window.autoreportMemory[rigId][elIdx] = el.value;
+                localStorage.setItem('drill_autoreport_memory', JSON.stringify(window.autoreportMemory));
+            });
+        });
+    });
+};
 
+window.exportReportToPDF = function() {
+    if (typeof html2pdf === 'undefined') {
+        alert("La librería PDF aún no ha cargado. Verifica tu conexión a internet o espera unos segundos.");
+        return;
+    }
+    const element = document.getElementById('pdfExportContainer');
+    const dateStr = window.currentReportDateStr || 'SinFecha';
+    
+    // Configuración para que el PDF salga apaisado (Landscape) y encaje bien
+    const opt = {
+        margin:       [5, 5, 5, 5],
+        filename:     `Reporte Diario Equipos ROC - ${dateStr}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
 
+    // Guardar backup automático en Firebase
+    if (window.autoreportMemory && Object.keys(window.autoreportMemory).length > 0) {
+        const payload = {
+            dateStr: dateStr,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            memory: window.autoreportMemory
+        };
+        db.collection('autoreports_history').add(payload).then(() => {
+            // Limpieza de antiguos
+            db.collection('autoreports_history').orderBy('timestamp', 'desc').get().then(snap => {
+                if(snap.size > 60) {
+                    let docsToDelete = snap.docs.slice(60);
+                    docsToDelete.forEach(d => d.ref.delete());
+                }
+            });
+        }).catch(err => console.error("Error saving backup:", err));
+    }
 
+    html2pdf().set(opt).from(element).save();
+};
 
+// ==============================================================
+// 14. GESTIÓN DEL HISTORIAL DE REPORTES
+// ==============================================================
+window.restoreLatestReport = function() {
+    if(!confirm("¿Estás seguro de querer sobrescribir los datos actuales con el último reporte guardado en la nube?")) return;
+    
+    db.collection('autoreports_history').orderBy('timestamp', 'desc').limit(1).get().then(snap => {
+        if(snap.empty) {
+            alert("No hay reportes guardados en la nube todavía.");
+            return;
+        }
+        const data = snap.docs[0].data();
+        localStorage.setItem('drill_autoreport_memory', JSON.stringify(data.memory));
+        window.autoreportMemory = data.memory;
+        window.generateDailyReport();
+        alert(`Reporte del ${data.dateStr} restaurado con éxito.`);
+    }).catch(e => {
+        console.error(e);
+        alert("Error de conexión al restaurar.");
+    });
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+window.openHistoryModal = function() {
+    const container = document.getElementById('historyListContainer');
+    container.innerHTML = '<p style="text-align:center; padding:10px;">Cargando historial...</p>';
+    document.getElementById('historyModal').classList.remove('hidden');
+    
+    db.collection('autoreports_history').orderBy('timestamp', 'desc').limit(60).get().then(snap => {
+        if(snap.empty) {
+            container.innerHTML = '<p style="text-align:center; color:#888;">No hay reportes en el historial.</p>';
+            return;
+        }
+        container.innerHTML = '';
+        snap.forEach(doc => {
+            const data = doc.data();
+            const date = data.timestamp ? data.timestamp.toDate() : new Date();
+            const displayDate = date.toLocaleString('es-AR', {day:'2-digit', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit'});
+            
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.style.cssText = 'width:100%; text-align:left; background:var(--bg-secondary); border:1px solid rgba(255,255,255,0.1); padding:10px; border-radius:4px; margin-bottom:5px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; color:var(--text-color);';
+            btn.innerHTML = `
+                <span><strong>Reporte del ${data.dateStr}</strong></span>
+                <span style="font-size:0.75rem; color:var(--color-text-dim);">Respaldado: ${displayDate}</span>
+            `;
+            btn.onclick = () => {
+                if(confirm(`¿Restaurar el reporte guardado el ${displayDate}?`)) {
+                    localStorage.setItem('drill_autoreport_memory', JSON.stringify(data.memory));
+                    window.autoreportMemory = data.memory;
+                    window.generateDailyReport();
+                    document.getElementById('historyModal').classList.add('hidden');
+                    alert('Reporte restaurado correctamente.');
+                }
+            };
+            container.appendChild(btn);
+        });
+    });
+};
