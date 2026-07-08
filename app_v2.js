@@ -422,7 +422,7 @@ function renderRequestsTable() {
     const clientVal = filterClient.value;
     const sysVal = filterSystem.value;
 
-    // Filtrar solicitudes
+    // Filtrar solicitudes para mostrar SOLO las activas/pendientes
     let filteredRequests = requestsHistory.filter(req => {
         const matchesSearch = req.rig.toLowerCase().includes(query) || 
                               req.client.toLowerCase().includes(query) || 
@@ -430,15 +430,71 @@ function renderRequestsTable() {
         const matchesClient = clientVal === "" || req.client === clientVal;
         const matchesSystem = sysVal === "" || req.system === sysVal;
 
-        return matchesSearch && matchesClient && matchesSystem;
+        // Verificar si la solicitud sigue siendo el estado actual del Rig y es "pendiente"
+        let isOpen = false;
+        const rigObj = rigsData.find(r => r.id === req.rig);
+        if (rigObj && rigObj.systems) {
+            const currentModality = rigObj.systems[req.system];
+            if (currentModality === req.modality && (
+                currentModality === 'SOLICITADO_MAIL' || 
+                currentModality === 'SOLICITADO_CON_OP' || 
+                currentModality === 'SOLICITADO_SIN_OP'
+            )) {
+                isOpen = true;
+            }
+        }
+
+        return matchesSearch && matchesClient && matchesSystem && isOpen;
     });
 
-    const totalCount = filteredRequests.length;
-    let slicedRequests = filteredRequests;
+    // Mantener solo la notificación más reciente por cada sistema/equipo para evitar duplicados en pantalla
+    const seenEvents = new Set();
+    filteredRequests = filteredRequests.filter(req => {
+        const key = req.rig + '-' + req.system;
+        if (seenEvents.has(key)) return false;
+        seenEvents.add(key);
+        return true;
+    });
+
+    // Añadir fallas pendientes de RigLine
+    const pendingRigline = riglineCases.filter(c => {
+        let client = "Sin Contrato";
+        const rigObj = rigsData.find(r => r.id === c.rig);
+        if (rigObj) client = rigObj.client;
+
+        const matchesSearch = c.rig.toLowerCase().includes(query) || 
+                              client.toLowerCase().includes(query) || 
+                              c.system.toLowerCase().includes(query);
+        const matchesClient = clientVal === "" || client === clientVal;
+        const matchesSystem = sysVal === "" || c.system === sysVal;
+
+        return c.status === 'PENDIENTE' && matchesSearch && matchesClient && matchesSystem;
+    }).map(c => {
+        let client = "Sin Contrato";
+        const rigObj = rigsData.find(r => r.id === c.rig);
+        if (rigObj) client = rigObj.client;
+        
+        return {
+            isRigline: true,
+            rig: c.rig,
+            client: client,
+            system: c.system,
+            reporter: c.reporter,
+            date: c.date,
+            priority: c.priority
+        };
+    });
+
+    // Combinar ambas listas y ordenar por fecha descendente
+    let combinedRequests = [...filteredRequests, ...pendingRigline];
+    combinedRequests.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const totalCount = combinedRequests.length;
+    let slicedRequests = combinedRequests;
     let hasLimitApplied = false;
 
     if (!showAllHistory && totalCount > 50) {
-        slicedRequests = filteredRequests.slice(0, 50);
+        slicedRequests = combinedRequests.slice(0, 50);
         hasLimitApplied = true;
     }
 
@@ -457,48 +513,68 @@ function renderRequestsTable() {
     slicedRequests.forEach(req => {
         const tr = document.createElement('tr');
         
-        let statusLabel = MODALITY_LABELS[req.modality];
-        let statusClass = `status-${req.modality}`;
-
-        if (req.system === "REASIGNACIN") {
-            if (req.modality === "Sin Contrato") {
-                statusLabel = "Sin Contrato / Liberado";
-                statusClass = 'status-INACTIVO'; // Gris pizarra
-            } else {
-                statusLabel = `Asignado a ${req.modality}`;
-                statusClass = 'status-CONTRATO'; // Verde cian
-            }
-        }
-
-        // Subtexto detallado si la solicitud proviene de la planilla Excel / manual
-        let detailsSubtextHtml = '';
-        if (req.sender) {
+        if (req.isRigline) {
+            let prioColor = req.priority === 'ALTA' ? 'var(--color-danger)' : (req.priority === 'MEDIA' ? 'var(--color-amber)' : 'var(--color-cyan)');
             let formattedDateStr = '';
             if (req.date) {
                 const d = new Date(req.date);
-                const day = String(d.getDate()).padStart(2, '0');
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const year = d.getFullYear();
-                formattedDateStr = `${day}/${month}/${year}`;
+                formattedDateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
             }
-            if (req.ourContact) {
-                detailsSubtextHtml = `<span class="request-details-subtext">Va: ${req.sender} (Previo: ${req.ourContact}) el ${formattedDateStr}</span>`;
-            } else {
-                detailsSubtextHtml = `<span class="request-details-subtext">Va: ${req.sender} el ${formattedDateStr}</span>`;
-            }
-        }
+            
+            tr.innerHTML = `
+                <td class="td-rig">Rig ${req.rig}</td>
+                <td class="td-client">${req.client}</td>
+                <td class="td-system">${req.system}</td>
+                <td>
+                    <span class="system-status-dot-label" style="font-size: 0.78rem; color: ${prioColor};">
+                        <span class="dot" style="background: ${prioColor}; box-shadow: 0 0 8px ${prioColor};"></span> Falla Pendiente
+                    </span>
+                    <span class="request-details-subtext" style="color: rgba(255,255,255,0.6);">Prioridad: <b style="color: ${prioColor};">${req.priority}</b> | Por: ${req.reporter} el ${formattedDateStr}</span>
+                </td>
+            `;
+        } else {
+            let statusLabel = MODALITY_LABELS[req.modality];
+            let statusClass = `status-${req.modality}`;
 
-        tr.innerHTML = `
-            <td class="td-rig">Rig ${req.rig}</td>
-            <td class="td-client">${req.client}</td>
-            <td class="td-system">${req.system}</td>
-            <td>
-                <span class="system-status-dot-label ${statusClass}" style="font-size: 0.78rem;">
-                    <span class="dot"></span> ${statusLabel}
-                </span>
-                ${detailsSubtextHtml}
-            </td>
-        `;
+            if (req.system === "REASIGNACIN") {
+                if (req.modality === "Sin Contrato") {
+                    statusLabel = "Sin Contrato / Liberado";
+                    statusClass = 'status-INACTIVO';
+                } else {
+                    statusLabel = `Asignado a ${req.modality}`;
+                    statusClass = 'status-CONTRATO';
+                }
+            }
+
+            let detailsSubtextHtml = '';
+            if (req.sender) {
+                let formattedDateStr = '';
+                if (req.date) {
+                    const d = new Date(req.date);
+                    const day = String(d.getDate()).padStart(2, '0');
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const year = d.getFullYear();
+                    formattedDateStr = `${day}/${month}/${year}`;
+                }
+                if (req.ourContact) {
+                    detailsSubtextHtml = `<span class="request-details-subtext">Va: ${req.sender} (Previo: ${req.ourContact}) el ${formattedDateStr}</span>`;
+                } else {
+                    detailsSubtextHtml = `<span class="request-details-subtext">Va: ${req.sender} el ${formattedDateStr}</span>`;
+                }
+            }
+
+            tr.innerHTML = `
+                <td class="td-rig">Rig ${req.rig}</td>
+                <td class="td-client">${req.client}</td>
+                <td class="td-system">${req.system}</td>
+                <td>
+                    <span class="system-status-dot-label ${statusClass}" style="font-size: 0.78rem;">
+                        <span class="dot"></span> ${statusLabel}
+                    </span>
+                    ${detailsSubtextHtml}
+                </td>
+            `;
+        }
         requestsTableBody.appendChild(tr);
     });
 
@@ -1515,12 +1591,25 @@ function renderExcelHistory() {
     tbody.innerHTML = '';
 
     // Filtrar solicitudes finalizadas: Eran SOLICITADO_MAIL pero ya no estn activas
-    const finalizedMailReqs = requestsHistory.filter(req => {
+    let finalizedMailReqs = requestsHistory.filter(req => {
         if (req.modality !== MODALITIES.SOLICITADO_MAIL) return false;
         const rigObj = rigsData.find(r => r.id === req.rig);
         if (!rigObj) return true; // Si el rig fue borrado, se considera finalizado
         return rigObj.systems[req.system] !== MODALITIES.SOLICITADO_MAIL;
     });
+
+    // Aplicar filtro de búsqueda si existe
+    const searchInput = document.getElementById('excelHistorySearchInput');
+    if (searchInput && searchInput.value) {
+        const query = searchInput.value.toLowerCase();
+        finalizedMailReqs = finalizedMailReqs.filter(req => {
+            return (req.rig && req.rig.toLowerCase().includes(query)) ||
+                   (req.well && req.well.toLowerCase().includes(query)) ||
+                   (req.system && req.system.toLowerCase().includes(query)) ||
+                   (req.ourContact && req.ourContact.toLowerCase().includes(query)) ||
+                   (req.sender && req.sender.toLowerCase().includes(query));
+        });
+    }
 
     // Tomar las 60 ms recientes
     for (let i = 0; i < 60; i++) {
@@ -2892,11 +2981,17 @@ document.getElementById('recoveryForm').addEventListener('submit', (e) => {
 });
 // PERF5: Removed duplicate checkSession() ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â it is already called inside DOMContentLoaded at line ~2438
 
-
-
-
-
-
+// Inicializar eventos de bsqueda del historial
+document.addEventListener('DOMContentLoaded', () => {
+    const historySearchInput = document.getElementById('excelHistorySearchInput');
+    if (historySearchInput) {
+        historySearchInput.addEventListener('input', () => {
+            if (typeof renderExcelHistory === 'function') {
+                renderExcelHistory();
+            }
+        });
+    }
+});
 
 
 
